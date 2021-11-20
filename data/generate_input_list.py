@@ -7,7 +7,7 @@ for i in range(6):
 
     filter_id = i + 1
 
-    # For training
+    # For training test
     train_fold_pattern = "Area_[!{}]*.h5".format(filter_id)
     dst_list_path = "train_hdf5_file_list_woArea{}.txt".format(filter_id)
 
