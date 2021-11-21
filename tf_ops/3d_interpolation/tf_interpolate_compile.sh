@@ -1,5 +1,5 @@
 # TF1.4 Python 3.5 CUDA 8.0
-# TF1.4 Python 3.7 CUDA 8.0
+# TF1.4 Python 3.7 CUDA 11.1
 
 TF_INC=$(python -c 'import tensorflow as tf; print(tf.sysconfig.get_include())')
 TF_LIB=$(python -c 'import tensorflow as tf; print(tf.sysconfig.get_lib())')
@@ -10,10 +10,10 @@ g++ -std=c++11 tf_interpolate.cpp \
 -shared \
 -fPIC \
 -I$TF_INC \
--I/usr/local/cuda-8.0/include \
+-I/usr/local/cuda-11.1/include \
 -I$TF_INC/external/nsync/public \
 -lcudart \
--L/usr/local/cuda-8.0/lib64/ \
+-L/usr/local/cuda-11.1/lib64/ \
 -L$TF_LIB \
 -ltensorflow_framework
 
