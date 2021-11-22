@@ -66,9 +66,11 @@ def collect_point_label(anno_path, out_filename, file_format='txt'):
         points_list.append(np.concatenate([points, labels, instancelabels], 1))  # Nx8
     print("test2")
     data_label = np.concatenate(points_list, 0)
-    xyz_min = np.amin(data_label, axis=0)[0:3]
-    data_label[:, 0:3] -= xyz_min
     print("test3")
+    xyz_min = np.amin(data_label, axis=0)[0:3]
+    print("test4")
+    data_label[:, 0:3] -= xyz_min
+    print("test5")
     if file_format == 'txt':
         fout = open(out_filename, 'w')
         for i in range(data_label.shape[0]):
