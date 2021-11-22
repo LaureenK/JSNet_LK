@@ -1,4 +1,4 @@
-/conten/JSNET_LK/data/indoor3d_ins_seg_hdf5/Area_1_conferenceRoom_1.h5
+/content/JSNET_LK/data/indoor3d_ins_seg_hdf5/Area_1_conferenceRoom_1.h5
 /content/JSNET_LK/data/indoor3d_ins_seg_hdf5/Area_1_conferenceRoom_2.h5
 /content/JSNet_LK/data/indoor3d_ins_seg_hdf5/Area_1_copyRoom_1.h5
 /content/JSNet_LK/data/indoor3d_ins_seg_hdf5/Area_1_hallway_1.h5
