@@ -16,4 +16,4 @@ g++ -std=c++11 tf_sampling.cpp tf_sampling_g.cu.o \
 -I$TF_INC/external/nsync/public \
 -lcudart -L/usr/local/cuda-11.1/lib64/ \
 -L$TF_LIB \
--ltensorflow_framework -O2 -D_GLIBCXX_USE_CXX11_ABI=0
+-ltensorflow_framework
