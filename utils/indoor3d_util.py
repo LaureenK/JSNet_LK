@@ -54,6 +54,7 @@ def collect_point_label(anno_path, out_filename, file_format='txt'):
     points_list = []
 
     instanceid = 0
+    print("test1")
     for f in glob.glob(os.path.join(anno_path, '*.txt')):
         cls = os.path.basename(f).split('_')[0]
         if cls not in g_classes:  # note: in some room there is 'staris' class..
@@ -63,11 +64,11 @@ def collect_point_label(anno_path, out_filename, file_format='txt'):
         instancelabels = np.ones((points.shape[0], 1)) * instanceid
         instanceid += 1
         points_list.append(np.concatenate([points, labels, instancelabels], 1))  # Nx8
-
+    print("test2")
     data_label = np.concatenate(points_list, 0)
     xyz_min = np.amin(data_label, axis=0)[0:3]
     data_label[:, 0:3] -= xyz_min
-
+    print("test3")
     if file_format == 'txt':
         fout = open(out_filename, 'w')
         for i in range(data_label.shape[0]):
