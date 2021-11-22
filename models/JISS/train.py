@@ -4,6 +4,7 @@ import socket
 import sys
 
 import tensorflow as tf
+tf.logging.set_verbosity(tf.logging.ERROR)
 
 CURR_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
