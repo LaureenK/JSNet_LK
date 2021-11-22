@@ -5,7 +5,7 @@ TF_INC=$(python -c 'import tensorflow as tf; print(tf.sysconfig.get_include())')
 TF_LIB=$(python -c 'import tensorflow as tf; print(tf.sysconfig.get_lib())')
 
 #/bin/bash
-/usr/local/cuda-11.1/bin/nvcc tf_sampling_g.cu \
+/usr/local/cuda-11.1/bin/nvcc ~/neural_networks/jsnet/JSNet_LK/tf_ops/grouping/tf_sampling_g.cu \
 -o tf_sampling_g.cu.o -c -O2 -DGOOGLE_CUDA=1 -x cu -Xcompiler -fPIC
 
 g++ -std=c++11 tf_sampling.cpp tf_sampling_g.cu.o \
