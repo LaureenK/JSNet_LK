@@ -134,7 +134,7 @@ def getDataFiles(list_filename):
 
 
 def load_h5(h5_filename):
-    f = h5py.File(h5_filename)
+    f = h5py.File(h5_filename, 'r')
     data = f['data'][:]
     label = f['label'][:]
     return (data, label)
@@ -145,7 +145,7 @@ def loadDataFile(filename):
 
 
 def load_h5_data_label_seg(h5_filename):
-    f = h5py.File(h5_filename)
+    f = h5py.File(h5_filename, 'r')
     data = f['data'][:]
     label = f['label'][:]
     seg = f['pid'][:]
@@ -157,7 +157,7 @@ def loadDataFile_with_seg(filename):
 
 
 def loadDataFile_with_grouplabel(filename):
-    f = h5py.File(filename)
+    f = h5py.File(filename, 'r')
     data = f['data'][:]
     # label = f['label'][:]
     group = f['pid'][:]  # Nx1
@@ -169,7 +169,7 @@ def loadDataFile_with_grouplabel(filename):
 
 
 def loadDataFile_with_groupseglabel(filename):
-    f = h5py.File(filename)
+    f = h5py.File(filename, 'r')
     data = f['data'][:]
     # label = f['label'][:]
     group = f['pid'][:]  # Nx1
@@ -186,7 +186,7 @@ def loadDataFile_with_groupseglabel(filename):
 
 
 def loadDataFile_with_groupseglabel_sunrgbd(filename):
-    f = h5py.File(filename)
+    f = h5py.File(filename, 'r')
     data = f['data'][:]
     group = f['pid'][:]  # NxG
     if 'groupcategory' in f:
@@ -201,7 +201,7 @@ def loadDataFile_with_groupseglabel_sunrgbd(filename):
 
 
 def loadDataFile_with_groupseglabel_scannet(filename):
-    f = h5py.File(filename)
+    f = h5py.File(filename, 'r')
     data = f['data'][:]
     # label = f['label'][:]
     group = f['pid'][:]  # NxG
@@ -217,7 +217,7 @@ def loadDataFile_with_groupseglabel_scannet(filename):
 
 
 def loadDataFile_with_groupseglabel_nuyv2(filename):
-    f = h5py.File(filename)
+    f = h5py.File(filename, 'r')
     data = f['data'][:]
     group = f['pid'][:]  # NxG
     if 'groupcategory' in f:
@@ -233,7 +233,7 @@ def loadDataFile_with_groupseglabel_nuyv2(filename):
 
 
 def loadDataFile_with_groupseglabel_stanfordindoor(filename):
-    f = h5py.File(filename)
+    f = h5py.File(filename, 'r')
     data = f['data'][:]
     group = f['pid'][:].astype(np.int32)  # NxG
     if 'label' in f:
@@ -248,7 +248,7 @@ def loadDataFile_with_groupseglabel_stanfordindoor(filename):
 
 
 def loadDataFile_with_img(filename):
-    f = h5py.File(filename)
+    f = h5py.File(filename, 'r')
     data = f['data'][:]
     group = f['pid'][:]  # NxG
     seg = f['seglabel'][:]
