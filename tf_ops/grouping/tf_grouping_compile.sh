@@ -17,4 +17,4 @@ tf_grouping_g.cu.o \
 -I$TF_INC/external/nsync/public \
 -lcudart -L/usr/local/cuda-10.0/lib64/ \
 -L$TF_LIB \
--ltensorflow_framework
+-ltensorflow_framework -D_GLIBCXX_USE_CXX11_ABI=0
