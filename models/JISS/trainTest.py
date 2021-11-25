@@ -32,7 +32,7 @@ parser.add_argument('--momentum', type=float, default=0.9, help='Initial learnin
 parser.add_argument('--optimizer', default='adam', help='adam or momentum [default: adam]')
 parser.add_argument('--decay_step', type=int, default=12500, help='Decay step for lr decay [default: 12500]')
 parser.add_argument('--decay_rate', type=float, default=0.5, help='Decay rate for lr decay [default: 0.5]')
-parser.add_argument('--input_list', type=str, default='data/train_hdf5_file_list_woArea5.txt',
+parser.add_argument('--input_list', type=str, default='data/train_csv_dvs.txt',
                     help='Input data list file')
 parser.add_argument('--restore_model', type=str, default='log/', help='Pretrained model')
 FLAGS = parser.parse_args()
