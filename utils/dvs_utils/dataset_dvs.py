@@ -117,7 +117,7 @@ def data_prepare(data_sample_queue, data_queue, blocks, epoch, batch_size):
         gc.collect()
 
 
-class S3DISDataset(object):
+class DVSDataset(object):
     def __init__(self, data_root, input_list_txt, split='train', epoch=1, batch_size=24, num_works=8,
                  data_type='numpy', block_points=4096, block_size=1.0, stride=0.5, random_sample=False,
                  sample_num=None, sample_aug=1, with_rgb=True):
@@ -129,9 +129,10 @@ class S3DISDataset(object):
         self.length = 0
 
         print("dataset_s3dis.py: init()")
-        assert (data_type == 'numpy' or data_type == 'hdf5'), 'data_type must be "numpy" or "hdf5"'
+        #assert (data_type == 'numpy' or data_type == 'hdf5'), 'data_type must be "numpy" or "hdf5"'
 
         self.input_list = self.get_input_list()
+        print(self.input_list)
 
         self.manager = multiprocessing.Manager()
         self.data_sample_queue = self.manager.Queue(3)
@@ -163,15 +164,10 @@ class S3DISDataset(object):
     def get_input_list(self):
         print("Get data from input list: just h5 or npy input")
         input_list = [line.strip() for line in open(self.input_list_txt, 'r')]
-        temp_list = [item.split('/')[-1].strip('.h5').strip('.npy') for item in input_list]
-        temp_input_list = [line.strip() for line in
-                           open(os.path.join(self.data_root, 'data/indoor3d_ins_seg_hdf5/room_filelist.txt'), 'r')]
-        cnt_length = 0
-        for item in temp_input_list:
-            if item in temp_list:
-                cnt_length += 1
+        temp_list = [item.split('/')[-1].strip('.h5').strip('.npy').strip('.csv') for item in input_list]
+ 
+        cnt_length = len(temp_list)
 
-        del temp_input_list
         self.length = cnt_length
         input_list = [os.path.join(self.data_root, item) for item in input_list]
 
@@ -190,12 +186,4 @@ class S3DISDataset(object):
 
 
 if __name__ == '__main__':
-    batch_size = 24
-    data_set = S3DISDataset(ROOT_DIR, 'data/test_file_list_Area1.txt', epoch=2)
-    num_batch = data_set.get_length() // batch_size
-    for epoch in range(2):
-        for idx in range(num_batch):
-            _, _, _ = data_set.get_batch()
-            print('epoch/num_epoch: {}/{}; batch/num_batch: {}/{};'.format(epoch, 2, idx, num_batch))
-            time.sleep(1)
     print('finish')
