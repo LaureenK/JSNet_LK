@@ -720,7 +720,7 @@ def changeDVSdata(data_label):
     print (xyz)
 
     #rgb
-    rgb = np.full((xyz.shape[1], 3), 255)
+    rgb = np.full((xyz.shape[0], 3), 255)
     print("rgb")
     print(rgb)
 
@@ -764,7 +764,7 @@ def changeDVSdata(data_label):
     newdata = np.random.shuffle(newdata)
 
 
-    return newdata, xyz.shape[1]
+    return newdata, xyz.shape[0]
 
 def dvs2samples_wrapper_normalized(data_label_filename):
     print("mywrapper")
