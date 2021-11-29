@@ -244,21 +244,13 @@ def loadDataFile_with_groupseglabel_stanfordindoor(filename):
         seg = f['seglabel'][:].astype(np.int32)
     else:
         seg = f['seglabels'][:].astype(np.int32)
-    print("data: " + filename)
-    print(data.shape)
-    print(data)
+    print("data: " + filename + data.shape)
 
-    print("group: ")
-    print(group.shape)
-    print(group)
+    print("group: " + group.shape)
 
-    print("label: ")
-    print(label.shape)
-    print(label)
+    print("label: " + label.shape)
 
-    print("seg: ")
-    print(seg.shape)
-    print(seg)
+    print("seg: " + seg.shape)
 
     return (data, group, label, seg)
 
