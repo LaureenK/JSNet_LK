@@ -58,25 +58,25 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
             datalabel = provider.shuffle_data(*datalabel)
         return datalabel
 
-    # for _ in range(epoch):
-    #     np.random.shuffle(input_list)
-    #     for idx in range(chunksize + 1):
-    #         start_idx = min(idx * num_work, input_list_length)
-    #         end_idx = min((idx + 1) * num_work, input_list_length)
-    #         if start_idx >= input_list_length or end_idx > input_list_length:
-    #             continue
+    for _ in range(epoch):
+        np.random.shuffle(input_list)
+        for idx in range(chunksize + 1):
+            start_idx = min(idx * num_work, input_list_length)
+            end_idx = min((idx + 1) * num_work, input_list_length)
+            if start_idx >= input_list_length or end_idx > input_list_length:
+                continue
 
-    #         with futures.ThreadPoolExecutor(num_work) as pool:
-    #             data_sem_ins = list(pool.map(data_sample_single, input_list[start_idx:end_idx], chunksize=1))
+            with futures.ThreadPoolExecutor(num_work) as pool:
+                data_sem_ins = list(pool.map(data_sample_single, input_list[start_idx:end_idx], chunksize=1))
 
-    #             for dsi in data_sem_ins:
-    #                 shuffle_dsi = provider.shuffle_data(*dsi)
-    #                 data_sample_queue.put(shuffle_dsi)
-    #                 del dsi
-    #                 gc.collect()
+                for dsi in data_sem_ins:
+                    shuffle_dsi = provider.shuffle_data(*dsi)
+                    data_sample_queue.put(shuffle_dsi)
+                    del dsi
+                    gc.collect()
 
-    #             pool.shutdown()
-    #             gc.collect()
+                pool.shutdown()
+                gc.collect()
 
 
 def data_prepare(data_sample_queue, data_queue, blocks, epoch, batch_size):
