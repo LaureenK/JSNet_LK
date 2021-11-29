@@ -41,6 +41,7 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
 #room2blocks_wrapper_normalized(data_label_filename, num_point, block_size=1.0, stride=1.0,random_sample=False, sample_num=None, sample_aug=1):
 
     elif input_list[0].endswith('csv'):
+        print("csv")
         data_sample_func = functools_partial(
             indoor3d_util.dvs2samples_wrapper_normalized)
 
