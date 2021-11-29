@@ -248,9 +248,9 @@ def loadDataFile_with_groupseglabel_stanfordindoor(filename):
 
     print("group: " , group.shape)
 
-    print("label: " , label.shape)
+    print("label: " , len(label))
 
-    print("seg: " , seg.shape)
+    print("seg: " , len(seg))
 
     return (data, group, label, seg)
 
