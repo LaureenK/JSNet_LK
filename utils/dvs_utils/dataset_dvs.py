@@ -20,7 +20,8 @@ import indoor3d_util
 
 def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_points=4096,
                 block_size=1.0, stride=0.5, random_sample=False, sample_num=None, sample_aug=1):
-    assert (input_list[0].endswith('npy') or input_list[0].endswith('h5')), "data format must be .npy or .h5"
+    
+    #assert (input_list[0].endswith('npy') or input_list[0].endswith('h5')), "data format must be .npy or .h5"
 
     input_list_length = len(input_list)
     num_work = min(min(num_works, multiprocessing.cpu_count()), input_list_length // 4)
@@ -35,37 +36,45 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
         data_sample_func = functools_partial(
             indoor3d_util.room2blocks_wrapper_normalized, num_point=block_points, block_size=block_size,
             stride=stride, random_sample=random_sample, sample_num=sample_num, sample_aug=sample_aug)
-    elif input_list[0].endswith('h5'):
-        def load_data_file(input_file):
-            cur_data, cur_group, _, cur_sem = provider.loadDataFile_with_groupseglabel_stanfordindoor(input_file)
-            return cur_data, cur_sem, cur_group
-        data_sample_func = load_data_file
 
-    def data_sample_single(input_file):
-        datalabel = data_sample_func(input_file)
-        if split == 'train':
-            datalabel = provider.shuffle_data(*datalabel)
-        return datalabel
+#room2blocks_wrapper_normalized(data_label_filename, num_point, block_size=1.0, stride=1.0,random_sample=False, sample_num=None, sample_aug=1):
 
-    for _ in range(epoch):
-        np.random.shuffle(input_list)
-        for idx in range(chunksize + 1):
-            start_idx = min(idx * num_work, input_list_length)
-            end_idx = min((idx + 1) * num_work, input_list_length)
-            if start_idx >= input_list_length or end_idx > input_list_length:
-                continue
+    elif input_list[0].endswith('csv'):
+        data_sample_func = functools_partial(
+            indoor3d_util.dvs2samples_wrapper_normalized)
 
-            with futures.ThreadPoolExecutor(num_work) as pool:
-                data_sem_ins = list(pool.map(data_sample_single, input_list[start_idx:end_idx], chunksize=1))
 
-                for dsi in data_sem_ins:
-                    shuffle_dsi = provider.shuffle_data(*dsi)
-                    data_sample_queue.put(shuffle_dsi)
-                    del dsi
-                    gc.collect()
+    # elif input_list[0].endswith('h5'):
+    #     def load_data_file(input_file):
+    #         cur_data, cur_group, _, cur_sem = provider.loadDataFile_with_groupseglabel_stanfordindoor(input_file)
+    #         return cur_data, cur_sem, cur_group
+    #     data_sample_func = load_data_file
 
-                pool.shutdown()
-                gc.collect()
+    # def data_sample_single(input_file):
+    #     datalabel = data_sample_func(input_file)
+    #     if split == 'train':
+    #         datalabel = provider.shuffle_data(*datalabel)
+    #     return datalabel
+
+    # for _ in range(epoch):
+    #     np.random.shuffle(input_list)
+    #     for idx in range(chunksize + 1):
+    #         start_idx = min(idx * num_work, input_list_length)
+    #         end_idx = min((idx + 1) * num_work, input_list_length)
+    #         if start_idx >= input_list_length or end_idx > input_list_length:
+    #             continue
+
+    #         with futures.ThreadPoolExecutor(num_work) as pool:
+    #             data_sem_ins = list(pool.map(data_sample_single, input_list[start_idx:end_idx], chunksize=1))
+
+    #             for dsi in data_sem_ins:
+    #                 shuffle_dsi = provider.shuffle_data(*dsi)
+    #                 data_sample_queue.put(shuffle_dsi)
+    #                 del dsi
+    #                 gc.collect()
+
+    #             pool.shutdown()
+    #             gc.collect()
 
 
 def data_prepare(data_sample_queue, data_queue, blocks, epoch, batch_size):
@@ -128,19 +137,15 @@ class DVSDataset(object):
         self.capacity = 30
         self.length = 0
 
-        print("dataset_s3dis.py: init()")
-        #assert (data_type == 'numpy' or data_type == 'hdf5'), 'data_type must be "numpy" or "hdf5"'
-
         self.input_list = self.get_input_list()
-        print(self.input_list)
 
-        # self.manager = multiprocessing.Manager()
-        # self.data_sample_queue = self.manager.Queue(3)
-        # self.data_queue = multiprocessing.Manager().Queue(self.capacity)
+        self.manager = multiprocessing.Manager()
+        self.data_sample_queue = self.manager.Queue(3)
+        self.data_queue = multiprocessing.Manager().Queue(self.capacity)
 
-        # self.producer_process = multiprocessing.Process(target=data_sample, args=(
-        #     self.data_sample_queue, self.input_list, split, epoch, num_works,
-        #     block_points, block_size, stride, random_sample, sample_num, sample_aug))
+        self.producer_process = multiprocessing.Process(target=data_sample, args=(
+             self.data_sample_queue, self.input_list, split, epoch, num_works,
+             block_points, block_size, stride, random_sample, sample_num, sample_aug))
 
         # self.consumer_process = multiprocessing.Process(target=data_prepare, args=(
         #     self.data_sample_queue, self.data_queue, self.length, epoch, batch_size))

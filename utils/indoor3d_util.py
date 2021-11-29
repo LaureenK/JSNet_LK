@@ -119,6 +119,7 @@ def num_room2blocks_wrapper_normalized(data_label_filename, block_size=1.0, stri
                                        random_sample=False, sample_num=None, sample_aug=1):
     assert (stride <= block_size)
 
+    #load data from file in data_label
     if data_label_filename[-3:] == 'txt':
         data_label = np.loadtxt(data_label_filename)
     elif data_label_filename[-3:] == 'npy':
@@ -126,17 +127,19 @@ def num_room2blocks_wrapper_normalized(data_label_filename, block_size=1.0, stri
     else:
         return 0
 
-    data = data_label[:, 0:6]
-    limit = np.amax(data, 0)[0:3]
+    data = data_label[:, 0:6]   #data xyz rgb? without normalized
+    limit = np.amax(data, 0)[0:3] #größter x wert davon xyz?
 
     # Get the corner location for our sampling blocks
     xbeg_list = []
     ybeg_list = []
-    if not random_sample:
-        num_block_x = int(np.ceil((limit[0] - block_size) / stride)) + 1
-        num_block_y = int(np.ceil((limit[1] - block_size) / stride)) + 1
-        for i in range(num_block_x):
-            if i % 2 == 0:
+    if not random_sample: #wenn nicht random ausgewählt
+        #berechne Blockgröße
+        num_block_x = int(np.ceil((limit[0] - block_size) / stride)) + 1 #(größter x wert - blocksize) durch Schritt) #ceil = aufgerundet
+        num_block_y = int(np.ceil((limit[1] - block_size) / stride)) + 1 # für y
+        
+        for i in range(num_block_x): #für jeden Block
+            if i % 2 == 0: # abwechselnd für jeden zweiten Block
                 for j in range(num_block_y):
                     xbeg_list.append(i * stride)
                     ybeg_list.append(j * stride)
@@ -325,7 +328,7 @@ def room2blocks_wrapper(data_label_filename, num_point, block_size=1.0, stride=1
     return room2blocks_plus(data_label, num_point, block_size, stride,
                             random_sample, sample_num, sample_aug)
 
-
+#2. das wird danach aufgerufen
 def room2blocks_plus_normalized(data_label, num_point, block_size, stride,
                                 random_sample, sample_num, sample_aug):
     """ room2block, with input filename and RGB preprocessing.
@@ -360,7 +363,7 @@ def room2blocks_plus_normalized(data_label, num_point, block_size, stride,
 
     return new_data_batch, label_batch, inslabel_batch
 
-
+#1. das wird aufgerufen
 def room2blocks_wrapper_normalized(data_label_filename, num_point, block_size=1.0, stride=1.0,
                                    random_sample=False, sample_num=None, sample_aug=1):
     if data_label_filename[-3:] == 'txt':
@@ -374,7 +377,7 @@ def room2blocks_wrapper_normalized(data_label_filename, num_point, block_size=1.
     return room2blocks_plus_normalized(data_label, num_point, block_size, stride,
                                        random_sample, sample_num, sample_aug)
 
-
+#this is interesing
 def room2samples(data, label, inslabel, sample_num_point):
     """ Prepare whole room samples.
     Args:
@@ -704,3 +707,72 @@ def collect_point_bounding_box(anno_path, out_filename, file_format):
     else:
         print('ERROR!! Unknown file format: %s, please use txt or numpy.' % file_format)
         exit()
+
+# -----------------------------------------------------------------------------
+# OWN FUNCTIONS
+# -----------------------------------------------------------------------------
+
+def changeDVSdata(data_label, num_point):
+    # xyz p segLabel insLabel
+    # xyz rgb segLabel insLabel
+    xyz = data_label[:, 0:3]
+    print("xyz")
+    print (xyz)
+
+    #rgb
+    rgb = np.full((xyz.shape[1], 3), 255)
+    print("rgb")
+    print(rgb)
+
+    #Change seg Labels from 0 to 3
+        #BICYCLE = 5  ----------> 0
+        #PERSON = 1
+        #DOG = 2
+        #SPORTSBALL = 6  -----------> 3
+    seglabels = data_label[:, 5:6]
+    print("seglabels before")
+    print(seglabels)
+    seglabels = np.where(seglabels == 5, 0,seglabels)
+    seglabels = np.where(seglabels == 6, 3,seglabels)
+    print("seglabels after")
+    print(seglabels)
+
+    inslabels = data_label[:, 6:6]
+    print("inslabel before")
+    print(inslabels)
+    unique = np.unique(inslabels)
+    countIns = len(unique)  
+
+    arr = np.arange(countIns)
+
+    for x in unique:
+        if not x in arr:
+            n = -1
+            for y in arr:
+                if not y in unique:
+                    n = y
+                    break
+            inslabels = np.where(inslabels == x, n,inslabels)
+    
+    print("inslabel after")
+    print(inslabels)
+    
+    #combine all
+    newdata = np.append(xyz,rgb,axis=1)
+    newdata = np.append(newdata,seglabels,axis=1)
+    newdata = np.append(newdata,inslabels,axis=1)
+    newdata = np.random.shuffle(newdata)
+
+
+    return newdata, xyz.shape[1]
+
+def dvs2samples_wrapper_normalized(data_label_filename):
+    if data_label_filename[-3:] == 'csv':
+        data_label = np.loadtxt(data_label_filename)
+        data_label, num_point = changeDVSdata(data_label)
+    else:
+        print('Unknown file type! exiting.')
+        exit()
+    print(data_label)
+    print(num_point)
+    #return room2samples_plus_normalized(data_label, num_point)
