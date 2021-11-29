@@ -43,7 +43,7 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
 
     def data_sample_single(input_file):
         datalabel = data_sample_func(input_file)
-        print("datalabel: " + datalabel.shape)
+        print("datalabel: ", datalabel.shape)
         print(datalabel)
         if split == 'train':
             datalabel = provider.shuffle_data(*datalabel)
