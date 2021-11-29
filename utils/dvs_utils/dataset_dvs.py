@@ -153,15 +153,15 @@ class DVSDataset(object):
         # self.producer_process.start()
         # self.consumer_process.start()
 
-    def __del__(self):
-        while not self.data_sample_queue.empty() and not self.data_queue.empty():
-            self.data_queue.get_nowait()
+    # def __del__(self):
+    #     while not self.data_sample_queue.empty() and not self.data_queue.empty():
+    #         self.data_queue.get_nowait()
 
-        if self.producer_process.is_alive():
-            self.producer_process.join()
+    #     if self.producer_process.is_alive():
+    #         self.producer_process.join()
 
-        if self.consumer_process.is_alive():
-            self.consumer_process.join()
+    #     if self.consumer_process.is_alive():
+    #         self.consumer_process.join()
 
     def __len__(self):
         return self.length
