@@ -58,7 +58,12 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
             with futures.ThreadPoolExecutor(num_work) as pool:
                 data_sem_ins = list(pool.map(data_sample_single, input_list[start_idx:end_idx], chunksize=1))
 
+                print("data_sem_ins length: ")
+                print(len(data_sem_ins))
+
                 for dsi in data_sem_ins:
+                    print("dsi shape: ")
+                    print(len(dsi.shape))
                     shuffle_dsi = provider.shuffle_data(*dsi)
                     data_sample_queue.put(shuffle_dsi)
                     del dsi

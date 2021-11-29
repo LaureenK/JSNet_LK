@@ -56,22 +56,23 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
             end_idx = min((idx + 1) * num_work, input_list_length)
             if start_idx >= input_list_length or end_idx > input_list_length:
                 continue
+
             with futures.ThreadPoolExecutor(num_work) as pool:
                 data_sem_ins = list(pool.map(data_sample_single, input_list[start_idx:end_idx], chunksize=1))
-                print("Test2")
+
+                print("data_sem_ins length: ")
+                print(len(data_sem_ins))
+
                 for dsi in data_sem_ins:
-                    print(dsi)
+                    print("dsi shape: ")
+                    print(len(dsi.shape))
                     shuffle_dsi = provider.shuffle_data(*dsi)
-                    print("test3")
                     data_sample_queue.put(shuffle_dsi)
-                    print("test4")
                     del dsi
-                    print("test5")
                     gc.collect()
-                print("test5")
+
                 pool.shutdown()
                 gc.collect()
-    print("test6")
 
 
 def data_prepare(data_sample_queue, data_queue, blocks, epoch, batch_size):
