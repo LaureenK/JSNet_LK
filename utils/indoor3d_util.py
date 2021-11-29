@@ -729,7 +729,7 @@ def changeDVSdata(data_label):
         #PERSON = 1
         #DOG = 2
         #SPORTSBALL = 6  -----------> 3
-    seglabels = data_label[:, 5:6]
+    seglabels = data_label[:, 4:5]
     print("seglabels before")
     print(seglabels)
     seglabels = np.where(seglabels == 5, 0,seglabels)
@@ -737,7 +737,7 @@ def changeDVSdata(data_label):
     print("seglabels after")
     print(seglabels)
 
-    inslabels = data_label[:, 6:6]
+    inslabels = data_label[:, 5:6]
     print("inslabel before")
     print(inslabels)
     unique = np.unique(inslabels)
