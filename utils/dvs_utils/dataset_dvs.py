@@ -144,11 +144,11 @@ class DVSDataset(object):
             self.data_sample_queue, self.input_list, split, epoch, num_works,
             block_points, block_size, stride, random_sample, sample_num, sample_aug))
 
-        # self.consumer_process = multiprocessing.Process(target=data_prepare, args=(
-        #     self.data_sample_queue, self.data_queue, self.length, epoch, batch_size))
+        self.consumer_process = multiprocessing.Process(target=data_prepare, args=(
+            self.data_sample_queue, self.data_queue, self.length, epoch, batch_size))
 
         self.producer_process.start()
-        # self.consumer_process.start()
+        self.consumer_process.start()
 
     def __del__(self):
         while not self.data_sample_queue.empty() and not self.data_queue.empty():
@@ -157,8 +157,8 @@ class DVSDataset(object):
         if self.producer_process.is_alive():
             self.producer_process.join()
 
-        # if self.consumer_process.is_alive():
-        #     self.consumer_process.join()
+        if self.consumer_process.is_alive():
+            self.consumer_process.join()
 
     def __len__(self):
         return self.length
