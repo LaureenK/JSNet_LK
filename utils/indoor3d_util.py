@@ -775,7 +775,7 @@ def changeDVSdata(data_label):
     print(newdata[:, 3:6])
     print(newdata[:, 6:7])
     print(newdata[:, 7:8])
-    newdata = np.random.shuffle(newdata)
+    np.random.shuffle(newdata)
     print("Shuffle")
     print(newdata[:, 0:3])
     print(newdata[:, 3:6])
@@ -785,7 +785,6 @@ def changeDVSdata(data_label):
     return newdata, xyz.shape[0]
 
 def dvs2samples_wrapper_normalized(data_label_filename):
-    print("mywrapper")
     if data_label_filename[-3:] == 'csv':
         data_label = np.loadtxt(data_label_filename)
         data_label, num_point = changeDVSdata(data_label)
