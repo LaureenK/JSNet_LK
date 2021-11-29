@@ -150,7 +150,7 @@ class DVSDataset(object):
         # self.consumer_process = multiprocessing.Process(target=data_prepare, args=(
         #     self.data_sample_queue, self.data_queue, self.length, epoch, batch_size))
 
-        # self.producer_process.start()
+        self.producer_process.start()
         # self.consumer_process.start()
 
     # def __del__(self):
