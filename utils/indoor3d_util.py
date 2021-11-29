@@ -746,17 +746,12 @@ def changeDVSdata(data_label):
     arr = np.arange(countIns)
 
     for x in unique:
-        print("change: ")
-        print(x)
         if not x in arr:
             n = -1
             for y in arr:
                 if not y in unique:
                     n = y
-                    print(n)
                     break
-            print("to: ")
-            print(n)
             inslabels = np.where(inslabels == x, n,inslabels)
             unique = np.unique(inslabels)
     
@@ -765,8 +760,11 @@ def changeDVSdata(data_label):
     
     #combine all
     newdata = np.append(xyz,rgb,axis=1)
+    print(newdata)
     newdata = np.append(newdata,seglabels,axis=1)
+    print(newdata)
     newdata = np.append(newdata,inslabels,axis=1)
+    print(newdata)
     newdata = np.random.shuffle(newdata)
 
 
