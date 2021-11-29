@@ -42,7 +42,10 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
         data_sample_func = load_data_file
 
     def data_sample_single(input_file):
+        print(input_file)
         datalabel = data_sample_func(input_file)
+        print(datalabel.shape)
+        print(datalabel)
         if split == 'train':
             datalabel = provider.shuffle_data(*datalabel)
         return datalabel
@@ -135,7 +138,6 @@ class S3DISDataset(object):
         self.capacity = 30
         self.length = 0
 
-        print("dataset_s3dis.py: init()")
         assert (data_type == 'numpy' or data_type == 'hdf5'), 'data_type must be "numpy" or "hdf5"'
 
         self.input_list = self.get_input_list()
