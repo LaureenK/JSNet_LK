@@ -712,7 +712,7 @@ def collect_point_bounding_box(anno_path, out_filename, file_format):
 # OWN FUNCTIONS
 # -----------------------------------------------------------------------------
 
-def changeDVSdata(data_label, num_point):
+def changeDVSdata(data_label):
     # xyz p segLabel insLabel
     # xyz rgb segLabel insLabel
     xyz = data_label[:, 0:3]
