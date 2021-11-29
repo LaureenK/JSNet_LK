@@ -391,6 +391,7 @@ def room2samples(data, label, inslabel, sample_num_point):
                      numpy array of XYZRGBX'Y'Z', RGB is in [0,1]
         sample_labels: K x sample_num_point x 1 np array of uint8 labels
     """
+    print("run room2samples")
     N = data.shape[0]
     order = np.arange(N)
     np.random.shuffle(order)
@@ -422,17 +423,20 @@ def room2samples_plus_normalized(data_label, num_point):
     """ room2sample, with input filename and RGB preprocessing.
         for each block centralize XYZ, add normalized XYZ as 678 channels
     """
-    data = data_label[:, 0:6]
-    data[:, 3:6] /= 255.0
-    label = data_label[:, -2].astype(np.uint8)
-    inslabel = data_label[:, -1].astype(np.uint8)
+    print("run room2samples_plus_normalized")
+    data = data_label[:, 0:6]                       #xyz rgb
+    data[:, 3:6] /= 255.0                           #normalize rgb
+    label = data_label[:, -2].astype(np.uint8)      #get segLabel
+    inslabel = data_label[:, -1].astype(np.uint8)   #get insLabel
     max_room_x = max(data[:, 0])
     max_room_y = max(data[:, 1])
     max_room_z = max(data[:, 2])
-    # print(max_room_x, max_room_y, max_room_z)
+    print(max_room_x, max_room_y, max_room_z)
 
     data_batch, label_batch, inslabel_batch = room2samples(data, label, inslabel, num_point)
     new_data_batch = np.zeros((data_batch.shape[0], num_point, 9))
+
+    #normalize xyz
     for b in range(data_batch.shape[0]):
         new_data_batch[b, :, 6] = data_batch[b, :, 0] / max_room_x
         new_data_batch[b, :, 7] = data_batch[b, :, 1] / max_room_y
@@ -719,7 +723,7 @@ def changeDVSdata(data_label):
     print("xyz")
     print (xyz)
 
-    #rgb
+    #add rgb (only white)
     rgb = np.full((xyz.shape[0], 3), 255)
     print("rgb")
     print(rgb)
@@ -737,6 +741,7 @@ def changeDVSdata(data_label):
     print("seglabels after")
     print(seglabels)
 
+    #Change instance label from 0 to n
     inslabels = data_label[:, 5:6]
     print("inslabel before")
     print(inslabels)
@@ -755,32 +760,12 @@ def changeDVSdata(data_label):
             inslabels = np.where(inslabels == x, n,inslabels)
             unique = np.unique(inslabels)
     
-    print("inslabel after")
-    print(inslabels)
-    
     #combine all
 
     newdata = np.append(xyz,rgb,axis=1)
-    print("XYZ RGB")
-    print(newdata[:, 0:3])
-    print(newdata[:, 3:6])
     newdata = np.append(newdata,seglabels,axis=1)
-    print("XYZ RGB SegLabel")
-    print(newdata[:, 0:3])
-    print(newdata[:, 3:6])
-    print(newdata[:, 6:7])
     newdata = np.append(newdata,inslabels,axis=1)
-    print("XYZ RGB SegLabel Instance")
-    print(newdata[:, 0:3])
-    print(newdata[:, 3:6])
-    print(newdata[:, 6:7])
-    print(newdata[:, 7:8])
     np.random.shuffle(newdata)
-    print("Shuffle")
-    print(newdata[:, 0:3])
-    print(newdata[:, 3:6])
-    print(newdata[:, 6:7])
-    print(newdata[:, 7:8])
 
     return newdata, xyz.shape[0]
 
@@ -793,4 +778,4 @@ def dvs2samples_wrapper_normalized(data_label_filename):
         exit()
     print(data_label)
     print(num_point)
-    #return room2samples_plus_normalized(data_label, num_point)
+    return room2samples_plus_normalized(data_label, num_point)
