@@ -24,6 +24,7 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
     #assert (input_list[0].endswith('npy') or input_list[0].endswith('h5')), "data format must be .npy or .h5"
 
     input_list_length = len(input_list)
+    print(input_list_length)
     num_work = min(min(num_works, multiprocessing.cpu_count()), input_list_length // 4)
 
     if input_list_length > 4:
