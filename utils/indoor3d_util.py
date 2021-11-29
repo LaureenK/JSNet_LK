@@ -767,6 +767,7 @@ def changeDVSdata(data_label, num_point):
     return newdata, xyz.shape[1]
 
 def dvs2samples_wrapper_normalized(data_label_filename):
+    print("mywrapper")
     if data_label_filename[-3:] == 'csv':
         data_label = np.loadtxt(data_label_filename)
         data_label, num_point = changeDVSdata(data_label)

@@ -52,11 +52,11 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
     #         return cur_data, cur_sem, cur_group
     #     data_sample_func = load_data_file
 
-    # def data_sample_single(input_file):
-    #     datalabel = data_sample_func(input_file)
-    #     if split == 'train':
-    #         datalabel = provider.shuffle_data(*datalabel)
-    #     return datalabel
+    def data_sample_single(input_file):
+        datalabel = data_sample_func(input_file)
+        if split == 'train':
+            datalabel = provider.shuffle_data(*datalabel)
+        return datalabel
 
     # for _ in range(epoch):
     #     np.random.shuffle(input_list)
