@@ -391,7 +391,6 @@ def room2samples(data, label, inslabel, sample_num_point):
                      numpy array of XYZRGBX'Y'Z', RGB is in [0,1]
         sample_labels: K x sample_num_point x 1 np array of uint8 labels
     """
-    print("run room2samples")
     N = data.shape[0]
     order = np.arange(N)
     np.random.shuffle(order)
@@ -423,7 +422,6 @@ def room2samples_plus_normalized(data_label, num_point):
     """ room2sample, with input filename and RGB preprocessing.
         for each block centralize XYZ, add normalized XYZ as 678 channels
     """
-    print("run room2samples_plus_normalized")
     data = data_label[:, 0:6]                       #xyz rgb
     data[:, 3:6] /= 255.0                           #normalize rgb
     label = data_label[:, -2].astype(np.uint8)      #get segLabel
@@ -431,7 +429,7 @@ def room2samples_plus_normalized(data_label, num_point):
     max_room_x = max(data[:, 0])
     max_room_y = max(data[:, 1])
     max_room_z = max(data[:, 2])
-    print(max_room_x, max_room_y, max_room_z)
+    #print(max_room_x, max_room_y, max_room_z)
 
     data_batch, label_batch, inslabel_batch = room2samples(data, label, inslabel, num_point)
     new_data_batch = np.zeros((data_batch.shape[0], num_point, 9))
@@ -720,13 +718,9 @@ def changeDVSdata(data_label):
     # xyz p segLabel insLabel
     # xyz rgb segLabel insLabel
     xyz = data_label[:, 0:3]
-    print("xyz")
-    print (xyz)
 
     #add rgb (only white)
     rgb = np.full((xyz.shape[0], 3), 255)
-    print("rgb")
-    print(rgb)
 
     #Change seg Labels from 0 to 3
         #BICYCLE = 5  ----------> 0
@@ -734,17 +728,11 @@ def changeDVSdata(data_label):
         #DOG = 2
         #SPORTSBALL = 6  -----------> 3
     seglabels = data_label[:, 4:5]
-    print("seglabels before")
-    print(seglabels)
     seglabels = np.where(seglabels == 5, 0,seglabels)
     seglabels = np.where(seglabels == 6, 3,seglabels)
-    print("seglabels after")
-    print(seglabels)
 
     #Change instance label from 0 to n
     inslabels = data_label[:, 5:6]
-    print("inslabel before")
-    print(inslabels)
     unique = np.unique(inslabels)
     countIns = len(unique)  
 
@@ -776,6 +764,5 @@ def dvs2samples_wrapper_normalized(data_label_filename):
     else:
         print('Unknown file type! exiting.')
         exit()
-    print(data_label)
-    print(num_point)
+
     return room2samples_plus_normalized(data_label, num_point)
