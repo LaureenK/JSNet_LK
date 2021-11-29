@@ -65,9 +65,9 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
 
                 for dsi in data_sem_ins:
                     print("dsi shape: ")
-                    print(dsi[0])
-                    print(dsi[1])
-                    print(dsi[2])
+                    print(dsi[0].shape)
+                    print(dsi[1].shape)
+                    print(dsi[2].shape)
                     shuffle_dsi = provider.shuffle_data(*dsi)
                     data_sample_queue.put(shuffle_dsi)
                     del dsi
