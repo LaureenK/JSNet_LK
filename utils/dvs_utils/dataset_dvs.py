@@ -21,7 +21,7 @@ import indoor3d_util
 def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_points=4096,
                 block_size=1.0, stride=0.5, random_sample=False, sample_num=None, sample_aug=1):
     
-    #assert (input_list[0].endswith('npy') or input_list[0].endswith('h5')), "data format must be .npy or .h5"
+    assert (input_list[0].endswith('npy') or input_list[0].endswith('csv')), "data format must be .npy or .csv"
 
     input_list_length = len(input_list)
     print(input_list_length)
@@ -41,19 +41,10 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
             indoor3d_util.room2blocks_wrapper_normalized, num_point=block_points, block_size=block_size,
             stride=stride, random_sample=random_sample, sample_num=sample_num, sample_aug=sample_aug)
 
-#room2blocks_wrapper_normalized(data_label_filename, num_point, block_size=1.0, stride=1.0,random_sample=False, sample_num=None, sample_aug=1):
-
     elif input_list[0].endswith('csv'):
         print("csv")
         data_sample_func = functools_partial(
             indoor3d_util.dvs2samples_wrapper_normalized)
-
-
-    # elif input_list[0].endswith('h5'):
-    #     def load_data_file(input_file):
-    #         cur_data, cur_group, _, cur_sem = provider.loadDataFile_with_groupseglabel_stanfordindoor(input_file)
-    #         return cur_data, cur_sem, cur_group
-    #     data_sample_func = load_data_file
 
     def data_sample_single(input_file):
         datalabel = data_sample_func(input_file)
