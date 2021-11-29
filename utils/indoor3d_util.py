@@ -377,7 +377,6 @@ def room2blocks_wrapper_normalized(data_label_filename, num_point, block_size=1.
     return room2blocks_plus_normalized(data_label, num_point, block_size, stride,
                                        random_sample, sample_num, sample_aug)
 
-#this is interesing
 def room2samples(data, label, inslabel, sample_num_point):
     """ Prepare whole room samples.
     Args:
