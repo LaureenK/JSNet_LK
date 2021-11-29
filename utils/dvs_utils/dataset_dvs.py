@@ -30,7 +30,10 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
     if input_list_length > 4:
         num_work = max(num_work, 4)
     print(num_work)
-    chunksize = input_list_length // num_work
+    if(num_work != 0):
+        chunksize = input_list_length // num_work
+    else:
+        chunksize = input_list_length
     print("num input_list: {}, num works: {}, chunksize: {}".format(input_list_length, num_work, chunksize))
 
     if input_list[0].endswith('npy'):
