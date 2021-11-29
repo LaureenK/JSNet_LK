@@ -759,14 +759,28 @@ def changeDVSdata(data_label):
     print(inslabels)
     
     #combine all
-    newdata = np.append(xyz,rgb,axis=1)
-    print(newdata)
-    newdata = np.append(newdata,seglabels,axis=1)
-    print(newdata)
-    newdata = np.append(newdata,inslabels,axis=1)
-    print(newdata)
-    newdata = np.random.shuffle(newdata)
 
+    newdata = np.append(xyz,rgb,axis=1)
+    print("XYZ RGB")
+    print(newdata[:, 0:3])
+    print(newdata[:, 3:6])
+    newdata = np.append(newdata,seglabels,axis=1)
+    print("XYZ RGB SegLabel")
+    print(newdata[:, 0:3])
+    print(newdata[:, 3:6])
+    print(newdata[:, 6:7])
+    newdata = np.append(newdata,inslabels,axis=1)
+    print("XYZ RGB SegLabel Instance")
+    print(newdata[:, 0:3])
+    print(newdata[:, 3:6])
+    print(newdata[:, 6:7])
+    print(newdata[:, 7:8])
+    newdata = np.random.shuffle(newdata)
+    print("Shuffle")
+    print(newdata[:, 0:3])
+    print(newdata[:, 3:6])
+    print(newdata[:, 6:7])
+    print(newdata[:, 7:8])
 
     return newdata, xyz.shape[0]
 
