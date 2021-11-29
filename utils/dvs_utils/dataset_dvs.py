@@ -42,7 +42,6 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
             stride=stride, random_sample=random_sample, sample_num=sample_num, sample_aug=sample_aug)
 
     elif input_list[0].endswith('csv'):
-        print("csv")
         data_sample_func = functools_partial(
             indoor3d_util.dvs2samples_wrapper_normalized)
 
@@ -59,18 +58,19 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
             end_idx = min((idx + 1) * num_work, input_list_length)
             if start_idx >= input_list_length or end_idx > input_list_length:
                 continue
-
+            print("test1")
             with futures.ThreadPoolExecutor(num_work) as pool:
                 data_sem_ins = list(pool.map(data_sample_single, input_list[start_idx:end_idx], chunksize=1))
-
+                print("Test2")
                 for dsi in data_sem_ins:
                     shuffle_dsi = provider.shuffle_data(*dsi)
                     data_sample_queue.put(shuffle_dsi)
                     del dsi
                     gc.collect()
-
+                print("test3")
                 pool.shutdown()
                 gc.collect()
+    print("test4")
 
 
 def data_prepare(data_sample_queue, data_queue, blocks, epoch, batch_size):
@@ -149,21 +149,20 @@ class DVSDataset(object):
         self.producer_process.start()
         # self.consumer_process.start()
 
-    # def __del__(self):
-    #     while not self.data_sample_queue.empty() and not self.data_queue.empty():
-    #         self.data_queue.get_nowait()
+    def __del__(self):
+        while not self.data_sample_queue.empty() and not self.data_queue.empty():
+            self.data_queue.get_nowait()
 
-    #     if self.producer_process.is_alive():
-    #         self.producer_process.join()
+        if self.producer_process.is_alive():
+            self.producer_process.join()
 
-    #     if self.consumer_process.is_alive():
-    #         self.consumer_process.join()
+        # if self.consumer_process.is_alive():
+        #     self.consumer_process.join()
 
     def __len__(self):
         return self.length
 
     def get_input_list(self):
-        print("Get data from input list: just h5 or npy input")
         input_list = [line.strip() for line in open(self.input_list_txt, 'r')]
         temp_list = [item.split('/')[-1].strip('.h5').strip('.npy').strip('.csv') for item in input_list]
  
