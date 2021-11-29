@@ -24,12 +24,10 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
     assert (input_list[0].endswith('npy') or input_list[0].endswith('csv')), "data format must be .npy or .csv"
 
     input_list_length = len(input_list)
-    print(input_list_length)
     num_work = min(min(num_works, multiprocessing.cpu_count()), input_list_length // 4)
 
     if input_list_length > 4:
         num_work = max(num_work, 4)
-    print(num_work)
     if(num_work != 0):
         chunksize = input_list_length // num_work
     else:
