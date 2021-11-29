@@ -63,12 +63,14 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
                 for dsi in data_sem_ins:
                     shuffle_dsi = provider.shuffle_data(*dsi)
                     data_sample_queue.put(shuffle_dsi)
+                    print("test3")
                     del dsi
+                    print("test4")
                     gc.collect()
-                print("test3")
+                print("test5")
                 pool.shutdown()
                 gc.collect()
-    print("test4")
+    print("test6")
 
 
 def data_prepare(data_sample_queue, data_queue, blocks, epoch, batch_size):
