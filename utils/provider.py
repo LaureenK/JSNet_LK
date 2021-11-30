@@ -233,6 +233,10 @@ def loadDataFile_with_groupseglabel_nuyv2(filename):
 
 
 def loadDataFile_with_groupseglabel_stanfordindoor(filename):
+    print("Run load loadDataFile_with_groupseglabel_stanfordindoor")
+    with h5py.File(filename,'r') as hf:
+        print('List of arrays in this file: \n', hf.keys())
+
     f = h5py.File(filename, 'r')
     data = f['data'][:]
     group = f['pid'][:].astype(np.int32)  # NxG
