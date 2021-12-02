@@ -46,7 +46,7 @@ def load_ascii_cloud(fname):
             if class_label not in range(NUM_CLASSES):
                 raise ValueError("unknown label!")
 
-            np.append(newdata,np.array([x,y,t,class_label,instance_label]),axis=0)
+            np.append(newdata,np.array([x,y,t,class_label,instance_label]))
             points.append(np.array([x, y, t], dtype=np.float32))
             labels.append(class_label)
             instances.append(instance_label)
