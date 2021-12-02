@@ -50,18 +50,22 @@ def load_ascii_cloud(fname):
             instances.append(instance_label)
     #shuffle data
     npPoint = np.array(points, dtype=np.float32)
+    x = npPoint[:][0]
+    y = npPoint[:][1]
+    t = npPoint[:][2]
     print(npPoint.shape)
     npSeg = np.array(labels, dtype=np.uint8)
     print(npSeg.shape)
     npIn = np.array(instances, dtype=np.uint8)
     print(npIn.shape)
-
-    newdata = np.append(npPoint,npSeg,axis=1)
+    newdata = np.append(x,y,axis=1)
+    newdata = np.append(newdata,t,axis=1)
+    newdata = np.append(newdata,npSeg,axis=1)
     newdata = np.append(newdata,npIn,axis=1)
 
     np.random.shuffle(newdata)
 
-    
+    print (newdata.shape)
     return newdata[:][0], newdata[:][1], newdata[:][2]
 
 def upscale(points, labels, instances):
