@@ -158,5 +158,5 @@ class DVSDataset():
 # ------------------------------------------------------------------------------
 if __name__ == '__main__':
 # ------------------------------------------------------------------------------
-    dvsDataset = DVSDataset('data', '/neural_networks/jsnet/JSNet_LK/data/train_csv_dvs.txt', npoints=65536, split='train')
+    dvsDataset = DVSDataset('data', '/home/klein/neural_networks/jsnet/JSNet_LK/data/train_csv_dvs.txt', npoints=65536, split='train')
 
