@@ -53,14 +53,7 @@ def load_ascii_cloud(fname):
     #shuffle data
     
     print(newdata.shape)
-    npSeg = np.array(labels, dtype=np.uint8)
-    print(npSeg.shape)
-    npIn = np.array(instances, dtype=np.uint8)
-    print(npIn.shape)
-    newdata = np.append(x,y,axis=1)
-    newdata = np.append(newdata,t,axis=1)
-    newdata = np.append(newdata,npSeg,axis=1)
-    newdata = np.append(newdata,npIn,axis=1)
+    
 
     np.random.shuffle(newdata)
 
