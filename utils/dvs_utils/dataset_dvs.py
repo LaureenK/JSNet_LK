@@ -32,7 +32,7 @@ def load_ascii_cloud(fname):
     points = []
     labels = []
     instances = []
-    newdata = []
+    newdata = np.zeros(1,5)
 
     with open(fname, 'r') as fd:
         for line in fd.readlines():
@@ -46,7 +46,7 @@ def load_ascii_cloud(fname):
             if class_label not in range(NUM_CLASSES):
                 raise ValueError("unknown label!")
 
-            newdata.append([x,y,t,class_label,instance_label]) 
+            np.append(newdata,[x,y,t,class_label,instance_label],axis=0)
             points.append(np.array([x, y, t], dtype=np.float32))
             labels.append(class_label)
             instances.append(instance_label)
