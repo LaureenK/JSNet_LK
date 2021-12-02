@@ -102,7 +102,7 @@ def get_bn_decay(batch):
 def train():
     # Load data
     print("Train.py: train(): Load data")
-    dataset = DVSDataset(DATA_ROOT, TRAINING_FILE_LIST, npoints=65536, split='train', show=False)
+    dataset = DVSDataset(DATA_ROOT, TRAINING_FILE_LIST, npoints=65536, split='train')
     
 
     # build network and create session

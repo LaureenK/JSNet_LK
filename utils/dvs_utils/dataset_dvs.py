@@ -4,7 +4,6 @@ import glob
 import random
 from multiprocessing import Pool
 
-import cv2
 import numpy as np
 
 NUM_CLASSES = 4
@@ -81,7 +80,7 @@ def load_and_upscale(path):
 
 
 class DVSDataset():
-    def __init__(self, data_root, input_list_txt = 'none', npoints=65536, split='train', show=False):
+    def __init__(self, data_root, input_list_txt = 'none', npoints=65536, split='train'):
         random.seed(1337)  # same result every time
 
         self.input_list_txt = input_list_txt
@@ -117,12 +116,6 @@ class DVSDataset():
 
         print(len(self.point_list), len(self.semantic_label_list), len(self.instance_label_list))
         
-        if show:
-            for i in range(len(points)):
-                p = self.point_list[i]
-                l = self.semantic_label_list[i]
-                i = self.instance_label_list[i]
-                self.show_debug_image(p, l, i, "debug")
 
         # labelweights
         # TODO: does [e.g. JSnet]-implementation provide some kind of handling of class-imbalances?
@@ -150,24 +143,6 @@ class DVSDataset():
         #return all data (batch size = 8000)
 
         return self.point_list, self.semantic_label_list, self.instance_label_list
-  
-    def show_debug_image(self, points, labels, windowName):
-        debug_img = np.zeros((640, 768, 3), dtype=np.uint8)
-
-        for i,p in enumerate(points):
-            x, y, _ = points[i]
-            l = labels[i]
-            
-            # TODO: indexing error in provided data
-            if x < 0 or x >= 768:
-                continue
-            if y < 0 or y >= 640:
-                continue
-
-            debug_img[int(y), int(x)] = CLASS_COLORS[l]
-
-        cv2.imshow(windowName, debug_img)
-        cv2.waitKey(100)
 
     def get_input_list(self):
         input_list = [line.strip() for line in open(self.input_list_txt, 'r')]
@@ -183,5 +158,5 @@ class DVSDataset():
 # ------------------------------------------------------------------------------
 if __name__ == '__main__':
 # ------------------------------------------------------------------------------
-    dvsDataset = DVSDataset('data', 'data/train_csv_dvs.txt', npoints=65536, split='train', show=False)
+    dvsDataset = DVSDataset('data', 'data/train_csv_dvs.txt', npoints=65536, split='train')
 
