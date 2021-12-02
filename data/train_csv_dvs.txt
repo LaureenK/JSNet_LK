@@ -1,1 +1,3 @@
 /bigdata_hdd/klein/FrKlein_PoC/data/test.csv
+/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/combined_5.csv
+/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/combined_6.csv
