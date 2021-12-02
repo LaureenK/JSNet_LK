@@ -21,7 +21,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--gpu', type=int, default=0, help='GPU to use [default: GPU 0]')
 parser.add_argument('--num_works', type=int, default=8, help='Loading data thread [default: 8]')
 parser.add_argument('--data_root', default='data', help='data dir [default: data]')
-parser.add_argument('--data_type', default='numpy', help='data type: numpy or hdf5 [default: numpy]')
+parser.add_argument('--data_type', default='csv', help='data type: numpy or csv [default: ncsv]')                  #changed
 parser.add_argument('--log_dir', default='logs', help='Log dir [default: logs]')
 parser.add_argument('--num_point', type=int, default=65536, help='Point number [default: 65536]')                   #changed
 parser.add_argument('--start_epoch', type=int, default=0, help='Epoch to run [default: 50]')
@@ -37,22 +37,22 @@ parser.add_argument('--input_list', type=str, default='data/train_csv_dvs.txt',
 parser.add_argument('--restore_model', type=str, default='log/', help='Pretrained model')
 FLAGS = parser.parse_args()
 
-BATCH_SIZE = FLAGS.batch_size
-NUM_WORKS = FLAGS.num_works
-NUM_POINT = FLAGS.num_point
-DATA_TYPE = FLAGS.data_type
-START_EPOCH = FLAGS.start_epoch
-MAX_EPOCH = FLAGS.max_epoch
-BASE_LEARNING_RATE = FLAGS.learning_rate
-GPU_INDEX = FLAGS.gpu
-MOMENTUM = FLAGS.momentum
-OPTIMIZER = FLAGS.optimizer
-DECAY_STEP = FLAGS.decay_step
+BATCH_SIZE = FLAGS.batch_size                   #8000
+NUM_WORKS = FLAGS.num_works                     #8
+NUM_POINT = FLAGS.num_point                     #65536
+DATA_TYPE = FLAGS.data_type                     #csv
+START_EPOCH = FLAGS.start_epoch                 #0
+MAX_EPOCH = FLAGS.max_epoch                     #in file --> 1
+BASE_LEARNING_RATE = FLAGS.learning_rate        #0.001
+GPU_INDEX = FLAGS.gpu                           #0
+MOMENTUM = FLAGS.momentum                       #0.9
+OPTIMIZER = FLAGS.optimizer                     #adam
+DECAY_STEP = FLAGS.decay_step                   #12500
 DECAY_STEP = int(DECAY_STEP / (BATCH_SIZE / 24))
-DECAY_RATE = FLAGS.decay_rate
+DECAY_RATE = FLAGS.decay_rate                   #0.5
 
-DATA_ROOT = FLAGS.data_root
-TRAINING_FILE_LIST = FLAGS.input_list
+DATA_ROOT = FLAGS.data_root                     # ./ -> in file
+TRAINING_FILE_LIST = FLAGS.input_list           #data/train_csv_dvs.txt
 PRETRAINED_MODEL_PATH = FLAGS.restore_model
 
 LOG_DIR = FLAGS.log_dir
