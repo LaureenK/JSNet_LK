@@ -23,10 +23,10 @@ parser.add_argument('--num_works', type=int, default=8, help='Loading data threa
 parser.add_argument('--data_root', default='data', help='data dir [default: data]')
 parser.add_argument('--data_type', default='numpy', help='data type: numpy or hdf5 [default: numpy]')
 parser.add_argument('--log_dir', default='logs', help='Log dir [default: logs]')
-parser.add_argument('--num_point', type=int, default=4096, help='Point number [default: 4096]')
+parser.add_argument('--num_point', type=int, default=65536, help='Point number [default: 65536]')                   #changed
 parser.add_argument('--start_epoch', type=int, default=0, help='Epoch to run [default: 50]')
 parser.add_argument('--max_epoch', type=int, default=50, help='Epoch to run [default: 50]')
-parser.add_argument('--batch_size', type=int, default=24, help='Batch Size during training [default: 24]')
+parser.add_argument('--batch_size', type=int, default=8000, help='Batch Size during training [default: 8000]')      #changed!
 parser.add_argument('--learning_rate', type=float, default=0.001, help='Initial learning rate [default: 0.001]')
 parser.add_argument('--momentum', type=float, default=0.9, help='Initial learning rate [default: 0.9]')
 parser.add_argument('--optimizer', default='adam', help='adam or momentum [default: adam]')
@@ -59,8 +59,8 @@ LOG_DIR = FLAGS.log_dir
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
-MAX_NUM_POINT = 4096
-NUM_CLASSES = 13
+MAX_NUM_POINT = 65536   #changed
+NUM_CLASSES = 4        #changed
 
 BN_INIT_DECAY = 0.5
 BN_DECAY_DECAY_RATE = 0.5
@@ -102,8 +102,8 @@ def get_bn_decay(batch):
 def train():
     # Load data
     print("Train.py: train(): Load data")
-    dataset = DVSDataset(DATA_ROOT, TRAINING_FILE_LIST, split='train', epoch=MAX_EPOCH - START_EPOCH,
-                           batch_size=BATCH_SIZE, num_works=NUM_WORKS, data_type=DATA_TYPE, block_points=NUM_POINT)
+    dataset = DVSDataset(DATA_ROOT, TRAINING_FILE_LIST, npoints=65536, split='train', show=False)
+    
 
     # build network and create session
     with tf.Graph().as_default(), tf.device('/gpu:'+str(GPU_INDEX)):

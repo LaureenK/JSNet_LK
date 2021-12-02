@@ -1,191 +1,187 @@
+# -*- coding: utf-8 -*-
 import os
-import sys
-import time
-import gc
+import glob
+import random
+from multiprocessing import Pool
+
+import cv2
 import numpy as np
 
-import multiprocessing
-from concurrent import futures
-from functools import partial as functools_partial
+NUM_CLASSES = 4
+NUM_POINTS = 2**16  ## <-- TODO: this dataset adapter only supprts UP(!) sampling not DOWN sampling
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.dirname(os.path.dirname(BASE_DIR))
-sys.path.append(BASE_DIR)
-sys.path.append(ROOT_DIR)
-sys.path.append(os.path.join(ROOT_DIR, 'utils'))
+DATASET_TRAIN_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/"
+DATASET_VALIDATION_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/ValidationFiles/"
+DATASET_TEST_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/TestFiles/"
 
-import provider
-import indoor3d_util
+CLASS_COLORS = {
+    0: (255, 116, 0),    # ClassLabel::PERSON
+    1: (92, 255, 0),     # ClassLabel::DOG
+    2: (0, 128, 128),    # ClassLabel::BICYCLE
+    3: (255, 153, 204),  # ClassLabel::SPORTSBALL
+}
+
+CLASS_MAPPING = {
+    1: 0,  # original PERSON(1) --> 0
+    2: 1,  # original DOG(2) --> 1
+    5: 2,  # original BICYCLE(5) --> 2
+    6: 3,  # original SPORTSBALL(6) --> 3
+}
 
 
-def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_points=4096,
-                block_size=1.0, stride=0.5, random_sample=False, sample_num=None, sample_aug=1):
-    
-    assert (input_list[0].endswith('npy') or input_list[0].endswith('csv')), "data format must be .npy or .csv"
+def load_ascii_cloud(fname):
+    points = []
+    labels = []
+    instances = []
 
-    input_list_length = len(input_list)
-    num_work = min(min(num_works, multiprocessing.cpu_count()), input_list_length // 4)
-
-    if input_list_length > 4:
-        num_work = max(num_work, 4)
-
-    chunksize = input_list_length // num_work
-    print("num input_list: {}, num works: {}, chunksize: {}".format(input_list_length, num_work, chunksize))
-
-    if input_list[0].endswith('npy'):
-        data_sample_func = functools_partial(
-            indoor3d_util.room2blocks_wrapper_normalized, num_point=block_points, block_size=block_size,
-            stride=stride, random_sample=random_sample, sample_num=sample_num, sample_aug=sample_aug)
-
-    elif input_list[0].endswith('csv'):
-        data_sample_func = functools_partial(
-            indoor3d_util.dvs2samples_wrapper_normalized)
-
-    def data_sample_single(input_file):
-        datalabel = data_sample_func(input_file)
-        if split == 'train':
-            datalabel = provider.shuffle_data(*datalabel)
-        return datalabel
-
-    for _ in range(epoch):
-        np.random.shuffle(input_list)
-        for idx in range(chunksize + 1):
-            start_idx = min(idx * num_work, input_list_length)
-            end_idx = min((idx + 1) * num_work, input_list_length)
-            if start_idx >= input_list_length or end_idx > input_list_length:
+    with open(fname, 'r') as fd:
+        for line in fd.readlines():
+            if "//" in line:
                 continue
 
-            with futures.ThreadPoolExecutor(num_work) as pool:
-                data_sem_ins = list(pool.map(data_sample_single, input_list[start_idx:end_idx], chunksize=1))
+            x, y, t, pol, class_label, instance_label = line.strip().split(' ')
+            x, y, t, pol, class_label, instance_label = float(x), float(y), float(t), int(pol), int(class_label), int(instance_label)
 
-                print("data_sem_ins length: ")
-                print(len(data_sem_ins))
+            class_label = CLASS_MAPPING[class_label]
+            if class_label not in range(NUM_CLASSES):
+                raise ValueError("unknown label!")
 
-                for dsi in data_sem_ins:
-                    print("dsi shape: ")
-                    print(dsi[0].shape)
-                    print(dsi[1].shape)
-                    print(dsi[2].shape)
-                    shuffle_dsi = provider.shuffle_data(*dsi)
-                    data_sample_queue.put(shuffle_dsi)
-                    del dsi
-                    gc.collect()
+            points.append(np.array([x, y, t], dtype=np.float32))
+            labels.append(class_label)
+            instances.append(instance_label)
+    #shuffle data
+    newdata = np.append(points,labels,axis=1)
+    newdata = np.append(newdata,instances,axis=1)
+    np.random.shuffle(newdata)
 
-                pool.shutdown()
-                gc.collect()
+    
+    return newdata[:][0], newdata[:][1], newdata[:][2]
 
+def upscale(points, labels, instances):
+    if len(points) > NUM_POINTS:
+        raise RuntimeError("no matching config...!")
 
-def data_prepare(data_sample_queue, data_queue, blocks, epoch, batch_size):
-    data_list = list()
-    sem_label_list = list()
-    ins_label_list = list()
+    while len(points) != NUM_POINTS:
+        copy_index = random.randint(0, len(points)-1)
 
-    total_batch = (blocks // batch_size) * epoch
+        points = np.vstack((points, points[copy_index]))
+        labels = np.append(labels, labels[copy_index])
+        instances = np.append(instances, instances[copy_index])
 
-    while total_batch > 0:
-        data, sem_label, ins_label = data_sample_queue.get()
+    return points, labels, instances
 
-        data_list.append(data)
-        sem_label_list.append(sem_label)
-        ins_label_list.append(ins_label)
+def load_and_upscale(path):
+    # read all points
+    points, labels, instances = load_ascii_cloud(path)
 
-        del data
-        del sem_label
-        del ins_label
+    # just copy some random points... if needed
+    points, labels, instances = upscale(points, labels, instances)
 
-        batch_data = np.concatenate(data_list, axis=0)
-        batch_sem_label = np.concatenate(sem_label_list, axis=0)
-        batch_ins_label = np.concatenate(ins_label_list, axis=0)
-
-        batch_data_length = batch_data.shape[0]
-        num_batch_size = batch_data_length // batch_size
-        for idx in range(num_batch_size):
-            total_batch -= 1
-            start_idx = idx * batch_size
-            end_idx = (idx + 1) * batch_size
-            data_queue.put((batch_data[start_idx: end_idx, ...],
-                            batch_sem_label[start_idx: end_idx],
-                            batch_ins_label[start_idx: end_idx]))
-
-        remainder = batch_data_length % batch_size
-        if remainder:
-            data_list = [batch_data[-remainder:]]
-            sem_label_list = [batch_sem_label[-remainder:]]
-            ins_label_list = [batch_ins_label[-remainder:]]
-        else:
-            data_list = list()
-            sem_label_list = list()
-            ins_label_list = list()
-
-        del batch_data
-        del batch_sem_label
-        del batch_ins_label
-
-        gc.collect()
+    return points, labels, instances
 
 
-class DVSDataset(object):
-    def __init__(self, data_root, input_list_txt, split='train', epoch=1, batch_size=24, num_works=8,
-                 data_type='numpy', block_points=4096, block_size=1.0, stride=0.5, random_sample=False,
-                 sample_num=None, sample_aug=1, with_rgb=True):
+class DVSDataset():
+    def __init__(self, data_root, input_list_txt = 'none', npoints=65536, split='train', show=False):
+        random.seed(1337)  # same result every time
+
         self.input_list_txt = input_list_txt
         self.split = split
         self.data_root = data_root
-        self.data_type = data_type
-        self.capacity = 30
-        self.length = 0
 
-        self.input_list = self.get_input_list()
+        if npoints != NUM_POINTS:
+            raise ValueError("npoints != NUM_POINTS")
 
-        self.manager = multiprocessing.Manager()
-        self.data_sample_queue = self.manager.Queue(3)
-        self.data_queue = multiprocessing.Manager().Queue(self.capacity)
+        if(input_list_txt == 'none'):
+            if(split == 'train'):
+                self.files_to_use = glob.glob(os.path.join(DATASET_TRAIN_DIR, split, "*.csv"))
+            elif(split == 'validation'): 
+                self.files_to_use = glob.glob(os.path.join(DATASET_VALIDATION_DIR, split, "*.csv"))
+            elif(split == 'test'):
+                self.files_to_use = glob.glob(os.path.join(DATASET_TEST_DIR, split, "*.csv"))
+        else:
+            self.input_list_txt = input_list_txt
+            self.files_to_use = self.get_input_list()
 
-        self.producer_process = multiprocessing.Process(target=data_sample, args=(
-            self.data_sample_queue, self.input_list, split, epoch, num_works,
-            block_points, block_size, stride, random_sample, sample_num, sample_aug))
+        random.shuffle(self.files_to_use)
 
-        self.consumer_process = multiprocessing.Process(target=data_prepare, args=(
-            self.data_sample_queue, self.data_queue, self.length, epoch, batch_size))
+        # --------------------------------------------------------------------------------------------------------------
+        if split not in ['train', 'validation', 'train']:
+            raise ValueError("unknown split")
 
-        self.producer_process.start()
-        self.consumer_process.start()
+        # parallel csv read...
+        pool = Pool(processes=None)
+        points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
+        self.point_list = points
+        self.semantic_label_list = labels
+        self.instance_label_list = instances
 
-    def __del__(self):
-        while not self.data_sample_queue.empty() and not self.data_queue.empty():
-            self.data_queue.get_nowait()
+        print(len(self.point_list), len(self.semantic_label_list), len(self.instance_label_list))
+        
+        if show:
+            for i in range(len(points)):
+                p = self.point_list[i]
+                l = self.semantic_label_list[i]
+                i = self.instance_label_list[i]
+                self.show_debug_image(p, l, i, "debug")
 
-        if self.producer_process.is_alive():
-            self.producer_process.join()
-
-        if self.consumer_process.is_alive():
-            self.consumer_process.join()
+        # labelweights
+        # TODO: does [e.g. JSnet]-implementation provide some kind of handling of class-imbalances?
+        #??
+        if split == 'train':
+            labelweights = np.zeros(NUM_CLASSES)
+            for seg in self.semantic_label_list:
+                tmp, _ = np.histogram(seg, range(NUM_CLASSES + 1))
+                labelweights += tmp
+            labelweights = labelweights.astype(np.float32)
+            labelweights = labelweights / np.sum(labelweights)
+            self.labelweights = 1 / np.log(1.2 + labelweights)
+        elif split == 'validation':
+            self.labelweights = np.ones(NUM_CLASSES)
 
     def __len__(self):
-        return self.length
+        return len(self.point_list)
+
+    def __getitem__(self, index):
+        return self.point_list[index], \
+               self.semantic_label_list[index].astype(np.int32), \
+               self.labelweights[self.semantic_label_list[0].astype(np.int32)]
+               
+    def get_batch(self, data_aug=False):
+        #return all data (batch size = 8000)
+
+        return self.point_list, self.semantic_label_list, self.instance_label_list
+  
+    def show_debug_image(self, points, labels, windowName):
+        debug_img = np.zeros((640, 768, 3), dtype=np.uint8)
+
+        for i,p in enumerate(points):
+            x, y, _ = points[i]
+            l = labels[i]
+            
+            # TODO: indexing error in provided data
+            if x < 0 or x >= 768:
+                continue
+            if y < 0 or y >= 640:
+                continue
+
+            debug_img[int(y), int(x)] = CLASS_COLORS[l]
+
+        cv2.imshow(windowName, debug_img)
+        cv2.waitKey(100)
 
     def get_input_list(self):
         input_list = [line.strip() for line in open(self.input_list_txt, 'r')]
         temp_list = [item.split('/')[-1].strip('.h5').strip('.npy').strip('.csv') for item in input_list]
  
-        cnt_length = len(temp_list)
+        #cnt_length = len(temp_list)
+        #self.length = cnt_length
 
-        self.length = cnt_length
         input_list = [os.path.join(self.data_root, item) for item in input_list]
 
         return input_list
 
-    def get_batch(self, data_aug=False):
-        data, sem_label, ins_label = self.data_queue.get()
-
-        if data_aug and self.split == 'train':
-            data[:, :, 0:3] = provider.jitter_point_cloud(data[:, :, 0:3])
-
-        return data, sem_label, ins_label
-
-    def get_length(self):
-        return self.__len__()
-
-
+# ------------------------------------------------------------------------------
 if __name__ == '__main__':
-    print('finish')
+# ------------------------------------------------------------------------------
+    dvsDataset = DVSDataset('data', 'data/train_csv_dvs.txt', npoints=65536, split='train', show=False)
+
