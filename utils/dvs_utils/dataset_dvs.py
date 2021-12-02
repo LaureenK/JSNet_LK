@@ -58,7 +58,7 @@ def load_ascii_cloud(fname):
     np.random.shuffle(newdata)
 
     print (newdata.shape)
-    return newdata[:][0], newdata[:][1], newdata[:][2]
+    return np.array(points, dtype=np.float32), np.array(labels, dtype=np.uint8), np.array(instances, dtype=np.uint8)
 
 def upscale(points, labels, instances):
     if len(points) > NUM_POINTS:
