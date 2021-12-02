@@ -116,7 +116,8 @@ class DVSDataset():
             self.input_list_txt = input_list_txt
             self.files_to_use = self.get_input_list()
 
-        #random.shuffle(self.files_to_use)
+        random.shuffle(self.files_to_use)
+        self.length = len(self.files_to_use)
 
         # --------------------------------------------------------------------------------------------------------------
         if split not in ['train', 'validation', 'train']:
@@ -147,7 +148,8 @@ class DVSDataset():
         #    self.labelweights = np.ones(NUM_CLASSES)
 
     def __len__(self):
-        return len(self.point_list)
+        #return len(self.point_list)
+        return self.length
 
     def __getitem__(self, index):
         return self.point_list[index], \
@@ -171,6 +173,8 @@ class DVSDataset():
 
         return input_list
 
+    def get_length(self):
+        return self.__len__()
 # ------------------------------------------------------------------------------
 if __name__ == '__main__':
 # ------------------------------------------------------------------------------
