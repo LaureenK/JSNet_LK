@@ -196,6 +196,7 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
     is_training = True
     file_size = dataset.get_length()
     num_batches = file_size // BATCH_SIZE
+    print(num_batches)
 
     loss_sum = 0
 
@@ -221,6 +222,11 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
 
             logger.info(logger_info.format(max_epoch_len, epoch, MAX_EPOCH, num_batches_len, batch_idx, num_batches,
                                            lr_rate, loss_val, sem_loss_val, disc_loss_val, l_var_val, l_dist_val))
+
+    if(loss_sum == 0):
+        logger.info('mean loss: %f' % (loss_sum))
+    else:
+        logger.info('mean loss: %f' % (loss_sum / float(num_batches)))
 
     logger.info('mean loss: %f' % (loss_sum / float(num_batches)))
 
