@@ -101,10 +101,8 @@ def get_bn_decay(batch):
 
 def train():
     # Load data
-    print("Train.py: train(): Load data")
     dataset = DVSDataset(DATA_ROOT, TRAINING_FILE_LIST, npoints=65536, split='train')
     
-
     # build network and create session
     with tf.Graph().as_default(), tf.device('/gpu:'+str(GPU_INDEX)):
         pointclouds_pl, labels_pl, sem_labels_pl = placeholder_inputs(BATCH_SIZE, NUM_POINT)
@@ -196,7 +194,6 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
     is_training = True
     file_size = dataset.get_length()
     num_batches = file_size // BATCH_SIZE
-    print(num_batches)
 
     loss_sum = 0
 
@@ -227,8 +224,6 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
         logger.info('mean loss: %f' % (loss_sum))
     else:
         logger.info('mean loss: %f' % (loss_sum / float(num_batches)))
-
-    logger.info('mean loss: %f' % (loss_sum / float(num_batches)))
 
 
 if __name__ == "__main__":
