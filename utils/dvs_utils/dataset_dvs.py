@@ -27,6 +27,10 @@ CLASS_MAPPING = {
     6: 3,  # original SPORTSBALL(6) --> 3
 }
 
+def unison_shuffled_copies(a, b, c):
+    assert len(a) == len(b) == len(c)
+    p = np.random.permutation(len(a))
+    return a[p], b[p], c[p]
 
 def load_ascii_cloud(fname):
     points = []
@@ -59,8 +63,20 @@ def load_ascii_cloud(fname):
 
     np.random.shuffle(newdata)
 
-    test = np.array(np.array([newdata[:][0], newdata[:][1], newdata[:][2]], dtype=np.float32))
-    print(test.shape)
+    npPoints = np.array(points, dtype=np.float32)
+    npSeg = np.array(labels, dtype=np.uint8)
+    npIns = np.array(instances, dtype=np.uint8)
+
+    testPoints = npPoints[:][0]
+    testSeg = npSeg[0]
+    testIns = npIns[0]
+
+    npPoints, npSeg, npIns = unison_shuffled_copies(npPoints, npSeg, npIns)
+
+    res = np.argwhere(npPoints[0][:] == testPoints[0] and  npPoints[1][:] == testPoints[1] and npPoints[2][:] == testPoints[2])
+    print(res)
+
+ 
     return np.array(points, dtype=np.float32), np.array(labels, dtype=np.uint8), np.array(instances, dtype=np.uint8)
 
 def upscale(points, labels, instances):
