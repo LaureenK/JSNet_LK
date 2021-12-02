@@ -1,1 +1,1 @@
-/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/test.csv
+/bigdata_hdd/klein/FrKlein_PoC/data/test.csv
