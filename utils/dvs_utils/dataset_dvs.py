@@ -90,6 +90,7 @@ class DVSDataset():
         if npoints != NUM_POINTS:
             raise ValueError("npoints != NUM_POINTS")
 
+        print(input_list_txt)
         if(input_list_txt == 'none'):
             if(split == 'train'):
                 self.files_to_use = glob.glob(os.path.join(DATASET_TRAIN_DIR, split, "*.csv"))
@@ -146,6 +147,7 @@ class DVSDataset():
         return self.point_list, self.semantic_label_list, self.instance_label_list
 
     def get_input_list(self):
+        print("getInputList")
         input_list = [line.strip() for line in open(self.input_list_txt, 'r')]
         temp_list = [item.split('/')[-1].strip('.h5').strip('.npy').strip('.csv') for item in input_list]
  
@@ -153,7 +155,7 @@ class DVSDataset():
         #self.length = cnt_length
 
         input_list = [os.path.join(self.data_root, item) for item in input_list]
-
+        print(input_list)
         return input_list
 
 # ------------------------------------------------------------------------------
