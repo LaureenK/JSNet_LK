@@ -46,7 +46,7 @@ def load_ascii_cloud(fname):
             if class_label not in range(NUM_CLASSES):
                 raise ValueError("unknown label!")
 
-            np.append(newdata,[x,y,t,class_label,instance_label],axis=0)
+            np.append(newdata,np.array([x,y,t,class_label,instance_label]),axis=0)
             points.append(np.array([x, y, t], dtype=np.float32))
             labels.append(class_label)
             instances.append(instance_label)
@@ -106,7 +106,6 @@ class DVSDataset():
             self.files_to_use = self.get_input_list()
 
         random.shuffle(self.files_to_use)
-        print(self.files_to_use)
 
         # --------------------------------------------------------------------------------------------------------------
         if split not in ['train', 'validation', 'train']:
