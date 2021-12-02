@@ -158,5 +158,5 @@ class DVSDataset():
 # ------------------------------------------------------------------------------
 if __name__ == '__main__':
 # ------------------------------------------------------------------------------
-    dvsDataset = DVSDataset('data', 'data/train_csv_dvs.txt', npoints=65536, split='train')
+    dvsDataset = DVSDataset('data', '/bigdata_hdd/klein/FrKlein_PoC/data/train_csv_dvs.txt', npoints=65536, split='train')
 
