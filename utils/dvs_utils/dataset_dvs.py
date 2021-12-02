@@ -102,6 +102,7 @@ class DVSDataset():
             self.files_to_use = self.get_input_list()
 
         random.shuffle(self.files_to_use)
+        print(self.files_to_use)
 
         # --------------------------------------------------------------------------------------------------------------
         if split not in ['train', 'validation', 'train']:
