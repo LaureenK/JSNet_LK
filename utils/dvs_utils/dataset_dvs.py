@@ -56,8 +56,6 @@ def load_ascii_cloud(fname):
             instances.append(instance_label)
     #shuffle data
     newdata = np.delete(newdata, (0), axis=0)
-    print(newdata.shape)
-    print(len(points))
 
     np.array(np.array([]))
 
