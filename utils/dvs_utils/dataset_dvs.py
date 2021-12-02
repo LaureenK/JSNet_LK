@@ -110,28 +110,28 @@ class DVSDataset():
             raise ValueError("unknown split")
 
         # parallel csv read...
-        pool = Pool(processes=None)
-        points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
-        self.point_list = points
-        self.semantic_label_list = labels
-        self.instance_label_list = instances
+        #pool = Pool(processes=None)
+        #points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
+        #self.point_list = points
+        #self.semantic_label_list = labels
+        #self.instance_label_list = instances
 
-        print(len(self.point_list), len(self.semantic_label_list), len(self.instance_label_list))
+        #print(len(self.point_list), len(self.semantic_label_list), len(self.instance_label_list))
         
 
         # labelweights
         # TODO: does [e.g. JSnet]-implementation provide some kind of handling of class-imbalances?
         #??
-        if split == 'train':
-            labelweights = np.zeros(NUM_CLASSES)
-            for seg in self.semantic_label_list:
-                tmp, _ = np.histogram(seg, range(NUM_CLASSES + 1))
-                labelweights += tmp
-            labelweights = labelweights.astype(np.float32)
-            labelweights = labelweights / np.sum(labelweights)
-            self.labelweights = 1 / np.log(1.2 + labelweights)
-        elif split == 'validation':
-            self.labelweights = np.ones(NUM_CLASSES)
+        #if split == 'train':
+        #    labelweights = np.zeros(NUM_CLASSES)
+        #    for seg in self.semantic_label_list:
+        #        tmp, _ = np.histogram(seg, range(NUM_CLASSES + 1))
+        #        labelweights += tmp
+        #    labelweights = labelweights.astype(np.float32)
+        #    labelweights = labelweights / np.sum(labelweights)
+         #   self.labelweights = 1 / np.log(1.2 + labelweights)
+        #elif split == 'validation':
+        #    self.labelweights = np.ones(NUM_CLASSES)
 
     def __len__(self):
         return len(self.point_list)
@@ -149,7 +149,8 @@ class DVSDataset():
     def get_input_list(self):
         print("getInputList")
         input_list = [line.strip() for line in open(self.input_list_txt, 'r')]
-        temp_list = [item.split('/')[-1].strip('.h5').strip('.npy').strip('.csv') for item in input_list]
+        print(input_list)
+        #temp_list = [item.split('/')[-1].strip('.h5').strip('.npy').strip('.csv') for item in input_list]
  
         #cnt_length = len(temp_list)
         #self.length = cnt_length
