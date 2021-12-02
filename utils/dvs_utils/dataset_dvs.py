@@ -90,7 +90,6 @@ class DVSDataset():
         if npoints != NUM_POINTS:
             raise ValueError("npoints != NUM_POINTS")
 
-        print(input_list_txt)
         if(input_list_txt == 'none'):
             if(split == 'train'):
                 self.files_to_use = glob.glob(os.path.join(DATASET_TRAIN_DIR, split, "*.csv"))
@@ -110,13 +109,13 @@ class DVSDataset():
             raise ValueError("unknown split")
 
         # parallel csv read...
-        #pool = Pool(processes=None)
-        #points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
-        #self.point_list = points
-        #self.semantic_label_list = labels
-        #self.instance_label_list = instances
+        pool = Pool(processes=None)
+        points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
+        self.point_list = points
+        self.semantic_label_list = labels
+        self.instance_label_list = instances
 
-        #print(len(self.point_list), len(self.semantic_label_list), len(self.instance_label_list))
+        print(len(self.point_list), len(self.semantic_label_list), len(self.instance_label_list))
         
 
         # labelweights
@@ -147,16 +146,15 @@ class DVSDataset():
         return self.point_list, self.semantic_label_list, self.instance_label_list
 
     def get_input_list(self):
-        print("getInputList")
         input_list = [line.strip() for line in open(self.input_list_txt, 'r')]
-        print(input_list)
+
         #temp_list = [item.split('/')[-1].strip('.h5').strip('.npy').strip('.csv') for item in input_list]
  
         #cnt_length = len(temp_list)
         #self.length = cnt_length
 
         input_list = [os.path.join(self.data_root, item) for item in input_list]
-        print(input_list)
+
         return input_list
 
 # ------------------------------------------------------------------------------
