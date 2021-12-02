@@ -67,17 +67,9 @@ def load_ascii_cloud(fname):
     npSeg = np.array(labels, dtype=np.uint8)
     npIns = np.array(instances, dtype=np.uint8)
 
-    print(npPoints)
-    print(npSeg)
-    print(npIns)
-
     npPoints, npSeg, npIns = unison_shuffled_copies(npPoints, npSeg, npIns)
-
-    print(npPoints)
-    print(npSeg)
-    print(npIns)
  
-    return np.array(points, dtype=np.float32), np.array(labels, dtype=np.uint8), np.array(instances, dtype=np.uint8)
+    return npPoints, npSeg, npIns
 
 def upscale(points, labels, instances):
     if len(points) > NUM_POINTS:
