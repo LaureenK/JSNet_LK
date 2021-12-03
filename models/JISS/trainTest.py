@@ -102,6 +102,7 @@ def get_bn_decay(batch):
 def train():
     # Load data
     dataset = DVSDataset(DATA_ROOT, TRAINING_FILE_LIST, npoints=65536, split='train')
+    #dataset = DVSDataset(DATA_ROOT, npoints=65536, split='train')
     
     # build network and create session
     with tf.Graph().as_default(), tf.device('/gpu:'+str(GPU_INDEX)):
