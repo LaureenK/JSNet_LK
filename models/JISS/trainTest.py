@@ -202,6 +202,7 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
     num_batches_len = len(str(num_batches))
 
     for batch_idx in range(num_batches):
+        print("Batch IDX: ", batch_idx)
         current_data, current_sem, current_label = dataset.get_batch(False)
         feed_dict = {ops['pointclouds_pl']: current_data,
                      ops['labels_pl']: current_label,
@@ -219,6 +220,8 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
                           "sem_loss: {8:.2f}; disc_loss: {9:.2f}; l_var: {10:.2f}; l_dist: {11:.2f};"
 
             logger.info(logger_info.format(max_epoch_len, epoch, MAX_EPOCH, num_batches_len, batch_idx, num_batches,
+                                           lr_rate, loss_val, sem_loss_val, disc_loss_val, l_var_val, l_dist_val))
+            print(logger_info.format(max_epoch_len, epoch, MAX_EPOCH, num_batches_len, batch_idx, num_batches,
                                            lr_rate, loss_val, sem_loss_val, disc_loss_val, l_var_val, l_dist_val))
 
     if(loss_sum == 0):
