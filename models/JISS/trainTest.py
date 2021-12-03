@@ -195,7 +195,7 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
     is_training = True
     file_size = dataset.get_length()
     num_batches = file_size // BATCH_SIZE
-
+    print("NUM_BATCHES: ", num_batches)
     loss_sum = 0
 
     max_epoch_len = len(str(MAX_EPOCH))
