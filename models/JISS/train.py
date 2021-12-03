@@ -101,7 +101,6 @@ def get_bn_decay(batch):
 
 def train():
     # Load data
-    print("Train.py: train(): Load data")
     dataset = S3DISDataset(DATA_ROOT, TRAINING_FILE_LIST, split='train', epoch=MAX_EPOCH - START_EPOCH,
                            batch_size=BATCH_SIZE, num_works=NUM_WORKS, data_type=DATA_TYPE, block_points=NUM_POINT)
 

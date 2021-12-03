@@ -43,8 +43,6 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
 
     def data_sample_single(input_file):
         datalabel = data_sample_func(input_file)
-        print("datalabel: ", datalabel.shape)
-        print(datalabel)
         if split == 'train':
             datalabel = provider.shuffle_data(*datalabel)
         return datalabel
@@ -60,14 +58,7 @@ def data_sample(data_sample_queue, input_list, split, epoch, num_works, block_po
             with futures.ThreadPoolExecutor(num_work) as pool:
                 data_sem_ins = list(pool.map(data_sample_single, input_list[start_idx:end_idx], chunksize=1))
 
-                print("data_sem_ins length: ")
-                print(len(data_sem_ins))
-
                 for dsi in data_sem_ins:
-                    print("dsi shape: ")
-                    print(dsi[0].shape)
-                    print(dsi[1].shape)
-                    print(dsi[2].shape)
                     shuffle_dsi = provider.shuffle_data(*dsi)
                     data_sample_queue.put(shuffle_dsi)
                     del dsi
@@ -169,7 +160,6 @@ class S3DISDataset(object):
         return self.length
 
     def get_input_list(self):
-        print("Get data from input list: just h5 or npy input")
         input_list = [line.strip() for line in open(self.input_list_txt, 'r')]
         temp_list = [item.split('/')[-1].strip('.h5').strip('.npy') for item in input_list]
         temp_input_list = [line.strip() for line in
