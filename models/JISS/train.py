@@ -205,6 +205,7 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
         current_data, current_sem, current_label = dataset.get_batch(False)
         print("Batch size: ", BATCH_SIZE, " \nOne Batch:\nData: ", current_data.shape, " SegLabel: ", current_sem.shape, " InsLabel: ", current_label)
         print("Data Type: ", type(current_data), " SegLabel Type: ", type(current_sem), " InsLabel Type: ", type(current_label))
+        print("InsLabel len: ", len(current_label))
         
         feed_dict = {ops['pointclouds_pl']: current_data,
                      ops['labels_pl']: current_label,
