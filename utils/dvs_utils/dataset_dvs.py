@@ -202,7 +202,7 @@ class DVSDataset():
 # ------------------------------------------------------------------------------
 if __name__ == '__main__':
 # ------------------------------------------------------------------------------
-    dvsDataset = DVSDataset('data', '/home/klein/neural_networks/jsnet/JSNet_LK/data/train_csv_dvs.txt', npoints=65536, split='train', batchsize=8)
+    dvsDataset = DVSDataset('data', '/home/klein/neural_networks/jsnet/JSNet_LK/data/train_csv_dvs.txt', split='train', batchsize=8)
     # points, sem, inst = dvsDataset.get_batch()
     # print(points.shape)
     # print(sem.shape)
