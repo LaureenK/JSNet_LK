@@ -184,13 +184,16 @@ class DVSDataset():
         self.semantic_label_list = labels
         self.instance_label_list = instances
 
-        print("points type: ", points.shape)
+        print("points type: ", type(points))
+        print("points type: ", len(points))
         print("points: ", points)
 
-        print("labels type: ", labels.shape)
+        print("labels type: ", type(labels))
+        print("labels type: ", len(labels))
         print("labels: ", labels)
 
-        print("instances type: ", instances.shape)
+        print("instances type: ", type(instances))
+        print("instances type: ", len(instances))
         print("instances: ", instances)
 
         print(len(self.point_list), len(self.semantic_label_list), len(self.instance_label_list))
