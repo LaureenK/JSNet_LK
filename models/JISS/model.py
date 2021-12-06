@@ -32,10 +32,10 @@ def get_model(point_cloud, is_training, num_class, num_embed=5, sigma=0.05, bn_d
     radius3 = 8
     radius4 = 16
 
-    npoint1 = 1024
-    npoint2 = 256
-    npoint3 = 64
-    npoint4 = 32
+    npoint1 = 2048
+    npoint2 = 512
+    npoint3 = 128
+    npoint4 = 64
 
     # shared encoder
     l1_xyz, l1_points, l1_indices = pointnet_sa_module(l0_xyz, l0_points, npoint=npoint1, radius=radius1, nsample=32, mlp=[32, 32, 64], mlp2=None, group_all=False, is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, scope='layer1')
