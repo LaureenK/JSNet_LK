@@ -148,6 +148,7 @@ class DVSDataset():
         self.split = split
         self.data_root = data_root
         self.batch_count = 0
+        self.batchsize = batchsize
         
 
         if npoints != NUM_POINTS:
@@ -180,31 +181,31 @@ class DVSDataset():
         # parallel csv read...
         pool = Pool(processes=None)
         points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
-        self.point_list = points
-        self.semantic_label_list = labels
-        self.instance_label_list = instances
+        self.point_list = np.asarray(points)
+        self.semantic_label_list = np.asarray(labels)
+        self.instance_label_list = np.asarray(instances)
 
-        print("points type: ", type(points))
-        print("points type: ", len(points))
-        #print("points: ", points)
+        # print("points type: ", type(points))
+        # print("points type: ", len(points))
+        # #print("points: ", points)
 
-        print("labels type: ", type(labels))
-        print("labels type: ", len(labels))
-        #print("labels: ", labels)
+        # print("labels type: ", type(labels))
+        # print("labels type: ", len(labels))
+        # #print("labels: ", labels)
 
-        print("instances type: ", type(instances))
-        print("instances type: ", len(instances))
-        #print("instances: ", instances)
+        # print("instances type: ", type(instances))
+        # print("instances type: ", len(instances))
+        # #print("instances: ", instances)
 
-        points = np.asarray(points)
-        labels = np.asarray(labels)
-        instances = np.asarray(instances)
+        # points = np.asarray(points)
+        # labels = np.asarray(labels)
+        # instances = np.asarray(instances)
 
-        print("points shape: ", points.shape)
+        # print("points shape: ", points.shape)
 
-        print("labels shape: ", labels.shape)
+        # print("labels shape: ", labels.shape)
 
-        print("instances shape: ", instances.shape)
+        # print("instances shape: ", instances.shape)
 
         print(len(self.point_list), len(self.semantic_label_list), len(self.instance_label_list))
         
@@ -234,12 +235,12 @@ class DVSDataset():
                
     def get_batch(self, data_aug=False):
 
-        points = self.point_list[self.batch_count]
-        sem = self.semantic_label_list[self.batch_count]
-        inst = self.instance_label_list[self.batch_count]
+        points = self.point_list[(self.batch_count*self.batchsize):((self.batch_count+1)*self.batchsize)][:][:]
+        sem = self.semantic_label_list[(self.batch_count*self.batchsize):((self.batch_count+1)*self.batchsize)][:][:]
+        inst = self.instance_label_list[(self.batch_count*self.batchsize):((self.batch_count+1)*self.batchsize)][:][:]
 
         self.batch_count = self.batch_count + 1
-        if(self.batch_count == self.batch_num):
+        if(self.batch_count == self.batch_num-1):
             self.batch_count = 0
             
         return points, sem, inst
@@ -262,15 +263,15 @@ class DVSDataset():
 if __name__ == '__main__':
 # ------------------------------------------------------------------------------
     dvsDataset = DVSDataset('data', '/home/klein/neural_networks/jsnet/JSNet_LK/data/train_csv_dvs.txt', npoints=65536, split='train', batchsize=8)
-    # points, sem, inst = dvsDataset.get_batch()
-    # print(points.shape)
-    # print(sem.shape)
-    # print(inst.shape)
-    # points, sem, inst = dvsDataset.get_batch()
-    # print(points.shape)
-    # print(sem.shape)
-    # print(inst.shape)
-    # points, sem, inst = dvsDataset.get_batch()
-    # print(points.shape)
-    # print(sem.shape)
-    # print(inst.shape)
+    points, sem, inst = dvsDataset.get_batch()
+    print(points.shape)
+    print(sem.shape)
+    print(inst.shape)
+    points, sem, inst = dvsDataset.get_batch()
+    print(points.shape)
+    print(sem.shape)
+    print(inst.shape)
+    points, sem, inst = dvsDataset.get_batch()
+    print(points.shape)
+    print(sem.shape)
+    print(inst.shape)
