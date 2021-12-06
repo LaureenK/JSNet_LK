@@ -107,10 +107,11 @@ def get_Batch(batchsize, files):
     
     batch_points = np.array(batch_points)
     batch_seg = np.array(batch_seg)
+    batch_ins = np.array(batch_ins)
 
     print(batch_points.shape)
     print(batch_seg.shape)
-    print(len(batch_ins))
+    print(batch_ins.shape)
 
     return batch_points, batch_seg, batch_ins
 
@@ -235,12 +236,12 @@ if __name__ == '__main__':
     points, sem, inst = dvsDataset.get_batch()
     print(points.shape)
     print(sem.shape)
-    #print(inst.shape)
+    print(inst.shape)
     points, sem, inst = dvsDataset.get_batch()
     print(points.shape)
     print(sem.shape)
-    #print(inst.shape)
+    print(inst.shape)
     points, sem, inst = dvsDataset.get_batch()
     print(points.shape)
     print(sem.shape)
-    #print(inst.shape)
+    print(inst.shape)
