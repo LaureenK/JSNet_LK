@@ -186,15 +186,25 @@ class DVSDataset():
 
         print("points type: ", type(points))
         print("points type: ", len(points))
-        print("points: ", points)
+        #print("points: ", points)
 
         print("labels type: ", type(labels))
         print("labels type: ", len(labels))
-        print("labels: ", labels)
+        #print("labels: ", labels)
 
         print("instances type: ", type(instances))
         print("instances type: ", len(instances))
-        print("instances: ", instances)
+        #print("instances: ", instances)
+
+        points = np.asarray(points)
+        labels = np.asarray(labels)
+        instances = np.asarray(instances)
+
+        print("points shape: ", points.shape)
+
+        print("labels shape: ", labels.shape)
+
+        print("instances shape: ", instances.shape)
 
         print(len(self.point_list), len(self.semantic_label_list), len(self.instance_label_list))
         
