@@ -160,8 +160,6 @@ class DVSDataset():
                
     def get_batch(self, data_aug=False):
 
-        print("start: ", (self.batch_count*self.batchsize))
-        print("end: ", (self.batch_count+1)*self.batchsize)
         points = self.point_list[(self.batch_count*self.batchsize):((self.batch_count+1)*self.batchsize)][:][:]
         sem = self.semantic_label_list[(self.batch_count*self.batchsize):((self.batch_count+1)*self.batchsize)][:][:]
         inst = self.instance_label_list[(self.batch_count*self.batchsize):((self.batch_count+1)*self.batchsize)][:][:]
