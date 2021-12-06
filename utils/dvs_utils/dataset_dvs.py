@@ -110,12 +110,13 @@ def get_Batch(batchsize, files):
 
     print(batch_points.shape)
     print(batch_seg.shape)
-    print(batch_ins.shape)
+    print(len(batch_ins))
 
     return batch_points, batch_seg, batch_ins
 
 def get_all(batchsize, files):
     num_batches = len(files) // batchsize
+    print("Num Batches: ", num_batches)
     n=0
     points = []
     seg = []
