@@ -27,16 +27,21 @@ def get_model(point_cloud, is_training, num_class, num_embed=5, sigma=0.05, bn_d
     l0_points = point_cloud[:, :, 3:]
     end_points['l0_xyz'] = l0_xyz
 
-    radius1 = 4
-    radius2 = 8
-    radius3 = 16
-    radius4 = 32
+    radius1 = 2
+    radius2 = 4
+    radius3 = 8
+    radius4 = 16
+
+    npoint1 = 1024
+    npoint2 = 256
+    npoint3 = 64
+    npoint4 = 32
 
     # shared encoder
-    l1_xyz, l1_points, l1_indices = pointnet_sa_module(l0_xyz, l0_points, npoint=1024, radius=radius1, nsample=32, mlp=[32, 32, 64], mlp2=None, group_all=False, is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, scope='layer1')
-    l2_xyz, l2_points = pointconv_encoding(l1_xyz, l1_points, npoint=256, radius=radius2, sigma=2 * sigma, K=32, mlp=[ 64,  64, 128], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='layer2')
-    l3_xyz, l3_points = pointconv_encoding(l2_xyz, l2_points, npoint=64,  radius=radius3, sigma=4 * sigma, K=32, mlp=[128, 128, 256], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='layer3')
-    l4_xyz, l4_points = pointconv_encoding(l3_xyz, l3_points, npoint=32,  radius=radius4, sigma=8 * sigma, K=32, mlp=[256, 256, 512], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='layer4')
+    l1_xyz, l1_points, l1_indices = pointnet_sa_module(l0_xyz, l0_points, npoint=npoint1, radius=radius1, nsample=32, mlp=[32, 32, 64], mlp2=None, group_all=False, is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, scope='layer1')
+    l2_xyz, l2_points = pointconv_encoding(l1_xyz, l1_points, npoint=npoint2, radius=radius2, sigma=2 * sigma, K=32, mlp=[ 64,  64, 128], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='layer2')
+    l3_xyz, l3_points = pointconv_encoding(l2_xyz, l2_points, npoint=npoint3,  radius=radius3, sigma=4 * sigma, K=32, mlp=[128, 128, 256], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='layer3')
+    l4_xyz, l4_points = pointconv_encoding(l3_xyz, l3_points, npoint=npoint4,  radius=radius4, sigma=8 * sigma, K=32, mlp=[256, 256, 512], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='layer4')
 
     # semantic decoder
     l3_points_sem = pointconv_decoding_depthwise(l3_xyz, l4_xyz, l3_points, l4_points,     radius=radius4, sigma=8*sigma, K=16, mlp=[512, 512], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='sem_fa_layer1')
