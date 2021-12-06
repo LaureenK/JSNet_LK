@@ -91,14 +91,55 @@ def load_and_upscale(path):
 
     return points, labels, instances
 
+def get_Batch(batchsize, files):
+    batch_points = []
+    batch_seg = []
+    batch_ins = []
+
+    n = 0
+    while n < batchsize:
+        file = files[n]
+        points, labels, instances = load_and_upscale(file)
+        batch_points.append(points)
+        batch_seg.append(labels)
+        batch_ins.append(instances)
+        n = n+1
+    
+    batch_points = np.array(batch_points)
+    batch_seg = np.array(batch_seg)
+
+    print(batch_points.shape)
+    print(batch_seg.shape)
+    print(batch_ins.shape)
+
+    return batch_points, batch_seg, batch_ins
+
+def get_all(batchsize, files):
+    num_batches = len(files) // batchsize
+    n=0
+    points = []
+    seg = []
+    ins = []
+
+    while n < num_batches:
+        partFiles = files[n:n+batchsize]
+        batch_points, batch_seg, batch_ins = get_Batch(batchsize, partFiles)
+        points.append(batch_points)
+        seg.append(batch_seg)
+        ins.append(batch_ins)
+        n = n + 1
+
+    return points, seg, ins
 
 class DVSDataset():
-    def __init__(self, data_root, input_list_txt = 'none', npoints=65536, split='train'):
+    def __init__(self, data_root, input_list_txt = 'none', npoints=65536, split='train', batchsize=24):
         random.seed(1337)  # same result every time
 
         self.input_list_txt = input_list_txt
         self.split = split
         self.data_root = data_root
+        self.batch_count = 0
+        
 
         if npoints != NUM_POINTS:
             raise ValueError("npoints != NUM_POINTS")
@@ -116,17 +157,23 @@ class DVSDataset():
 
         random.shuffle(self.files_to_use)
         self.length = len(self.files_to_use)
+        self.batch_num = self.length // batchsize
 
         # --------------------------------------------------------------------------------------------------------------
         if split not in ['train', 'validation', 'train']:
             raise ValueError("unknown split")
 
-        # parallel csv read...
-        pool = Pool(processes=None)
-        points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
+        points, labels, instances = get_all(batchsize, self.files_to_use)
         self.point_list = points
         self.semantic_label_list = labels
         self.instance_label_list = instances
+
+        # parallel csv read...
+        #pool = Pool(processes=None)
+        #points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
+        #self.point_list = points
+        #self.semantic_label_list = labels
+        #self.instance_label_list = instances
 
         print(len(self.point_list), len(self.semantic_label_list), len(self.instance_label_list))
         
@@ -155,9 +202,16 @@ class DVSDataset():
                self.labelweights[self.semantic_label_list[0].astype(np.int32)]
                
     def get_batch(self, data_aug=False):
-        #return all data (batch size = 8000)
 
-        return self.point_list, self.semantic_label_list, self.instance_label_list
+        points = self.point_list[self.batch_count]
+        sem = self.semantic_label_list[self.batch_count]
+        inst = self.instance_label_list[self.batch_count]
+
+        self.batch_count = self.batch_count + 1
+        if(self.batch_count == self.batch_num):
+            self.batch_count = 0
+            
+        return points, sem, inst
 
     def get_input_list(self):
         input_list = [line.strip() for line in open(self.input_list_txt, 'r')]
@@ -176,5 +230,16 @@ class DVSDataset():
 # ------------------------------------------------------------------------------
 if __name__ == '__main__':
 # ------------------------------------------------------------------------------
-    dvsDataset = DVSDataset('data', '/home/klein/neural_networks/jsnet/JSNet_LK/data/train_csv_dvs.txt', npoints=65536, split='train')
-
+    dvsDataset = DVSDataset('data', '/home/klein/neural_networks/jsnet/JSNet_LK/data/train_csv_dvs.txt', npoints=65536, split='train', batchsize=8)
+    points, sem, inst = dvsDataset.get_batch()
+    print(points.shape)
+    print(sem.shape)
+    print(inst.shape)
+    points, sem, inst = dvsDataset.get_batch()
+    print(points.shape)
+    print(sem.shape)
+    print(inst.shape)
+    points, sem, inst = dvsDataset.get_batch()
+    print(points.shape)
+    print(sem.shape)
+    print(inst.shape)

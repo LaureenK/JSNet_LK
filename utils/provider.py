@@ -233,9 +233,6 @@ def loadDataFile_with_groupseglabel_nuyv2(filename):
 
 
 def loadDataFile_with_groupseglabel_stanfordindoor(filename):
-    print("Run load loadDataFile_with_groupseglabel_stanfordindoor")
-    with h5py.File(filename,'r') as hf:
-        print('List of arrays in this file: \n', hf.keys())
 
     f = h5py.File(filename, 'r')
     data = f['data'][:]
@@ -248,13 +245,6 @@ def loadDataFile_with_groupseglabel_stanfordindoor(filename):
         seg = f['seglabel'][:].astype(np.int32)
     else:
         seg = f['seglabels'][:].astype(np.int32)
-    print("data: " , filename , data.shape)
-
-    print("group: " , group.shape)
-
-    print("label: " , len(label))
-
-    print("seg: " , len(seg))
 
     return (data, group, label, seg)
 
