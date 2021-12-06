@@ -26,7 +26,7 @@ parser.add_argument('--log_dir', default='logs', help='Log dir [default: logs]')
 parser.add_argument('--num_point', type=int, default=65536, help='Point number [default: 65536]')                   #changed
 parser.add_argument('--start_epoch', type=int, default=0, help='Epoch to run [default: 50]')
 parser.add_argument('--max_epoch', type=int, default=50, help='Epoch to run [default: 50]')
-parser.add_argument('--batch_size', type=int, default=20, help='Batch Size during training [default: 8000]')      #changed!
+parser.add_argument('--batch_size', type=int, default=8, help='Batch Size during training [default: 8000]')      #changed!
 parser.add_argument('--learning_rate', type=float, default=0.001, help='Initial learning rate [default: 0.001]')
 parser.add_argument('--momentum', type=float, default=0.9, help='Initial learning rate [default: 0.9]')
 parser.add_argument('--optimizer', default='adam', help='adam or momentum [default: adam]')
@@ -204,7 +204,7 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
     for batch_idx in range(num_batches):
         current_data, current_sem, current_label = dataset.get_batch(False)
         #print("Batch size: ", BATCH_SIZE, " \nOne Batch:\nData: ", current_data.shape, " SegLabel: ", current_sem.shape, " InsLabel: ", current_label)
-        print("Data Type: ", type(current_data), " SegLabel Type: ", type(current_sem), " InsLabel Type: ", current_label)
+        print("Data Type: ", type(current_data), " SegLabel Type: ", type(current_sem), " InsLabel Type: ", type(current_label))
         feed_dict = {ops['pointclouds_pl']: current_data,
                      ops['labels_pl']: current_label,
                      ops['sem_labels_pl']: current_sem,
