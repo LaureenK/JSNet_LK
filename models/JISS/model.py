@@ -27,22 +27,27 @@ def get_model(point_cloud, is_training, num_class, num_embed=5, sigma=0.05, bn_d
     l0_points = point_cloud[:, :, 3:]
     end_points['l0_xyz'] = l0_xyz
 
+    radius1 = 0.1
+    radius2 = 0.2
+    radius3 = 0.4
+    radius4 = 0.8
+
     # shared encoder
-    l1_xyz, l1_points, l1_indices = pointnet_sa_module(l0_xyz, l0_points, npoint=1024, radius=0.1, nsample=32, mlp=[32, 32, 64], mlp2=None, group_all=False, is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, scope='layer1')
-    l2_xyz, l2_points = pointconv_encoding(l1_xyz, l1_points, npoint=256, radius=0.2, sigma=2 * sigma, K=32, mlp=[ 64,  64, 128], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='layer2')
-    l3_xyz, l3_points = pointconv_encoding(l2_xyz, l2_points, npoint=64,  radius=0.4, sigma=4 * sigma, K=32, mlp=[128, 128, 256], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='layer3')
-    l4_xyz, l4_points = pointconv_encoding(l3_xyz, l3_points, npoint=32,  radius=0.8, sigma=8 * sigma, K=32, mlp=[256, 256, 512], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='layer4')
+    l1_xyz, l1_points, l1_indices = pointnet_sa_module(l0_xyz, l0_points, npoint=1024, radius=radius1, nsample=32, mlp=[32, 32, 64], mlp2=None, group_all=False, is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, scope='layer1')
+    l2_xyz, l2_points = pointconv_encoding(l1_xyz, l1_points, npoint=256, radius=radius2, sigma=2 * sigma, K=32, mlp=[ 64,  64, 128], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='layer2')
+    l3_xyz, l3_points = pointconv_encoding(l2_xyz, l2_points, npoint=64,  radius=radius3, sigma=4 * sigma, K=32, mlp=[128, 128, 256], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='layer3')
+    l4_xyz, l4_points = pointconv_encoding(l3_xyz, l3_points, npoint=32,  radius=radius4, sigma=8 * sigma, K=32, mlp=[256, 256, 512], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='layer4')
 
     # semantic decoder
-    l3_points_sem = pointconv_decoding_depthwise(l3_xyz, l4_xyz, l3_points, l4_points,     radius=0.8, sigma=8*sigma, K=16, mlp=[512, 512], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='sem_fa_layer1')
-    l2_points_sem = pointconv_decoding_depthwise(l2_xyz, l3_xyz, l2_points, l3_points_sem, radius=0.4, sigma=4*sigma, K=16, mlp=[256, 256], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='sem_fa_layer2')  # 48x256x256
-    l1_points_sem = pointconv_decoding_depthwise(l1_xyz, l2_xyz, l1_points, l2_points_sem, radius=0.2, sigma=2*sigma, K=16, mlp=[256, 128], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='sem_fa_layer3')  # 48x1024x128
+    l3_points_sem = pointconv_decoding_depthwise(l3_xyz, l4_xyz, l3_points, l4_points,     radius=radius4, sigma=8*sigma, K=16, mlp=[512, 512], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='sem_fa_layer1')
+    l2_points_sem = pointconv_decoding_depthwise(l2_xyz, l3_xyz, l2_points, l3_points_sem, radius=radius3, sigma=4*sigma, K=16, mlp=[256, 256], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='sem_fa_layer2')  # 48x256x256
+    l1_points_sem = pointconv_decoding_depthwise(l1_xyz, l2_xyz, l1_points, l2_points_sem, radius=radius2, sigma=2*sigma, K=16, mlp=[256, 128], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='sem_fa_layer3')  # 48x1024x128
     l0_points_sem = pointnet_fp_module(l0_xyz, l1_xyz, l0_points, l1_points_sem, [128, 128, 128], is_training, bn_decay, is_dist=is_dist, scope='sem_fa_layer4')  # 48x4096x128
 
     # instance decoder
-    l3_points_ins = pointconv_decoding_depthwise(l3_xyz, l4_xyz, l3_points, l4_points,     radius=0.8, sigma=8*sigma, K=16, mlp=[512, 512], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='ins_fa_layer1')
-    l2_points_ins = pointconv_decoding_depthwise(l2_xyz, l3_xyz, l2_points, l3_points_ins, radius=0.4, sigma=4*sigma, K=16, mlp=[256, 256], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='ins_fa_layer2')  # 48x256x256
-    l1_points_ins = pointconv_decoding_depthwise(l1_xyz, l2_xyz, l1_points, l2_points_ins, radius=0.2, sigma=2*sigma, K=16, mlp=[256, 128], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='ins_fa_layer3')  # 48x1024x128
+    l3_points_ins = pointconv_decoding_depthwise(l3_xyz, l4_xyz, l3_points, l4_points,     radius=radius4, sigma=8*sigma, K=16, mlp=[512, 512], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='ins_fa_layer1')
+    l2_points_ins = pointconv_decoding_depthwise(l2_xyz, l3_xyz, l2_points, l3_points_ins, radius=radius3, sigma=4*sigma, K=16, mlp=[256, 256], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='ins_fa_layer2')  # 48x256x256
+    l1_points_ins = pointconv_decoding_depthwise(l1_xyz, l2_xyz, l1_points, l2_points_ins, radius=radius2, sigma=2*sigma, K=16, mlp=[256, 128], is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, weight_decay=None, scope='ins_fa_layer3')  # 48x1024x128
     l0_points_ins = pointnet_fp_module(l0_xyz, l1_xyz, l0_points, l1_points_ins, [128, 128, 128], is_training, bn_decay, is_dist=is_dist, scope='ins_fa_layer4')   # 48x4096x128
 
     # FC layers F_sem
