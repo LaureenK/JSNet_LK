@@ -106,7 +106,7 @@ def train():
 
     # build network and create session
     with tf.Graph().as_default(), tf.device('/gpu:'+str(GPU_INDEX)):
-        pointclouds_pl, labels_pl, sem_labels_pl = placeholder_inputs(BATCH_SIZE, NUM_POINT)
+        pointclouds_pl, labels_pl, sem_labels_pl = placeholder_inputs(BATCH_SIZE, NUM_POINT,num_dims=9)
         is_training_pl = tf.placeholder(tf.bool, shape=())
 
         # Note the global_step=batch parameter to minimize.
