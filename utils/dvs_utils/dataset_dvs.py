@@ -242,7 +242,7 @@ class DVSDataset():
         inst = self.instance_label_list[(self.batch_count*self.batchsize):((self.batch_count+1)*self.batchsize)][:][:]
 
         self.batch_count = self.batch_count + 1
-        if(self.batch_count == self.batch_num-1):
+        if(self.batch_count == self.batch_num):
             self.batch_count = 0
             
         return points, sem, inst
