@@ -98,6 +98,13 @@ def get_Batch(batchsize, files):
 
     n = 0
     while n < batchsize:
+        # parallel csv read...
+        #pool = Pool(processes=None)
+        #points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
+        #self.point_list = points
+        #self.semantic_label_list = labels
+        #self.instance_label_list = instances
+
         file = files[n]
         points, labels, instances = load_and_upscale(file)
         batch_points.append(points)
@@ -165,17 +172,26 @@ class DVSDataset():
         if split not in ['train', 'validation', 'train']:
             raise ValueError("unknown split")
 
-        points, labels, instances = get_all(batchsize, self.files_to_use)
+        #points, labels, instances = get_all(batchsize, self.files_to_use)
+        #self.point_list = points
+        #self.semantic_label_list = labels
+        #self.instance_label_list = instances
+
+        # parallel csv read...
+        pool = Pool(processes=None)
+        points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
         self.point_list = points
         self.semantic_label_list = labels
         self.instance_label_list = instances
 
-        # parallel csv read...
-        #pool = Pool(processes=None)
-        #points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
-        #self.point_list = points
-        #self.semantic_label_list = labels
-        #self.instance_label_list = instances
+        print("points type: ", points.shape)
+        print("points: ", points)
+
+        print("labels type: ", labels.shape)
+        print("labels: ", labels)
+
+        print("instances type: ", instances.shape)
+        print("instances: ", instances)
 
         print(len(self.point_list), len(self.semantic_label_list), len(self.instance_label_list))
         
@@ -233,15 +249,15 @@ class DVSDataset():
 if __name__ == '__main__':
 # ------------------------------------------------------------------------------
     dvsDataset = DVSDataset('data', '/home/klein/neural_networks/jsnet/JSNet_LK/data/train_csv_dvs.txt', npoints=65536, split='train', batchsize=8)
-    points, sem, inst = dvsDataset.get_batch()
-    print(points.shape)
-    print(sem.shape)
-    print(inst.shape)
-    points, sem, inst = dvsDataset.get_batch()
-    print(points.shape)
-    print(sem.shape)
-    print(inst.shape)
-    points, sem, inst = dvsDataset.get_batch()
-    print(points.shape)
-    print(sem.shape)
-    print(inst.shape)
+    # points, sem, inst = dvsDataset.get_batch()
+    # print(points.shape)
+    # print(sem.shape)
+    # print(inst.shape)
+    # points, sem, inst = dvsDataset.get_batch()
+    # print(points.shape)
+    # print(sem.shape)
+    # print(inst.shape)
+    # points, sem, inst = dvsDataset.get_batch()
+    # print(points.shape)
+    # print(sem.shape)
+    # print(inst.shape)
