@@ -122,7 +122,7 @@ class DVSDataset():
         # parallel csv read...
         pool = Pool(processes=None)
         points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
-        points, labels, instances = self.downscale(points, labels, instances)
+        points, labels, instances = self.downscale(list(points), list(labels), list(instances))
         
         self.point_list = np.asarray(points)
         self.semantic_label_list = np.asarray(labels)
