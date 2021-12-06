@@ -15,7 +15,7 @@ sys.path.append(os.path.join(ROOT_DIR, 'utils'))
 
 from s3dis_utils.dataset_s3dis import S3DISDataset
 from log_util import get_logger
-from model import *
+from modelOriginal import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--gpu', type=int, default=0, help='GPU to use [default: GPU 0]')
@@ -106,7 +106,7 @@ def train():
 
     # build network and create session
     with tf.Graph().as_default(), tf.device('/gpu:'+str(GPU_INDEX)):
-        pointclouds_pl, labels_pl, sem_labels_pl = placeholder_inputs(BATCH_SIZE, NUM_POINT,num_dims=9)
+        pointclouds_pl, labels_pl, sem_labels_pl = placeholder_inputs(BATCH_SIZE, NUM_POINT)
         is_training_pl = tf.placeholder(tf.bool, shape=())
 
         # Note the global_step=batch parameter to minimize.
