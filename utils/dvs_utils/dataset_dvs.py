@@ -91,54 +91,6 @@ def load_and_upscale(path):
 
     return points, labels, instances
 
-def get_Batch(batchsize, files):
-    batch_points = []
-    batch_seg = []
-    batch_ins = []
-
-    n = 0
-    while n < batchsize:
-        # parallel csv read...
-        #pool = Pool(processes=None)
-        #points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
-        #self.point_list = points
-        #self.semantic_label_list = labels
-        #self.instance_label_list = instances
-
-        file = files[n]
-        points, labels, instances = load_and_upscale(file)
-        batch_points.append(points)
-        batch_seg.append(labels)
-        batch_ins.append(instances)
-        n = n+1
-    
-    batch_points = np.array(batch_points)
-    batch_seg = np.array(batch_seg)
-    batch_ins = np.array(batch_ins)
-
-    print(batch_points.shape)
-    print(batch_seg.shape)
-    print(batch_ins.shape)
-
-    return batch_points, batch_seg, batch_ins
-
-def get_all(batchsize, files):
-    num_batches = len(files) // batchsize
-    print("Num Batches: ", num_batches)
-    n=0
-    points = []
-    seg = []
-    ins = []
-
-    while n < num_batches:
-        partFiles = files[n:n+batchsize]
-        batch_points, batch_seg, batch_ins = get_Batch(batchsize, partFiles)
-        points.append(batch_points)
-        seg.append(batch_seg)
-        ins.append(batch_ins)
-        n = n + 1
-
-    return points, seg, ins
 
 class DVSDataset():
     def __init__(self, data_root, input_list_txt = 'none', npoints=65536, split='train', batchsize=24):
@@ -173,39 +125,12 @@ class DVSDataset():
         if split not in ['train', 'validation', 'train']:
             raise ValueError("unknown split")
 
-        #points, labels, instances = get_all(batchsize, self.files_to_use)
-        #self.point_list = points
-        #self.semantic_label_list = labels
-        #self.instance_label_list = instances
-
         # parallel csv read...
         pool = Pool(processes=None)
         points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
         self.point_list = np.asarray(points)
         self.semantic_label_list = np.asarray(labels)
         self.instance_label_list = np.asarray(instances)
-
-        # print("points type: ", type(points))
-        # print("points type: ", len(points))
-        # #print("points: ", points)
-
-        # print("labels type: ", type(labels))
-        # print("labels type: ", len(labels))
-        # #print("labels: ", labels)
-
-        # print("instances type: ", type(instances))
-        # print("instances type: ", len(instances))
-        # #print("instances: ", instances)
-
-        # points = np.asarray(points)
-        # labels = np.asarray(labels)
-        # instances = np.asarray(instances)
-
-        # print("points shape: ", points.shape)
-
-        # print("labels shape: ", labels.shape)
-
-        # print("instances shape: ", instances.shape)
 
         print(len(self.point_list), len(self.semantic_label_list), len(self.instance_label_list))
         
