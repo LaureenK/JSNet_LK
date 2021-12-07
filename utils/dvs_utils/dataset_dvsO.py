@@ -93,7 +93,7 @@ def load_and_upscale(path):
 
 
 class DVSDataset():
-    def __init__(self, data_root, input_list_txt = 'none', npoints=65536, split='train', batchsize=24):
+    def __init__(self, data_root, input_list_txt = 'none', npoints=16384, split='train', batchsize=24):
         random.seed(1337)  # same result every time
 
         self.input_list_txt = input_list_txt
@@ -189,7 +189,7 @@ class DVSDataset():
 # ------------------------------------------------------------------------------
 if __name__ == '__main__':
 # ------------------------------------------------------------------------------
-    dvsDataset = DVSDataset('data', '/home/klein/neural_networks/jsnet/JSNet_LK/data/train_csv_dvs.txt', npoints=65536, split='train', batchsize=8)
+    dvsDataset = DVSDataset('data', '/home/klein/neural_networks/jsnet/JSNet_LK/data/train_csv_dvs.txt', split='train', batchsize=8)
     points, sem, inst = dvsDataset.get_batch()
     print(points.shape)
     print(sem.shape)
