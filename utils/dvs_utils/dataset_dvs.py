@@ -105,6 +105,8 @@ def create_two_x(points, labels, instances):
             small_instances2.append(instances[i])
 
         i = i + 1
+    print("Points1: ", len(small_points1), " Labels: ", len(small_labels1), " Instances: ", len(small_instances1))
+    print("Points2: ", len(small_points2), " Labels: ", len(small_labels2), " Instances: ", len(small_instances2))
 
     small_points3 = []
     small_labels3 = []
