@@ -167,8 +167,6 @@ def downscale(points, labels, instances, x=True, depth = 1, left=True):
     small_labels = []
     small_instances = []
 
-    print("Before downscale: ", len(points))
-
     if x == True:
         if depth == 1 and left == True:
             small_points1, small_labels1, small_instances1 = create_two_x(points, labels, instances)
@@ -177,8 +175,8 @@ def downscale(points, labels, instances, x=True, depth = 1, left=True):
         elif depth == 2 and left == False:
             small_points1, small_labels1, small_instances1 = create_two_x(points, labels, instances, 320,640)
 
-        print("After downscale X: ", len(small_points1[0]))
-        print("After downscale X: ", len(small_points1[1]))
+        # print("After downscale X: ", len(small_points1[0]))
+        # print("After downscale X: ", len(small_points1[1]))
 
         if len(small_points1[0]) > NUM_POINTS:
             small_points2, small_labels2, small_instances2 = downscale(small_points1[0], small_labels1[0], small_instances1[0], False,depth,True)
@@ -208,8 +206,8 @@ def downscale(points, labels, instances, x=True, depth = 1, left=True):
             small_instances.append(small_instances1[1])
     else:
         small_points1, small_labels1, small_instances1 = create_two_y(points, labels, instances)
-        print("After downscale Y: ", len(small_points1[0]))
-        print("After downscale Y: ", len(small_points1[1]))
+        # print("After downscale Y: ", len(small_points1[0]))
+        # print("After downscale Y: ", len(small_points1[1]))
 
         if len(small_points1[0]) > NUM_POINTS:
             small_points2, small_labels2, small_instances2 = downscale(small_points1[0], small_labels1[0], small_instances1[0], True, depth+1,left)
@@ -357,8 +355,6 @@ class DVSDataset():
                 good_instances.append(instances[n])
             n = n + 1
 
-        print("Count to big: ", len(too_big_points), " Other: ", len(good_points))
-
         n=0
         while n < len(too_big_points):
             small_points, small_labels, small_instances = downscale(too_big_points[n], too_big_labels[n],too_big_instances[n])
@@ -371,7 +367,6 @@ class DVSDataset():
 
             n = n + 1
 
-        print("length after downscale: ", len(good_points))
         return good_points, good_labels, good_instances
 # ------------------------------------------------------------------------------
 if __name__ == '__main__':
