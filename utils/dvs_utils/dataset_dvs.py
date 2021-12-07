@@ -165,11 +165,18 @@ def downscale(points, labels, instances):
     small_labels = []
     small_instances = []
 
+    print("Before downscale X: ", len(points))
     small_points3, small_labels3, small_instances3 = create_two_x(points, labels, instances)
+    print("After downscale X: ", len(small_points3[0]))
+    print("After downscale X: ", len(small_points3[1]))
+
 
     if len(small_points3[0]) > NUM_POINTS:
+        print("Before downscale Y: ", len(small_points3[0]))
         small_points1, small_labels1, small_instances1 = create_two_y(small_points3[0], small_labels3[0], small_instances3[0])
-        
+        print("After downscale Y: ", len(small_points1[0]))
+        print("After downscale Y: ", len(small_points1[1]))
+
         if len(small_points1[0]) != NUM_POINTS:
             raise RuntimeError("1 error downscale...! ", len(small_points1[0]) , " != ", NUM_POINTS)
         else:
@@ -193,8 +200,11 @@ def downscale(points, labels, instances):
 
 
     if len(small_points3[1]) > NUM_POINTS:
+        print("Before downscale Y: ", len(small_points3[1]))
         small_points1, small_labels1, small_instances1 = create_two_y(small_points3[1], small_labels3[1], small_instances3[1])
-        
+        print("After downscale Y: ", len(small_points1[0]))
+        print("After downscale Y: ", len(small_points1[1]))
+
         if len(small_points1[0]) != NUM_POINTS:
             raise RuntimeError("4 error downscale...!", len(small_points1[0]) , " != ", NUM_POINTS)
         else:
