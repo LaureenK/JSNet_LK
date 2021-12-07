@@ -277,7 +277,7 @@ class DVSDataset():
         # parallel csv read...
         pool = Pool(processes=None)
         points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
-        points, labels, instances = self.do_downscale(list(points), list(labels), list(instances))
+        points, labels, instances = self.do_downscale(points, labels, instances)
 
         self.point_list = np.asarray(points)
         self.semantic_label_list = np.asarray(labels)
@@ -340,12 +340,21 @@ class DVSDataset():
         too_big_points = []
         too_big_labels = []
         too_big_instances = []
+        good_points = []
+        good_labels = []
+        good_instances = []
         index = []
 
         n=0
         while n < len(points):
             if(len(points[n]) > NUM_POINTS):
-                index.append(n)
+                too_big_points.append(points[n])
+                too_big_labels.append(labels[n])
+                too_big_instances.append(instances[n])
+            else:
+                good_points.append(points[n])
+                good_labels.append(labels[n])
+                good_instances.append(instances[n])
             n = n + 1
 
         # n=0
@@ -355,7 +364,7 @@ class DVSDataset():
         #     too_big_instances.append(instances.pop(n))
         #     n = n + 1
         
-        print("Count to big: ", len(too_big_points), " Other: ", len(points))
+        print("Count to big: ", len(too_big_points), " Other: ", len(good_points))
 
         # n=0
         # while n < len(too_big_points):
@@ -369,8 +378,8 @@ class DVSDataset():
 
         #     n = n + 1
 
-        print("length after downscale: ", len(points))
-        return tuple(points), tuple(labels), tuple(instances)
+        print("length after downscale: ", len(good_points))
+        return good_points, good_labels, good_instances
 # ------------------------------------------------------------------------------
 if __name__ == '__main__':
 # ------------------------------------------------------------------------------
