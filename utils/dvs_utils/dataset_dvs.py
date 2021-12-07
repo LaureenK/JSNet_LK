@@ -255,6 +255,7 @@ class DVSDataset():
 
         if(input_list_txt == 'none'):
             if(split == 'train'):
+                print("Test1")
                 self.files_to_use = glob.glob(os.path.join(DATASET_TRAIN_DIR, split, "*.csv"))
             elif(split == 'validation'): 
                 self.files_to_use = glob.glob(os.path.join(DATASET_VALIDATION_DIR, split, "*.csv"))
