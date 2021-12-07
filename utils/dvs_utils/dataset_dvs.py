@@ -276,7 +276,10 @@ class DVSDataset():
         pool = Pool(processes=None)
         points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
         #points, labels, instances = self.downscale(list(points), list(labels), list(instances))
-        
+        print(type(points), type(labels), type(instances))
+        print(type(points[1]), type(labels[1]), type(instances[1]))
+        print(points[1].shape, labels[1].shape, instances[1].shape)
+
         self.point_list = np.asarray(points)
         self.semantic_label_list = np.asarray(labels)
         self.instance_label_list = np.asarray(instances)
