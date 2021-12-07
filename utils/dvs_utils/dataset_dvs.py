@@ -181,12 +181,23 @@ def downscale(points, labels, instances, x=True):
                 small_instances.append(small_instances2[i])
                 i = i +1
         else:
+            small_points.append(small_points1[0])
+            small_labels.append(small_labels1[0])
+            small_instances.append(small_instances1[0])
+
+        
+        if len(small_points1[1]) > NUM_POINTS:
+            small_points2, small_labels2, small_instances2 = downscale(small_points1[1], small_labels1[1], small_instances1[1], False)
             i = 0
-            while i < len(small_points1):
-                small_points.append(small_points1[i])
-                small_labels.append(small_labels1[i])
-                small_instances.append(small_instances1[i])
+            while i < len(small_points2):
+                small_points.append(small_points2[i])
+                small_labels.append(small_labels2[i])
+                small_instances.append(small_instances2[i])
                 i = i +1
+        else:
+            small_points.append(small_points1[1])
+            small_labels.append(small_labels1[1])
+            small_instances.append(small_instances1[1])
     else:
         small_points1, small_labels1, small_instances1 = create_two_y(points, labels, instances)
         print("After downscale Y: ", len(small_points1[0]))
@@ -200,13 +211,24 @@ def downscale(points, labels, instances, x=True):
                 small_labels.append(small_labels2[i])
                 small_instances.append(small_instances2[i])
                 i = i +1
-        else:
+        else:     
+            small_points.append(small_points1[0])
+            small_labels.append(small_labels1[0])
+            small_instances.append(small_instances1[0])
+        
+        if len(small_points1[1]) > NUM_POINTS:
+            small_points2, small_labels2, small_instances2 = downscale(small_points1[1], small_labels1[1], small_instances1[1], True)
             i = 0
-            while i < len(small_points1):
-                small_points.append(small_points1[i])
-                small_labels.append(small_labels1[i])
-                small_instances.append(small_instances1[i])
+            while i < len(small_points2):
+                small_points.append(small_points2[i])
+                small_labels.append(small_labels2[i])
+                small_instances.append(small_instances2[i])
                 i = i +1
+        else:     
+            small_points.append(small_points1[1])
+            small_labels.append(small_labels1[1])
+            small_instances.append(small_instances1[1])
+
 
     return small_points, small_labels, small_instances
 
