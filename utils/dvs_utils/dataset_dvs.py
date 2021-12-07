@@ -264,6 +264,7 @@ class DVSDataset():
             self.input_list_txt = input_list_txt
             self.files_to_use = self.get_input_list()
 
+        print("Files to use: ", len(self.files_to_use))
         random.shuffle(self.files_to_use)
         self.length = len(self.files_to_use)
         self.batch_num = self.length // batchsize
