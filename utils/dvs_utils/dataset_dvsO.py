@@ -342,17 +342,23 @@ class DVSDataset():
         too_big_points = []
         too_big_labels = []
         too_big_instances = []
+        index = []
 
         n=0
         print(len(points))
         while n < len(points):
             print(n, ": Length: ", len(points[n]), " Too big? ", (len(points[n]) > NUM_POINTS))
             if(len(points[n]) > NUM_POINTS):
-                too_big_points.append(points.pop(n))
-                too_big_labels.append(labels.pop(n))
-                too_big_instances.append(instances.pop(n))
-            
+                index.append(n)
             n = n + 1
+            
+        n=0
+        while n < len(index):
+            too_big_points.append(points.pop(n))
+            too_big_labels.append(labels.pop(n))
+            too_big_instances.append(instances.pop(n))
+            n = n + 1
+        
         print("Count to big: ", len(too_big_points))
 
         n=0
