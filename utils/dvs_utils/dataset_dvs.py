@@ -382,7 +382,7 @@ class DVSDataset():
         
         pool = Pool(processes=None)
         small_points, small_labels, small_instances = zip(*pool.starmap(downscale, zip(too_big_points, too_big_labels,too_big_instances)))
-        print("Result: ", len(small_points), " Shape: ", small_points[0].shape)
+        print("Result: ", len(small_points), " Entry: ", len(small_points[0]))
         i=0
         while i < len(small_points):
                 good_points.append(small_points[i])
