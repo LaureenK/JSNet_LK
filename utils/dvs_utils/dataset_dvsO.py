@@ -357,17 +357,17 @@ class DVSDataset():
         
         print("Count to big: ", len(too_big_points), " Other: ", len(points))
 
-        n=0
-        while n < len(too_big_points):
-            small_points, small_labels, small_instances = downscale(too_big_points[n], too_big_labels[n],too_big_instances[n])
-            i=0
-            while i < len(small_points):
-                points.append(small_points[i])
-                labels.append(small_labels[i])
-                instances.append(small_instances[i])
-                i = i+1
+        # n=0
+        # while n < len(too_big_points):
+        #     small_points, small_labels, small_instances = downscale(too_big_points[n], too_big_labels[n],too_big_instances[n])
+        #     i=0
+        #     while i < len(small_points):
+        #         points.append(small_points[i])
+        #         labels.append(small_labels[i])
+        #         instances.append(small_instances[i])
+        #         i = i+1
 
-            n = n + 1
+        #     n = n + 1
 
         print("length after downscale: ", len(points))
         return tuple(points), tuple(labels), tuple(instances)
