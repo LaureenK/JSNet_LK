@@ -7,7 +7,7 @@ from multiprocessing import Pool
 import numpy as np
 
 NUM_CLASSES = 4
-NUM_POINTS = 2**16  ## <-- TODO: this dataset adapter only supprts UP(!) sampling not DOWN sampling
+NUM_POINTS = 2**14  ## <-- TODO: this dataset adapter only supprts UP(!) sampling not DOWN sampling
 
 DATASET_TRAIN_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/"
 DATASET_VALIDATION_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/ValidationFiles/"
@@ -70,8 +70,8 @@ def load_ascii_cloud(fname):
     return npPoints, npSeg, npIns
 
 def upscale(points, labels, instances):
-    if len(points) > NUM_POINTS:
-        raise RuntimeError("no matching config...!")
+    # if len(points) > NUM_POINTS:
+    #     raise RuntimeError("no matching config...!")
 
     while len(points) != NUM_POINTS:
         copy_index = random.randint(0, len(points)-1)
