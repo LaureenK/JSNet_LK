@@ -283,6 +283,7 @@ class DVSDataset():
 
         #print(len(self.point_list), len(self.semantic_label_list), len(self.instance_label_list))
         print(self.point_list.shape, self.semantic_label_list.shape, self.instance_label_list.shape)
+        print(self.point_list[1].shape, self.semantic_label_list[1].shape, self.instance_label_list[1].shape)
         
 
         # labelweights
