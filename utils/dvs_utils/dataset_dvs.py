@@ -54,6 +54,7 @@ def load_ascii_cloud(fname):
             labels.append(class_label)
             instances.append(instance_label)
     #shuffle data
+
     npPoints = np.array(points, dtype=np.float32)
     npSeg = np.array(labels, dtype=np.uint8)
     npIns = np.array(instances, dtype=np.uint8)
@@ -63,15 +64,16 @@ def load_ascii_cloud(fname):
     return npPoints, npSeg, npIns
 
 def upscale(points, labels, instances):
-    #if len(points) > NUM_POINTS:
-        #raise RuntimeError("no matching config...!")
+    # if len(points) > NUM_POINTS:
+    #     raise RuntimeError("no matching config...!")
 
-    while len(points) < NUM_POINTS:
-        copy_index = random.randint(0, len(points)-1)
+    if len(points) < NUM_POINTS:
+        while len(points) != NUM_POINTS:
+            copy_index = random.randint(0, len(points)-1)
 
-        points = np.vstack((points, points[copy_index]))
-        labels = np.append(labels, labels[copy_index])
-        instances = np.append(instances, instances[copy_index])
+            points = np.vstack((points, points[copy_index]))
+            labels = np.append(labels, labels[copy_index])
+            instances = np.append(instances, instances[copy_index])
 
     return points, labels, instances
 
@@ -238,6 +240,7 @@ def downscale(points, labels, instances, x=True, depth = 1, left=True):
 
     return small_points, small_labels, small_instances
 
+
 class DVSDataset():
     def __init__(self, data_root, input_list_txt = 'none', npoints=16384, split='train', batchsize=24):
         random.seed(1337)  # same result every time
@@ -247,7 +250,6 @@ class DVSDataset():
         self.data_root = data_root
         self.batch_count = 0
         self.batchsize = batchsize
-        
         
 
         if npoints != NUM_POINTS:
@@ -275,21 +277,13 @@ class DVSDataset():
         # parallel csv read...
         pool = Pool(processes=None)
         points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
-        #points, labels, instances = self.downscale(list(points), list(labels), list(instances))
-        print(type(points), type(labels), type(instances))
-        print(type(points[1]), type(labels[1]), type(instances[1]))
-        print(points[1].shape, labels[1].shape, instances[1].shape)
+        points, labels, instances = self.do_downscale(points, labels, instances)
 
         self.point_list = np.asarray(points)
         self.semantic_label_list = np.asarray(labels)
         self.instance_label_list = np.asarray(instances)
 
-        #print(len(self.point_list), len(self.semantic_label_list), len(self.instance_label_list))
-        print(self.point_list.shape, self.semantic_label_list.shape, self.instance_label_list.shape)
-        print(self.point_list[1].shape, self.semantic_label_list[1].shape, self.instance_label_list[1].shape)
-        print(type(self.point_list), type(self.semantic_label_list), type(self.instance_label_list))
-        print(type(self.point_list[1]), type(self.semantic_label_list[1]), type(self.instance_label_list[1]))
-
+        print(len(self.point_list), len(self.semantic_label_list), len(self.instance_label_list))
         
 
         # labelweights
@@ -309,36 +303,6 @@ class DVSDataset():
     def __len__(self):
         #return len(self.point_list)
         return self.length
-
-    def downscale(self, points, labels, instances):
-        too_big_points = []
-        too_big_labels = []
-        too_big_instances = []
-
-        n=0
-
-        while n < len(points):
-            if(len(points[n]) > NUM_POINTS):
-                too_big_points.append(points.pop(n))
-                too_big_labels.append(labels.pop(n))
-                too_big_instances.append(instances.pop(n))
-            n = n + 1
-        print("Count to big: ", len(too_big_points))
-
-        n=0
-        while n < len(too_big_points):
-            small_points, small_labels, small_instances = downscale(too_big_points[n], too_big_labels[n],too_big_instances[n])
-            i=0
-            while i < len(small_points):
-                points.append(small_points[i])
-                labels.append(small_labels[i])
-                instances.append(small_instances[i])
-                i = i+1
-
-            n = n + 1
-
-        print("length after downscale: ", len(points))
-        return tuple(points), tuple(labels), tuple(instances)
 
     def __getitem__(self, index):
         return self.point_list[index], \
@@ -371,6 +335,44 @@ class DVSDataset():
 
     def get_length(self):
         return self.__len__()
+    
+    def do_downscale(self, points, labels, instances):
+        too_big_points = []
+        too_big_labels = []
+        too_big_instances = []
+        good_points = []
+        good_labels = []
+        good_instances = []
+        index = []
+
+        n=0
+        while n < len(points):
+            if(len(points[n]) > NUM_POINTS):
+                too_big_points.append(points[n])
+                too_big_labels.append(labels[n])
+                too_big_instances.append(instances[n])
+            else:
+                good_points.append(points[n])
+                good_labels.append(labels[n])
+                good_instances.append(instances[n])
+            n = n + 1
+
+        print("Count to big: ", len(too_big_points), " Other: ", len(good_points))
+
+        n=0
+        while n < len(too_big_points):
+            small_points, small_labels, small_instances = downscale(too_big_points[n], too_big_labels[n],too_big_instances[n])
+            i=0
+            while i < len(small_points):
+                good_points.append(small_points[i])
+                good_labels.append(small_labels[i])
+                good_instances.append(small_instances[i])
+                i = i+1
+
+            n = n + 1
+
+        print("length after downscale: ", len(good_points))
+        return good_points, good_labels, good_instances
 # ------------------------------------------------------------------------------
 if __name__ == '__main__':
 # ------------------------------------------------------------------------------
@@ -379,9 +381,6 @@ if __name__ == '__main__':
     print(points.shape)
     print(sem.shape)
     print(inst.shape)
-    print(type(points))
-    print(type(sem))
-    print(type(inst))
     points, sem, inst = dvsDataset.get_batch()
     print(points.shape)
     print(sem.shape)
