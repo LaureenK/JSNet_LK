@@ -279,7 +279,6 @@ class DVSDataset():
 
         if(input_list_txt == 'none'):
             if(split == 'train'):
-                print("Dataset_dir : ", DATASET_TRAIN_DIR)
                 self.files_to_use = glob.glob(os.path.join(DATASET_TRAIN_DIR, "*.csv"))
             elif(split == 'validation'): 
                 self.files_to_use = glob.glob(os.path.join(DATASET_VALIDATION_DIR, "*.csv"))
@@ -289,7 +288,6 @@ class DVSDataset():
             self.input_list_txt = input_list_txt
             self.files_to_use = self.get_input_list()
 
-        print("Files to use: ", len(self.files_to_use))
         random.shuffle(self.files_to_use)
         self.length = len(self.files_to_use)
         self.batch_num = self.length // batchsize
@@ -384,18 +382,28 @@ class DVSDataset():
             n = n + 1
 
         print("Files too big: ", len(too_big_points), " Other: ", len(good_points))
-        n=0
-        while n < len(too_big_points):
-            print(n, " of ", len(too_big_points))
-            small_points, small_labels, small_instances = downscale(too_big_points[n], too_big_labels[n],too_big_instances[n])
-            i=0
-            while i < len(small_points):
+        
+        pool = Pool(processes=None)
+        small_points, small_labels, small_instances = zip(*pool.starmap(downscale, too_big_points, too_big_labels,too_big_instances))
+        print("Test Pool")
+        i=0
+        while i < len(small_points):
                 good_points.append(small_points[i])
                 good_labels.append(small_labels[i])
                 good_instances.append(small_instances[i])
                 i = i+1
+        # n=0
+        # while n < len(too_big_points):
+        #     print(n, " of ", len(too_big_points))
+        #     small_points, small_labels, small_instances = downscale(too_big_points[n], too_big_labels[n],too_big_instances[n])
+        #     i=0
+        #     while i < len(small_points):
+        #         good_points.append(small_points[i])
+        #         good_labels.append(small_labels[i])
+        #         good_instances.append(small_instances[i])
+        #         i = i+1
 
-            n = n + 1
+        #     n = n + 1
 
         return good_points, good_labels, good_instances
 # ------------------------------------------------------------------------------
