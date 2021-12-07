@@ -283,7 +283,7 @@ class DVSDataset():
         pool = Pool(processes=None)
         points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
         points, labels, instances = self.do_downscale(list(points), list(labels), list(instances))
-        
+
         self.point_list = np.asarray(points)
         self.semantic_label_list = np.asarray(labels)
         self.instance_label_list = np.asarray(instances)
@@ -316,8 +316,6 @@ class DVSDataset():
                
     def get_batch(self, data_aug=False):
 
-        print("start: ", (self.batch_count*self.batchsize))
-        print("end: ", (self.batch_count+1)*self.batchsize)
         points = self.point_list[(self.batch_count*self.batchsize):((self.batch_count+1)*self.batchsize)][:][:]
         sem = self.semantic_label_list[(self.batch_count*self.batchsize):((self.batch_count+1)*self.batchsize)][:][:]
         inst = self.instance_label_list[(self.batch_count*self.batchsize):((self.batch_count+1)*self.batchsize)][:][:]
