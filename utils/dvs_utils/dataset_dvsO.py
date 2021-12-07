@@ -91,6 +91,160 @@ def load_and_upscale(path):
 
     return points, labels, instances
 
+def create_two_x(points, labels, instances, start= 0, end= 640):
+    small_points1 = []
+    small_labels1 = []
+    small_instances1 = []
+
+    small_points2 = []
+    small_labels2 = []
+    small_instances2 = []
+
+    i = 0
+    while i < len(points):
+        if(points[i][0] < (start + ((end-start) / 2))):
+            small_points1.append(points[i])
+            small_labels1.append(labels[i])
+            small_instances1.append(instances[i])
+        else:
+            small_points2.append(points[i])
+            small_labels2.append(labels[i])
+            small_instances2.append(instances[i])
+
+        i = i + 1
+
+    small_points3 = []
+    small_labels3 = []
+    small_instances3 = []
+
+    small_points1, small_labels1, small_instances1 = upscale(small_points1, small_labels1, small_instances1)
+    small_points2, small_labels2, small_instances2 = upscale(small_points2, small_labels2, small_instances2)
+
+    small_points3.append(small_points1)
+    small_labels3.append(small_labels1)
+    small_instances3.append(small_instances1)
+    small_points3.append(small_points2)
+    small_labels3.append(small_labels2)
+    small_instances3.append(small_instances2)
+
+    return small_points3, small_labels3, small_instances3
+
+def create_two_y(points, labels, instances, start = 0, end = 768):
+    small_points1 = []
+    small_labels1 = []
+    small_instances1 = []
+
+    small_points2 = []
+    small_labels2 = []
+    small_instances2 = []
+
+    i = 0
+    while i < len(points):
+        if(points[i][1] < (start + ((end-start) / 2))):
+            small_points1.append(points[i])
+            small_labels1.append(labels[i])
+            small_instances1.append(instances[i])
+        else:
+            small_points2.append(points[i])
+            small_labels2.append(labels[i])
+            small_instances2.append(instances[i])
+
+        i = i + 1
+
+    small_points3 = []
+    small_labels3 = []
+    small_instances3 = []
+
+    small_points1, small_labels1, small_instances1 = upscale(small_points1, small_labels1, small_instances1)
+    small_points2, small_labels2, small_instances2 = upscale(small_points2, small_labels2, small_instances2)
+
+    small_points3.append(small_points1)
+    small_labels3.append(small_labels1)
+    small_instances3.append(small_instances1)
+    small_points3.append(small_points2)
+    small_labels3.append(small_labels2)
+    small_instances3.append(small_instances2)
+
+    return small_points3, small_labels3, small_instances3
+
+def downscale(points, labels, instances, x=True, depth = 1, left=True):
+    small_points = []
+    small_labels = []
+    small_instances = []
+
+    print("Before downscale: ", len(points))
+
+    if x == True:
+        if depth == 1 and left == True:
+            small_points1, small_labels1, small_instances1 = create_two_x(points, labels, instances)
+        elif depth == 2 and left == True:
+            small_points1, small_labels1, small_instances1 = create_two_x(points, labels, instances, 0,320)
+        elif depth == 2 and left == False:
+            small_points1, small_labels1, small_instances1 = create_two_x(points, labels, instances, 320,640)
+
+        print("After downscale X: ", len(small_points1[0]))
+        print("After downscale X: ", len(small_points1[1]))
+
+        if len(small_points1[0]) > NUM_POINTS:
+            small_points2, small_labels2, small_instances2 = downscale(small_points1[0], small_labels1[0], small_instances1[0], False,depth,True)
+            i = 0
+            while i < len(small_points2):
+                small_points.append(small_points2[i])
+                small_labels.append(small_labels2[i])
+                small_instances.append(small_instances2[i])
+                i = i +1
+        else:
+            small_points.append(small_points1[0])
+            small_labels.append(small_labels1[0])
+            small_instances.append(small_instances1[0])
+
+        
+        if len(small_points1[1]) > NUM_POINTS:
+            small_points2, small_labels2, small_instances2 = downscale(small_points1[1], small_labels1[1], small_instances1[1], False,depth,False)
+            i = 0
+            while i < len(small_points2):
+                small_points.append(small_points2[i])
+                small_labels.append(small_labels2[i])
+                small_instances.append(small_instances2[i])
+                i = i +1
+        else:
+            small_points.append(small_points1[1])
+            small_labels.append(small_labels1[1])
+            small_instances.append(small_instances1[1])
+    else:
+        small_points1, small_labels1, small_instances1 = create_two_y(points, labels, instances)
+        print("After downscale Y: ", len(small_points1[0]))
+        print("After downscale Y: ", len(small_points1[1]))
+
+        if len(small_points1[0]) > NUM_POINTS:
+            small_points2, small_labels2, small_instances2 = downscale(small_points1[0], small_labels1[0], small_instances1[0], True, depth+1,left)
+            i = 0
+            while i < len(small_points2):
+                small_points.append(small_points2[i])
+                small_labels.append(small_labels2[i])
+                small_instances.append(small_instances2[i])
+                i = i +1
+        else:     
+            small_points.append(small_points1[0])
+            small_labels.append(small_labels1[0])
+            small_instances.append(small_instances1[0])
+        
+        if len(small_points1[1]) > NUM_POINTS:
+            small_points2, small_labels2, small_instances2 = downscale(small_points1[1], small_labels1[1], small_instances1[1], True, depth+1,left)
+            i = 0
+            while i < len(small_points2):
+                small_points.append(small_points2[i])
+                small_labels.append(small_labels2[i])
+                small_instances.append(small_instances2[i])
+                i = i +1
+        else:     
+            small_points.append(small_points1[1])
+            small_labels.append(small_labels1[1])
+            small_instances.append(small_instances1[1])
+
+
+    return small_points, small_labels, small_instances
+
 
 class DVSDataset():
     def __init__(self, data_root, input_list_txt = 'none', npoints=16384, split='train', batchsize=24):
@@ -128,6 +282,7 @@ class DVSDataset():
         # parallel csv read...
         pool = Pool(processes=None)
         points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
+        #points, labels, instances = self.do_downscale(list(points), list(labels), list(instances))
         self.point_list = np.asarray(points)
         self.semantic_label_list = np.asarray(labels)
         self.instance_label_list = np.asarray(instances)
@@ -186,6 +341,36 @@ class DVSDataset():
 
     def get_length(self):
         return self.__len__()
+    
+    def do_downscale(self, points, labels, instances):
+        too_big_points = []
+        too_big_labels = []
+        too_big_instances = []
+
+        n=0
+
+        while n < len(points):
+            if(len(points[n]) > NUM_POINTS):
+                too_big_points.append(points.pop(n))
+                too_big_labels.append(labels.pop(n))
+                too_big_instances.append(instances.pop(n))
+            n = n + 1
+        print("Count to big: ", len(too_big_points))
+
+        n=0
+        while n < len(too_big_points):
+            small_points, small_labels, small_instances = downscale(too_big_points[n], too_big_labels[n],too_big_instances[n])
+            i=0
+            while i < len(small_points):
+                points.append(small_points[i])
+                labels.append(small_labels[i])
+                instances.append(small_instances[i])
+                i = i+1
+
+            n = n + 1
+
+        print("length after downscale: ", len(points))
+        return tuple(points), tuple(labels), tuple(instances)
 # ------------------------------------------------------------------------------
 if __name__ == '__main__':
 # ------------------------------------------------------------------------------
