@@ -386,10 +386,13 @@ class DVSDataset():
         print("Result: ", len(small_points), " Entry: ", len(small_points[0][0]))
         i=0
         while i < len(small_points):
-                good_points.append(small_points[i])
-                good_labels.append(small_labels[i])
-                good_instances.append(small_instances[i])
-                i = i+1
+            j=0
+            while j < len(small_points[i]):
+                good_points.append(small_points[i][j])
+                good_labels.append(small_labels[i][j])
+                good_instances.append(small_instances[i][j])
+                j = j+1
+            i = i+1
         # n=0
         # while n < len(too_big_points):
         #     print(n, " of ", len(too_big_points))
