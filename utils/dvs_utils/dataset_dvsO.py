@@ -346,6 +346,7 @@ class DVSDataset():
         n=0
 
         while n < len(points):
+            print("Length: ", len(points[n]), " Too big? ", (len(points[n]) > NUM_POINTS))
             if(len(points[n]) > NUM_POINTS):
                 too_big_points.append(points.pop(n))
                 too_big_labels.append(labels.pop(n))
