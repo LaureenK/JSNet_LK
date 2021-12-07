@@ -351,7 +351,7 @@ class DVSDataset():
             if(len(points[n]) > NUM_POINTS):
                 index.append(n)
             n = n + 1
-            
+
         n=0
         while n < len(index):
             too_big_points.append(points.pop(n))
@@ -359,7 +359,7 @@ class DVSDataset():
             too_big_instances.append(instances.pop(n))
             n = n + 1
         
-        print("Count to big: ", len(too_big_points))
+        print("Count to big: ", len(too_big_points), " Other: ", len(points))
 
         n=0
         while n < len(too_big_points):
