@@ -176,6 +176,7 @@ def create_two_y(points, labels, instances, start = 0, end = 768):
     return small_points3, small_labels3, small_instances3, top, down
 
 def downscale(points, labels, instances, x=True, depth = 1, left=True, top=True):
+    print("Length: ", len(points))
     small_points = []
     small_labels = []
     small_instances = []
