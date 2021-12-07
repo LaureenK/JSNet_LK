@@ -67,12 +67,13 @@ def upscale(points, labels, instances):
     # if len(points) > NUM_POINTS:
     #     raise RuntimeError("no matching config...!")
 
-    while len(points) != NUM_POINTS:
-        copy_index = random.randint(0, len(points)-1)
+    if len(points) < NUM_POINTS:
+        while len(points) != NUM_POINTS:
+            copy_index = random.randint(0, len(points)-1)
 
-        points = np.vstack((points, points[copy_index]))
-        labels = np.append(labels, labels[copy_index])
-        instances = np.append(instances, instances[copy_index])
+            points = np.vstack((points, points[copy_index]))
+            labels = np.append(labels, labels[copy_index])
+            instances = np.append(instances, instances[copy_index])
 
     return points, labels, instances
 
