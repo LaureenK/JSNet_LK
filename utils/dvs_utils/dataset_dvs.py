@@ -160,71 +160,53 @@ def create_two_y(points, labels, instances):
 
     return small_points3, small_labels3, small_instances3
 
-def downscale(points, labels, instances):
+def downscale(points, labels, instances, x=True):
     small_points = []
     small_labels = []
     small_instances = []
 
     print("Before downscale X: ", len(points))
-    small_points3, small_labels3, small_instances3 = create_two_x(points, labels, instances)
-    print("After downscale X: ", len(small_points3[0]))
-    print("After downscale X: ", len(small_points3[1]))
 
+    if x == True:
+        small_points1, small_labels1, small_instances1 = create_two_x(points, labels, instances)
+        print("After downscale X: ", len(small_points1[0]))
+        print("After downscale X: ", len(small_points1[1]))
 
-    if len(small_points3[0]) > NUM_POINTS:
-        print("Before downscale Y: ", len(small_points3[0]))
-        small_points1, small_labels1, small_instances1 = create_two_y(small_points3[0], small_labels3[0], small_instances3[0])
+        if len(small_points1[0]) > NUM_POINTS:
+            small_points2, small_labels2, small_instances2 = downscale(small_points1[0], small_labels1[0], small_instances1[0], False)
+            i = 0
+            while i < len(small_points2):
+                small_points.append(small_points2[i])
+                small_labels.append(small_labels2[i])
+                small_instances.append(small_instances2[i])
+                i = i +1
+        else:
+            i = 0
+            while i < len(small_points1):
+                small_points.append(small_points1[i])
+                small_labels.append(small_labels1[i])
+                small_instances.append(small_instances1[i])
+                i = i +1
+    else:
+        small_points1, small_labels1, small_instances1 = create_two_y(points, labels, instances)
         print("After downscale Y: ", len(small_points1[0]))
         print("After downscale Y: ", len(small_points1[1]))
 
-        if len(small_points1[0]) != NUM_POINTS:
-            raise RuntimeError("1 error downscale...! ", len(small_points1[0]) , " != ", NUM_POINTS)
+        if len(small_points1[0]) > NUM_POINTS:
+            small_points2, small_labels2, small_instances2 = downscale(small_points1[0], small_labels1[0], small_instances1[0], True)
+            i = 0
+            while i < len(small_points2):
+                small_points.append(small_points2[i])
+                small_labels.append(small_labels2[i])
+                small_instances.append(small_instances2[i])
+                i = i +1
         else:
-            small_points.append(small_points1[0])
-            small_labels.append(small_labels1[0])
-            small_instances.append(small_instances1[0])
-        if len(small_points1[1]) != NUM_POINTS:
-            raise RuntimeError("2 error downscale...!", len(small_points1[1]) , " != ", NUM_POINTS)
-        else:
-            small_points.append(small_points1[1])
-            small_labels.append(small_labels1[1])
-            small_instances.append(small_instances1[1])
-
-    elif len(small_points3[0]) != NUM_POINTS:
-        raise RuntimeError("3 error downscale...!")
-    else:
-        small_points.append(small_points3[0])
-        small_labels.append(small_labels3[0])
-        small_instances.append(small_instances3[0])
-    
-
-
-    if len(small_points3[1]) > NUM_POINTS:
-        print("Before downscale Y: ", len(small_points3[1]))
-        small_points1, small_labels1, small_instances1 = create_two_y(small_points3[1], small_labels3[1], small_instances3[1])
-        print("After downscale Y: ", len(small_points1[0]))
-        print("After downscale Y: ", len(small_points1[1]))
-
-        if len(small_points1[0]) != NUM_POINTS:
-            raise RuntimeError("4 error downscale...!", len(small_points1[0]) , " != ", NUM_POINTS)
-        else:
-            small_points.append(small_points1[0])
-            small_labels.append(small_labels1[0])
-            small_instances.append(small_instances1[0])
-        if len(small_points1[1]) != NUM_POINTS:
-            raise RuntimeError("5 error downscale...!", len(small_points1[1]) , " != ", NUM_POINTS)
-        else:
-            small_points.append(small_points1[1])
-            small_labels.append(small_labels1[1])
-            small_instances.append(small_instances1[1])
-
-
-    elif len(small_points3[1]) != NUM_POINTS:
-        raise RuntimeError("6 error downscale...!", len(small_points3[1]) , " != ", NUM_POINTS)
-    else:
-        small_points.append(small_points3[1])
-        small_labels.append(small_labels3[1])
-        small_instances.append(small_instances3[1])
+            i = 0
+            while i < len(small_points1):
+                small_points.append(small_points1[i])
+                small_labels.append(small_labels1[i])
+                small_instances.append(small_instances1[i])
+                i = i +1
 
     return small_points, small_labels, small_instances
 
