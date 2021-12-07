@@ -84,6 +84,62 @@ def load_and_upscale(path):
 
     return points, labels, instances
 
+def create_two_x(points, labels, instances):
+    small_points1 = []
+    small_labels1 = []
+    small_instances1 = []
+
+    small_points2 = []
+    small_labels2 = []
+    small_instances2 = []
+
+    i = 0
+    while i < len(points):
+        if(points[i][0] < 320):
+            small_points1.append(points[i])
+            small_labels1.append(labels[i])
+            small_instances1.append(instances[i])
+        else:
+            small_points2.append(points[i])
+            small_labels2.append(labels[i])
+            small_instances2.append(instances[i])
+
+        i = i + 1
+
+    small_points3 = []
+    small_labels3 = []
+    small_instances3 = []
+
+    small_points1, small_labels1, small_instances1 = upscale(small_points1, small_labels1, small_instances1)
+    small_points2, small_labels2, small_instances2 = upscale(small_points2, small_labels2, small_instances2)
+
+    small_points3.append(small_points1)
+    small_labels3.append(small_labels1)
+    small_instances3.append(small_instances1)
+    small_points3.append(small_points2)
+    small_labels3.append(small_labels2)
+    small_instances3.append(small_instances2)
+
+    return small_points3, small_labels3, small_instances3
+
+def create_two_y(points, labels, instances):
+    small_points = []
+    small_labels = []
+    small_instances = []
+
+    return points, labels, instances
+
+def downscale(points, labels, instances):
+    small_points = []
+    small_labels = []
+    small_instances = []
+
+    print("Downscale size before: ", len(points))
+    small_points3, small_labels3, small_instances3 = create_two_x(points, labels, instances)
+    print("Downscale size after 1: ", len(small_points3[0]))
+    print("Downscale size after 2: ", len(small_points3[1]))
+
+    return
 
 class DVSDataset():
     def __init__(self, data_root, input_list_txt = 'none', npoints=16384, split='train', batchsize=24):
@@ -155,7 +211,7 @@ class DVSDataset():
         too_big_instances = []
 
         n=0
-        print("File Length: ", len(points))
+
         while n < len(points):
             if(len(points[n]) > NUM_POINTS):
                 too_big_points.append(points.pop(n))
@@ -164,9 +220,12 @@ class DVSDataset():
             n = n + 1
         print("Count to big: ", len(too_big_points))
 
+        n=0
+        while n < len(too_big_points):
+            downscale(too_big_points[n], too_big_labels[n],too_big_instances[n])
+            n = n + 1
+
         return points, labels, instances
-
-
 
     def __getitem__(self, index):
         return self.point_list[index], \
