@@ -357,26 +357,19 @@ class DVSDataset():
                 good_instances.append(instances[n])
             n = n + 1
 
-        # n=0
-        # while n < len(index):
-        #     too_big_points.append(points.pop(n))
-        #     too_big_labels.append(labels.pop(n))
-        #     too_big_instances.append(instances.pop(n))
-        #     n = n + 1
-        
         print("Count to big: ", len(too_big_points), " Other: ", len(good_points))
 
-        # n=0
-        # while n < len(too_big_points):
-        #     small_points, small_labels, small_instances = downscale(too_big_points[n], too_big_labels[n],too_big_instances[n])
-        #     i=0
-        #     while i < len(small_points):
-        #         points.append(small_points[i])
-        #         labels.append(small_labels[i])
-        #         instances.append(small_instances[i])
-        #         i = i+1
+        n=0
+        while n < len(too_big_points):
+            small_points, small_labels, small_instances = downscale(too_big_points[n], too_big_labels[n],too_big_instances[n])
+            i=0
+            while i < len(small_points):
+                good_points.append(small_points[i])
+                good_labels.append(small_labels[i])
+                good_instances.append(small_instances[i])
+                i = i+1
 
-        #     n = n + 1
+            n = n + 1
 
         print("length after downscale: ", len(good_points))
         return good_points, good_labels, good_instances
