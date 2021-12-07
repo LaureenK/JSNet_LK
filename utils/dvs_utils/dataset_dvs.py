@@ -370,7 +370,6 @@ class DVSDataset():
         good_points = []
         good_labels = []
         good_instances = []
-        index = []
 
         n=0
         while n < len(points):
@@ -384,8 +383,10 @@ class DVSDataset():
                 good_instances.append(instances[n])
             n = n + 1
 
+        print("Files too big: ", len(too_big_points), " Other: ", len(good_points))
         n=0
         while n < len(too_big_points):
+            print(n, " of ", len(too_big_points))
             small_points, small_labels, small_instances = downscale(too_big_points[n], too_big_labels[n],too_big_instances[n])
             i=0
             while i < len(small_points):
