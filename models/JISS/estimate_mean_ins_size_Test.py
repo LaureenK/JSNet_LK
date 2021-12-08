@@ -29,7 +29,8 @@ FLAGS = parser.parse_args()
 def estimate(flags):
     num_classes = flags.num_cls
     if flags.dataset == 'DVS':
-        train_file_list = glob.glob(os.path.join(DATASET_TRAIN_DIR, "*.csv"))
+        #train_file_list = glob.glob(os.path.join(DATASET_TRAIN_DIR, "*.csv"))
+        train_file_list = [["/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/combined_1198.csv"],["/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/combined_2559.csv"]]
     else:
         print("Error: Not support the dataset: ", flags.dataset)
         return
@@ -46,8 +47,11 @@ def estimate(flags):
         # print("cur_sem Shape: ", cur_sem.shape)
 
         un = np.unique(cur_group)
+        print("Unique: ", un)
         for ig, g in enumerate(un):
+            print("IG: ", ig, " g: ", g)
             tmp = (cur_group == g)
+            print("tmp: ", tmp)
             sem_seg_g = int(stats.mode(cur_sem[tmp])[0])
             ptsnum_in_gt[sem_seg_g].append(np.sum(tmp))
 
