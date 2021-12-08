@@ -47,11 +47,11 @@ def estimate(flags):
         # print("cur_sem Shape: ", cur_sem.shape)
 
         un = np.unique(cur_group)
-        print("Unique: ", un)
+        #print("Unique: ", un)
         for ig, g in enumerate(un):
-            print("IG: ", ig, " g: ", g)
+            #print("IG: ", ig, " g: ", g)
             tmp = (cur_group == g)
-            print("tmp: ", tmp)
+            #print("tmp: ", tmp)
             sem_seg_g = int(stats.mode(cur_sem[tmp])[0])
             ptsnum_in_gt[sem_seg_g].append(np.sum(tmp))
 
