@@ -57,7 +57,10 @@ def estimate(flags):
             sem_seg_g = int(stats.mode(cur_sem[tmp])[0])
             ptsnum_in_gt[sem_seg_g].append(np.sum(tmp))
 
-    print("What: ", ptsnum_in_gt)
+    print("What: ", ptsnum_in_gt[0])
+    print("What: ", ptsnum_in_gt[1])
+    print("What: ", ptsnum_in_gt[2])
+    print("What: ", ptsnum_in_gt[3])
 
     for idx in range(num_classes):
         mean_ins_size[idx] = np.mean(ptsnum_in_gt[idx]).astype(np.int)
