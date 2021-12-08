@@ -1,6 +1,15 @@
 import numpy as np
 import h5py
 
+NUM_CLASSES = 4
+
+CLASS_MAPPING = {
+    1: 0,  # original PERSON(1) --> 0
+    2: 1,  # original DOG(2) --> 1
+    5: 2,  # original BICYCLE(5) --> 2
+    6: 3,  # original SPORTSBALL(6) --> 3
+}
+
 # BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # sys.path.append(BASE_DIR)
 #
@@ -15,6 +24,10 @@ import h5py
 #     os.system('mv %s %s' % (zipfile[:-4], DATA_DIR))
 #     os.system('rm %s' % (zipfile))
 
+def unison_shuffled_copies(a, b, c):
+    assert len(a) == len(b) == len(c)
+    p = np.random.permutation(len(a))
+    return a[p], b[p], c[p]
 
 def shuffle_data(data, labels, ins_label=None):
     """ Shuffle data and labels.
@@ -231,7 +244,7 @@ def loadDataFile_with_groupseglabel_nuyv2(filename):
     boxes = f['bbox'][:]
     return data, group, cate, seg, boxes
 
-
+#hier
 def loadDataFile_with_groupseglabel_stanfordindoor(filename):
 
     f = h5py.File(filename, 'r')
@@ -256,3 +269,34 @@ def loadDataFile_with_img(filename):
     seg = f['seglabel'][:]
     img = f['img'][:].transpose([2, 1, 0])
     return data, group, seg, img
+
+#NEU
+def loadData_DVS(fname):
+    points = []
+    labels = []
+    instances = []
+
+    with open(fname, 'r') as fd:
+        for line in fd.readlines():
+            if "//" in line:
+                continue
+
+            x, y, t, pol, class_label, instance_label = line.strip().split(' ')
+            x, y, t, pol, class_label, instance_label = float(x), float(y), float(t), int(pol), int(class_label), int(instance_label)
+
+            class_label = CLASS_MAPPING[class_label]
+            if class_label not in range(NUM_CLASSES):
+                raise ValueError("unknown label!")
+
+            points.append(np.array([x, y, t], dtype=np.float32))
+            labels.append(class_label)
+            instances.append(instance_label)
+    #shuffle data
+
+    npPoints = np.array(points, dtype=np.float32)
+    npSeg = np.array(labels, dtype=np.uint8)
+    npIns = np.array(instances, dtype=np.uint8)
+
+    npPoints, npSeg, npIns = unison_shuffled_copies(npPoints, npSeg, npIns)
+ 
+    return npPoints, npSeg, npIns

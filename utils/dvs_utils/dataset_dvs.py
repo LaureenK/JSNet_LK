@@ -36,7 +36,6 @@ def load_ascii_cloud(fname):
     points = []
     labels = []
     instances = []
-    newdata = np.zeros((1,5))
 
     with open(fname, 'r') as fd:
         for line in fd.readlines():
