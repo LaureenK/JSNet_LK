@@ -39,10 +39,11 @@ def estimate(flags):
 
     for dvs_filename in train_file_list:
         print(dvs_filename)
-        cur_data, cur_group, _, cur_sem = provider.loadDataFile_with_groupseglabel_stanfordindoor(dvs_filename)
-        cur_data = np.reshape(cur_data, [-1, cur_data.shape[-1]])
-        cur_group = np.reshape(cur_group, [-1])
-        cur_sem = np.reshape(cur_sem, [-1])
+        cur_data, cur_group, cur_sem = provider.loadData_DVS(dvs_filename)
+
+        print("Cur_Data Shape: ", cur_data.shape)
+        print("cur_group Shape: ", cur_group.shape)
+        print("cur_sem Shape: ", cur_sem.shape)
 
         un = np.unique(cur_group)
         for ig, g in enumerate(un):

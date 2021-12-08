@@ -35,11 +35,7 @@ def estimate(flags):
     for h5_filename in train_file_list:
         print(h5_filename)
         cur_data, cur_group, _, cur_sem = provider.loadDataFile_with_groupseglabel_stanfordindoor(h5_filename)
-        print("Cur_Data Shape: ", cur_data.shape)
-        print("cur_group Shape: ", cur_group.shape)
-        print("Group: " , cur_group[0])
-        print("cur_sem Shape: ", cur_sem.shape)
-        print("Sem: " , cur_sem[0])
+     
         cur_data = np.reshape(cur_data, [-1, cur_data.shape[-1]])
         cur_group = np.reshape(cur_group, [-1])
         cur_sem = np.reshape(cur_sem, [-1])

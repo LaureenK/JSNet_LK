@@ -299,4 +299,4 @@ def loadData_DVS(fname):
 
     npPoints, npSeg, npIns = unison_shuffled_copies(npPoints, npSeg, npIns)
  
-    return npPoints, npSeg, npIns
+    return npPoints,npIns, npSeg
