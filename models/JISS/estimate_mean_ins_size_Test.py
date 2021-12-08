@@ -61,6 +61,7 @@ def estimate(flags):
         mean_ins_size[idx] = np.mean(ptsnum_in_gt[idx]).astype(np.int)
 
     print("Meansize: ",mean_ins_size)
+    os.remove(os.path.join(flags.out_dir, 'mean_ins_size.txt'))
     np.savetxt(os.path.join(flags.out_dir, 'mean_ins_size.txt'), mean_ins_size)
 
 
