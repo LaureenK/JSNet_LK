@@ -40,13 +40,16 @@ def estimate(flags):
         cur_group = np.reshape(cur_group, [-1])
         cur_sem = np.reshape(cur_sem, [-1])
 
-        print("Cur_Data Shape: ", cur_data.shape)
-        print("cur_group Shape: ", cur_group.shape)
-        print("cur_sem Shape: ", cur_sem.shape)
+        # print("Cur_Data Shape: ", cur_data.shape)
+        # print("cur_group Shape: ", cur_group.shape)
+        # print("cur_sem Shape: ", cur_sem.shape)
 
         un = np.unique(cur_group)
+        print("Unique: ", un)
         for ig, g in enumerate(un):
+            print("IG: ", ig, " g: ", g)
             tmp = (cur_group == g)
+            print("tmp: ", tmp)
             sem_seg_g = int(stats.mode(cur_sem[tmp])[0])
             ptsnum_in_gt[sem_seg_g].append(np.sum(tmp))
 
