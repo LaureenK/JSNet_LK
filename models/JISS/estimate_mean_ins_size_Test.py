@@ -37,6 +37,8 @@ def estimate(flags):
 
     mean_ins_size = np.zeros(num_classes)
     ptsnum_in_gt = [[] for itmp in range(num_classes)]
+    print("What: ", type(ptsnum_in_gt))
+    print("What: ", ptsnum_in_gt)
 
     for dvs_filename in train_file_list:
         print(dvs_filename)
