@@ -25,23 +25,21 @@ parser.add_argument('--num_cls', type=int, default=4, help='estimate the mean in
 parser.add_argument('--out_dir', type=str, default='log5', help='log dir to save mean instance size [model path]')
 FLAGS = parser.parse_args()
 
-
+#count points for class and calculate mean size
 def estimate(flags):
     num_classes = flags.num_cls
     if flags.dataset == 'DVS':
-        #train_file_list = glob.glob(os.path.join(DATASET_TRAIN_DIR, "*.csv"))
-        train_file_list = ["/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/combined_1.csv","/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/combined_2559.csv"]
+        train_file_list = glob.glob(os.path.join(DATASET_TRAIN_DIR, "*.csv"))
+        #train_file_list = ["/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/combined_1.csv","/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/combined_2559.csv"]
     else:
         print("Error: Not support the dataset: ", flags.dataset)
         return
 
     mean_ins_size = np.zeros(num_classes)
     ptsnum_in_gt = [[] for itmp in range(num_classes)]
-    print("What: ", type(ptsnum_in_gt))
-    print("What: ", ptsnum_in_gt)
 
     for dvs_filename in train_file_list:
-        print(dvs_filename)
+        #print(dvs_filename)
         cur_data, cur_group, cur_sem = provider.loadData_DVS(dvs_filename)
 
         # print("Cur_Data Shape: ", cur_data.shape)
@@ -49,18 +47,15 @@ def estimate(flags):
         # print("cur_sem Shape: ", cur_sem.shape)
 
         un = np.unique(cur_group)
-        #print("Unique: ", un)
         for ig, g in enumerate(un):
-            #print("IG: ", ig, " g: ", g)
             tmp = (cur_group == g)
-            #print("tmp: ", tmp)
             sem_seg_g = int(stats.mode(cur_sem[tmp])[0])
             ptsnum_in_gt[sem_seg_g].append(np.sum(tmp))
 
-    print("What: ", ptsnum_in_gt[0])
-    print("What: ", ptsnum_in_gt[1])
-    print("What: ", ptsnum_in_gt[2])
-    print("What: ", ptsnum_in_gt[3])
+    # print("What: ", ptsnum_in_gt[0])
+    # print("What: ", ptsnum_in_gt[1])
+    # print("What: ", ptsnum_in_gt[2])
+    # print("What: ", ptsnum_in_gt[3])
 
     for idx in range(num_classes):
         mean_ins_size[idx] = np.mean(ptsnum_in_gt[idx]).astype(np.int)
