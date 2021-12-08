@@ -30,7 +30,7 @@ def estimate(flags):
     num_classes = flags.num_cls
     if flags.dataset == 'DVS':
         #train_file_list = glob.glob(os.path.join(DATASET_TRAIN_DIR, "*.csv"))
-        train_file_list = ["/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/combined_1198.csv","/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/combined_2559.csv"]
+        train_file_list = ["/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/combined_1.csv","/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/combined_2559.csv"]
     else:
         print("Error: Not support the dataset: ", flags.dataset)
         return
