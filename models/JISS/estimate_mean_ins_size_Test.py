@@ -62,7 +62,7 @@ def estimate(flags):
 
     print("Meansize: ",mean_ins_size)
     os.remove(os.path.join(flags.out_dir, 'mean_ins_size.txt'))
-    np.savetxt(os.path.join(flags.out_dir, 'mean_ins_size.txt'), mean_ins_size)
+    np.savetxt(os.path.join(flags.out_dir, 'mean_ins_size.txt'), mean_ins_size, fmt='%d')
 
 
 if __name__ == "__main__":
