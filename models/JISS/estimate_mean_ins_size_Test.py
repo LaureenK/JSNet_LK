@@ -41,9 +41,9 @@ def estimate(flags):
         print(dvs_filename)
         cur_data, cur_group, cur_sem = provider.loadData_DVS(dvs_filename)
 
-        print("Cur_Data Shape: ", cur_data.shape)
-        print("cur_group Shape: ", cur_group.shape)
-        print("cur_sem Shape: ", cur_sem.shape)
+        # print("Cur_Data Shape: ", cur_data.shape)
+        # print("cur_group Shape: ", cur_group.shape)
+        # print("cur_sem Shape: ", cur_sem.shape)
 
         un = np.unique(cur_group)
         for ig, g in enumerate(un):
