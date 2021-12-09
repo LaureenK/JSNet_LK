@@ -136,9 +136,6 @@ def test():
             logger.info('%d / %d ...' % (shape_idx, len_pts_files))
             logger.info('Loading file ' + room_path)
 
-            print('%d / %d ...' % (shape_idx, len_pts_files))
-            print('Loading file ' + room_path)
-
             size_path = room_path
             if FILE_TYPE == 'hdf5':
                 size_path = size_path.replace('indoor3d_ins_seg_hdf5', 'stanford_indoor3d_ins.sem')
@@ -195,7 +192,6 @@ def test():
             num_data = cur_data.shape[0]
             for j in range(num_data):
                 logger.info("Processsing: Shape [%d] Block[%d]" % (shape_idx, j))
-                print("Processsing: Shape [%d] Block[%d]" % (shape_idx, j))
 
                 pts = cur_data[j, ...]
                 group = cur_group[j]
@@ -232,8 +228,8 @@ def test():
                 group_output[j, :] = groupids
                 total_acc += float(np.sum(pred_sem == sem)) / pred_sem.shape[0]
                 total_seen += 1
-            print("Group_pred: ", group_pred.shape, " seg_pred: ", seg_pred.shape, " seg_pred_softmax: ",  seg_pred_softmax.shape)
-            print("pts (cur_data): ", pts.shape)
+            print("Group_pred: ", group_output.shape, " seg_pred: ", cur_pred_sem.shape, " seg_pred_softmax: ",  cur_pred_sem_softmax)
+            print("pts (cur_data): ",cur_data.shape)
             group_pred = group_output.reshape(-1)
             seg_pred = cur_pred_sem.reshape(-1)
             seg_pred_softmax = cur_pred_sem_softmax.reshape([-1, NUM_CLASSES])
