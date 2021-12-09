@@ -282,7 +282,9 @@ class DVSDataset():
             elif(split == 'validation'): 
                 self.files_to_use = glob.glob(os.path.join(DATASET_VALIDATION_DIR, "*.csv"))
             elif(split == 'test'):
-                self.files_to_use = glob.glob(os.path.join(DATASET_TEST_DIR, "*.csv"))
+                #self.files_to_use = glob.glob(os.path.join(DATASET_TEST_DIR, "*.csv"))
+                self.files_to_use = []
+                self.files_to_use.append(input_list_txt)
         else:
             self.input_list_txt = input_list_txt
             self.files_to_use = self.get_input_list()
@@ -329,7 +331,11 @@ class DVSDataset():
         return self.point_list[index], \
                self.semantic_label_list[index].astype(np.int32), \
                self.labelweights[self.semantic_label_list[0].astype(np.int32)]
-               
+
+    def get_all(self):
+        print("Points: ", self.point_list.shape, " Sem: ", self.semantic_label_list.shape, " Ins: ", self.instance_label_list.shape)
+        return self.point_list, self.semantic_label_list, self.instance_label_list
+
     def get_batch(self, data_aug=False):
 
         points = self.point_list[(self.batch_count*self.batchsize):((self.batch_count+1)*self.batchsize)][:][:]

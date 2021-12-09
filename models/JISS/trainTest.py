@@ -21,7 +21,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--gpu', type=int, default=0, help='GPU to use [default: GPU 0]')
 parser.add_argument('--num_works', type=int, default=8, help='Loading data thread [default: 8]')
 parser.add_argument('--data_root', default='data', help='data dir [default: data]')
-parser.add_argument('--data_type', default='csv', help='data type: numpy or csv [default: ncsv]')                  #changed
+parser.add_argument('--data_type', default='csv', help='data type: numpy or csv [default: csv]')                  #changed
 parser.add_argument('--log_dir', default='logs', help='Log dir [default: logs]')
 parser.add_argument('--num_point', type=int, default=16384, help='Point number [default: 65536]')                   #changed
 parser.add_argument('--start_epoch', type=int, default=0, help='Epoch to run [default: 50]')
@@ -59,7 +59,7 @@ LOG_DIR = FLAGS.log_dir
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
-MAX_NUM_POINT = 65536   #changed
+MAX_NUM_POINT = 16384   #changed
 NUM_CLASSES = 4        #changed
 
 BN_INIT_DECAY = 0.5

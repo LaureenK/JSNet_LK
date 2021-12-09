@@ -77,7 +77,8 @@ elif FILE_TYPE == 'numpy':
 else:
     raise Exception('Not support file type')
 
-ROOM_PATH_LIST = [os.path.join(ROOT_DIR, line.rstrip()) for line in open(os.path.join(ROOT_DIR, FLAGS.input_list))]
+#ROOM_PATH_LIST = [os.path.join(ROOT_DIR, line.rstrip()) for line in open(os.path.join(ROOT_DIR, FLAGS.input_list))]
+ROOM_PATH_LIST = ["data/indoor3d_ins_seg_hdf5/Area_1_hallway_1.h5"]
 len_pts_files = len(ROOM_PATH_LIST)
 
 
@@ -135,12 +136,16 @@ def test():
             logger.info('%d / %d ...' % (shape_idx, len_pts_files))
             logger.info('Loading file ' + room_path)
 
+            print('%d / %d ...' % (shape_idx, len_pts_files))
+            print('Loading file ' + room_path)
+
             size_path = room_path
             if FILE_TYPE == 'hdf5':
                 size_path = size_path.replace('indoor3d_ins_seg_hdf5', 'stanford_indoor3d_ins.sem')
                 size_path = "{}.npy".format(size_path[:-3])
                 cur_data, cur_group, _, cur_sem = \
                     provider.loadDataFile_with_groupseglabel_stanfordindoor(room_path)
+                print("Data: ", cur_data.shape, " Sem: ", cur_sem.shape, " Group: ", cur_group.shape)
             elif FILE_TYPE == 'numpy':
                 cur_data, cur_sem, cur_group = \
                     indoor3d_util.room2blocks_wrapper_normalized(room_path, NUM_POINT, block_size=1.0, stride=0.5,
@@ -148,6 +153,7 @@ def test():
             cur_data = cur_data[:, 0:NUM_POINT, :]
             cur_sem = np.squeeze(cur_sem)
             cur_group = np.squeeze(cur_group)
+            print("Data: ", cur_data.shape, " Sem: ", cur_sem.shape, " Group: ", cur_group.shape)
             # Get room dimension..
             data_label = np.load(size_path)
             data = data_label[:, 0:6]
@@ -167,6 +173,7 @@ def test():
             num_data = cur_data.shape[0]
             for j in range(num_data):
                 logger.info("Processsing: Shape [%d] Block[%d]" % (shape_idx, j))
+                print("Processsing: Shape [%d] Block[%d]" % (shape_idx, j))
 
                 pts = cur_data[j, ...]
                 group = cur_group[j]
@@ -203,12 +210,16 @@ def test():
                 group_output[j, :] = groupids
                 total_acc += float(np.sum(pred_sem == sem)) / pred_sem.shape[0]
                 total_seen += 1
-
+            print("Group_pred: ", group_pred.shape, " seg_pred: ", seg_pred.shape, " seg_pred_softmax: ",  seg_pred_softmax.shape)
+            print("pts (cur_data): ", pts.shape)
             group_pred = group_output.reshape(-1)
             seg_pred = cur_pred_sem.reshape(-1)
             seg_pred_softmax = cur_pred_sem_softmax.reshape([-1, NUM_CLASSES])
             pts = cur_data.reshape([-1, 9])
 
+            print("Group_pred: ", group_pred.shape, " seg_pred: ", seg_pred.shape, " seg_pred_softmax: ",  seg_pred_softmax.shape)
+            print("pts (cur_data): ", pts.shape)
+            
             # filtering
             x = (pts[:, 6] / gap).astype(np.int32)
             y = (pts[:, 7] / gap).astype(np.int32)
