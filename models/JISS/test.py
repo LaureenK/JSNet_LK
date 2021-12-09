@@ -170,7 +170,7 @@ def test():
                 # print("X SHape: ", block[:,0].shape)
                 # print("Y SHape: ", block[:,1].shape)
                 # print("Z SHape: ", block[:,2].shape)
-                print("First row: ", block[0,:])
+                #print("First row: ", block[0,:])
                 max_x = max(block[:,0])
                 max_y = max(block[:,1])
                 max_z = max(block[:,2])
@@ -189,6 +189,7 @@ def test():
             cur_pred_sem_softmax = np.zeros([cur_sem.shape[0], cur_sem.shape[1], NUM_CLASSES])
             group_output = np.zeros_like(cur_group)
 
+            #??? 0.005
             gap = 5e-3
             volume_num = int(1. / gap) + 1
             volume = -1 * np.ones([volume_num, volume_num, volume_num]).astype(np.int32)
