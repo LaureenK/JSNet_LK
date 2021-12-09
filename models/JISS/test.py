@@ -167,9 +167,9 @@ def test():
             while i < cur_data.shape[0]:
                 block = cur_data[i]
                 print("Block Shape: ", block.shape)
-                print("X SHape: ", block[:][0].shape)
-                print("Y SHape: ", block[:][1].shape)
-                print("Z SHape: ", block[:][2].shape)
+                print("X SHape: ", block[:][0:0].shape)
+                print("Y SHape: ", block[:][1:1].shape)
+                print("Z SHape: ", block[:][2:2].shape)
                 max_x = max(block[0])
                 max_y = max(block[1])
                 max_z = max(block[2])
