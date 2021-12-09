@@ -228,20 +228,23 @@ def test():
                 group_output[j, :] = groupids
                 total_acc += float(np.sum(pred_sem == sem)) / pred_sem.shape[0]
                 total_seen += 1
-            print("Group_pred: ", group_output.shape, " seg_pred: ", cur_pred_sem.shape, " seg_pred_softmax: ",  cur_pred_sem_softmax)
-            print("pts (cur_data): ",cur_data.shape)
+            # print("Group_pred: ", group_output.shape, " seg_pred: ", cur_pred_sem.shape, " seg_pred_softmax: ",  cur_pred_sem_softmax)
+            # print("pts (cur_data): ",cur_data.shape)
             group_pred = group_output.reshape(-1)
             seg_pred = cur_pred_sem.reshape(-1)
             seg_pred_softmax = cur_pred_sem_softmax.reshape([-1, NUM_CLASSES])
             pts = cur_data.reshape([-1, 9])
 
-            print("Group_pred: ", group_pred.shape, " seg_pred: ", seg_pred.shape, " seg_pred_softmax: ",  seg_pred_softmax.shape)
-            print("pts (cur_data): ", pts.shape)
+            # print("Group_pred: ", group_pred.shape, " seg_pred: ", seg_pred.shape, " seg_pred_softmax: ",  seg_pred_softmax.shape)
+            # print("pts (cur_data): ", pts.shape)
 
             # filtering
             x = (pts[:, 6] / gap).astype(np.int32)
             y = (pts[:, 7] / gap).astype(np.int32)
             z = (pts[:, 8] / gap).astype(np.int32)
+            print("X Shape: ", x.shape, " X Values: ", x)
+            print("Y Shape: ", y.shape, " Y Values: ", y)
+            print("Z Shape: ", z.shape, " Z Values: ", z)
             for i in range(group_pred.shape[0]):
                 if volume[x[i], y[i], z[i]] != -1:
                     group_pred[i] = volume[x[i], y[i], z[i]]
