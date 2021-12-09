@@ -179,6 +179,7 @@ def test():
                     max_room_y = max_y
                 if max_z > max_room_z:
                     max_room_z = max_z
+                i = i +1
 
             print("Max_X: ", max_room_x, " Max_y: ", max_room_y, " Max_z: ", max_room_z)
 
