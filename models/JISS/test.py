@@ -13,7 +13,7 @@ sys.path.append(BASE_DIR)
 sys.path.append(ROOT_DIR)
 sys.path.append(os.path.join(ROOT_DIR, 'utils'))
 
-from model import *
+from modelOriginal import *
 from test_utils import *
 from log_util import get_logger
 from clustering import cluster
@@ -219,7 +219,7 @@ def test():
 
             print("Group_pred: ", group_pred.shape, " seg_pred: ", seg_pred.shape, " seg_pred_softmax: ",  seg_pred_softmax.shape)
             print("pts (cur_data): ", pts.shape)
-            
+
             # filtering
             x = (pts[:, 6] / gap).astype(np.int32)
             y = (pts[:, 7] / gap).astype(np.int32)
