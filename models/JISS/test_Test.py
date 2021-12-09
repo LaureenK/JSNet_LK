@@ -150,12 +150,19 @@ def test():
             cur_data = cur_data[:, 0:NUM_POINT, :]
             cur_sem = np.squeeze(cur_sem)
             cur_group = np.squeeze(cur_group)
+            
+            
             # Get room dimension..
-            data_label = np.load(size_path)
-            data = data_label[:, 0:6]
-            max_room_x = max(data[:, 0])
-            max_room_y = max(data[:, 1])
-            max_room_z = max(data[:, 2])
+            #??
+            #data_label = np.load(size_path)
+            #data = data_label[:, 0:6]
+            # max_room_x = max(data[:, 0])
+            # max_room_y = max(data[:, 1])
+            # max_room_z = max(data[:, 2])
+
+            max_room_x = 640
+            max_room_y = 768
+            max_room_z = 60
 
             cur_pred_sem = np.zeros_like(cur_sem)
             cur_pred_sem_softmax = np.zeros([cur_sem.shape[0], cur_sem.shape[1], NUM_CLASSES])

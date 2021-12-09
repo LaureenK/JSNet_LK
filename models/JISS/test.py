@@ -154,12 +154,33 @@ def test():
             cur_sem = np.squeeze(cur_sem)
             cur_group = np.squeeze(cur_group)
             print("Data: ", cur_data.shape, " Sem: ", cur_sem.shape, " Group: ", cur_group.shape)
+            
             # Get room dimension..
-            data_label = np.load(size_path)
-            data = data_label[:, 0:6]
-            max_room_x = max(data[:, 0])
-            max_room_y = max(data[:, 1])
-            max_room_z = max(data[:, 2])
+            #no numpy??
+            # data_label = np.load(size_path)
+            # data = data_label[:, 0:6]
+            # max_room_x = max(data[:, 0])
+            # max_room_y = max(data[:, 1])
+            # max_room_z = max(data[:, 2])
+            max_room_x = 0
+            max_room_y = 0
+            max_room_z = 0
+
+            i = 0
+            while i < cur_data.shape[0]:
+                block = cur_data[i]
+                max_x = max(block[0])
+                max_y = max(block[1])
+                max_z = max(block[2])
+                
+                if max_x > max_room_x:
+                    max_room_x = max_x
+                if max_y > max_room_y:
+                    max_room_y = max_y
+                if max_z > max_room_z:
+                    max_room_z = max_z
+
+            print("Max_X: ", max_room_x, " Max_y: ", max_room_y, " Max_z: ", max_room_z)
 
             cur_pred_sem = np.zeros_like(cur_sem)
             cur_pred_sem_softmax = np.zeros([cur_sem.shape[0], cur_sem.shape[1], NUM_CLASSES])
