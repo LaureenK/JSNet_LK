@@ -210,6 +210,7 @@ def train():
 
 def train_one_epoch(sess, ops, train_writer, dataset, epoch):
     """ ops: dict mapping from string to tf ops """
+    print("#### Start Epoch ", epoch, " ####")
     is_training = True
     file_size = dataset.get_length()
     num_batches = file_size // BATCH_SIZE
@@ -258,8 +259,8 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
     if(loss_sum == 0):
         logger.info('mean loss: %f' % (loss_sum))
     else:
-        logger.info('mean loss: %f' % (loss_sum / float(num_batches)))
-        logger.info('Semantic mean accuracy: %f' % ((acc_sum / float(num_batches))*100))
+        logger.info('mean loss: %.2f' % (loss_sum / float(num_batches)))
+        logger.info('Semantic mean accuracy: %.2f' % ((acc_sum / float(num_batches))*100))
 
 
 if __name__ == "__main__":
