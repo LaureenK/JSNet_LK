@@ -232,16 +232,16 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
             [ops['pred_ins'], ops['pred_sem_label'], ops['merged'], ops['step'], ops['learning_rate'], ops['train_op'], ops['loss'], ops['sem_loss'],
              ops['disc_loss'], ops['l_var'], ops['l_dist']], feed_dict=feed_dict)
         
-        print("Pred_ins_val: ", pred_ins_val[0,0,:], " pred_sem_label_val: ", pred_sem_label_val[0,0])
+        #print("Pred_ins_val: ", pred_ins_val[0,0,:], " pred_sem_label_val: ", pred_sem_label_val[0,0])
         
         i = 0
         while i < BATCH_SIZE:
             block1 = pred_sem_label_val[i]
             block2 = current_sem[i]
-            print("block1: ", block1.shape, " Block2: ", block2.shape)
+            #print("block1: ", block1.shape, " Block2: ", block2.shape)
 
             right_pred = np.count_nonzero(block1==block2)
-            print("Right: ", right_pred, " from: 16384 accuracy: ", float((right_pred/(NUM_POINT) * 100)))
+            #print("Right: ", right_pred, " from: 16384 accuracy: ", float((right_pred/(NUM_POINT) * 100)))
             i = i+1
 
         acc_sum += float((right_pred/(NUM_POINT)))
