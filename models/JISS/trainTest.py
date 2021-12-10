@@ -2,8 +2,10 @@ import argparse
 import os
 import socket
 import sys
+import numpy as np
 
 import tensorflow as tf
+from utils.dvs_utils.dataset_dvs import NUM_POINTS
 tf.logging.set_verbosity(tf.logging.ERROR)
 
 CURR_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -37,7 +39,7 @@ parser.add_argument('--input_list', type=str, default='data/train_csv_dvs.txt',
 parser.add_argument('--restore_model', type=str, default='log/', help='Pretrained model')
 FLAGS = parser.parse_args()
 
-BATCH_SIZE = FLAGS.batch_size                   #8000
+BATCH_SIZE = FLAGS.batch_size                   #16
 NUM_WORKS = FLAGS.num_works                     #8
 NUM_POINT = FLAGS.num_point                     #16384
 DATA_TYPE = FLAGS.data_type                     #csv
@@ -214,6 +216,7 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
     num_batches = file_size // BATCH_SIZE
 
     loss_sum = 0
+    acc_sum = 0.0
 
     max_epoch_len = len(str(MAX_EPOCH))
     num_batches_len = len(str(num_batches))
@@ -232,26 +235,31 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
         
         print("Pred_ins_val: ", pred_ins_val[0,0,:], " pred_sem_label_val: ", pred_sem_label_val[0,0])
         
+        i = 0
+        while i < BATCH_SIZE:
+            block1 = pred_sem_label_val[i]
+            block2 = current_sem[i]
+            print("block1: ", block1.shape, " Block2: ", block2.shape)
+
+            right_pred = np.count_nonzero(block1==block2)
+            print("Right: ", right_pred, " from: 16384 accuracy: ", float((right_pred/(BATCH_SIZE*NUM_POINTS) * 100)))
+
+        acc_sum += float((right_pred/(BATCH_SIZE*NUM_POINTS)))
         train_writer.add_summary(summary, step)
         loss_sum += loss_val
 
-        logger_info = "epoch: {1:0{0}d}/{2}; batch_num: {4:0{3}d}/{5}; lr_rate: {6:.6f}; loss: {7:.2f}; " \
+        if batch_idx % 50 == 0 and batch_idx:
+            logger_info = "epoch: {1:0{0}d}/{2}; batch_num: {4:0{3}d}/{5}; lr_rate: {6:.6f}; loss: {7:.2f}; " \
                           "sem_loss: {8:.2f}; disc_loss: {9:.2f}; l_var: {10:.2f}; l_dist: {11:.2f};"
 
-        logger.info(logger_info.format(max_epoch_len, epoch, MAX_EPOCH, num_batches_len, batch_idx, num_batches,
+            logger.info(logger_info.format(max_epoch_len, epoch, MAX_EPOCH, num_batches_len, batch_idx, num_batches,
                                            lr_rate, loss_val, sem_loss_val, disc_loss_val, l_var_val, l_dist_val))
-
-        # if batch_idx % 50 == 0 and batch_idx:
-        #     logger_info = "epoch: {1:0{0}d}/{2}; batch_num: {4:0{3}d}/{5}; lr_rate: {6:.6f}; loss: {7:.2f}; " \
-        #                   "sem_loss: {8:.2f}; disc_loss: {9:.2f}; l_var: {10:.2f}; l_dist: {11:.2f};"
-
-        #     logger.info(logger_info.format(max_epoch_len, epoch, MAX_EPOCH, num_batches_len, batch_idx, num_batches,
-        #                                    lr_rate, loss_val, sem_loss_val, disc_loss_val, l_var_val, l_dist_val))
 
     if(loss_sum == 0):
         logger.info('mean loss: %f' % (loss_sum))
     else:
         logger.info('mean loss: %f' % (loss_sum / float(num_batches)))
+        logger.info('Semantic mean accuracy: %f' % (acc_sum / float(num_batches))*100)
 
 
 if __name__ == "__main__":
