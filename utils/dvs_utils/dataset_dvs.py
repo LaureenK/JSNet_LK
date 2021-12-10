@@ -298,10 +298,12 @@ class DVSDataset():
             raise ValueError("unknown split")
 
         # parallel csv read...
+        print("Start to read files...")
         pool = Pool(processes=None)
         points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
         points, labels, instances = self.do_downscale(points, labels, instances)
 
+        print("Downscale files...")
         self.point_list = np.asarray(points)
         self.semantic_label_list = np.asarray(labels)
         self.instance_label_list = np.asarray(instances)
