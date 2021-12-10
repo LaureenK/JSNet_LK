@@ -102,8 +102,8 @@ def get_bn_decay(batch):
 
 def train():
     # Load data
-    #dataset = DVSDataset(DATA_ROOT, input_list_txt = 'none', split='train',batchsize = BATCH_SIZE)
-    dataset = DVSDataset(DATA_ROOT, TRAINING_FILE_LIST, split='train',batchsize = BATCH_SIZE)
+    dataset = DVSDataset(DATA_ROOT, input_list_txt = 'none', split='train',batchsize = BATCH_SIZE)
+    #dataset = DVSDataset(DATA_ROOT, TRAINING_FILE_LIST, split='train',batchsize = BATCH_SIZE)
     
     
     # build network and create session
@@ -211,6 +211,7 @@ def train():
 def train_one_epoch(sess, ops, train_writer, dataset, epoch):
     """ ops: dict mapping from string to tf ops """
     print("#### Start Epoch ", epoch, " ####")
+    logger.info('Start time')
     is_training = True
     file_size = dataset.get_length()
     num_batches = file_size // BATCH_SIZE
