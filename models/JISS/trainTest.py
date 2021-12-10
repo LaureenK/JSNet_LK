@@ -2,7 +2,7 @@ import argparse
 import os
 import socket
 import sys
-import numpy as np
+
 
 import tensorflow as tf
 from utils.dvs_utils.dataset_dvs import NUM_POINTS
