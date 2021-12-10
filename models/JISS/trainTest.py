@@ -168,25 +168,10 @@ def train():
         adam_initializers = [var.initializer for var in tf.global_variables() if 'Adam' in var.name]
         sess.run(adam_initializers)
 
-        ops = {'pointclouds_pl': pointclouds_pl,
-               'labels_pl': labels_pl,
-               'sem_labels_pl': sem_labels_pl,
-               'is_training_pl': is_training_pl,
-               'loss': loss,
-               'sem_loss': sem_loss,
-               'disc_loss': disc_loss,
-               'l_var': l_var,
-               'l_dist': l_dist,
-               'train_op': train_op,
-               'merged': merged,
-               'step': batch,
-               'learning_rate': learning_rate}
-
         # ops = {'pointclouds_pl': pointclouds_pl,
         #        'labels_pl': labels_pl,
         #        'sem_labels_pl': sem_labels_pl,
         #        'is_training_pl': is_training_pl,
-        #        'pred': pred,                          #neu
         #        'loss': loss,
         #        'sem_loss': sem_loss,
         #        'disc_loss': disc_loss,
@@ -196,6 +181,22 @@ def train():
         #        'merged': merged,
         #        'step': batch,
         #        'learning_rate': learning_rate}
+
+        ops = {'pointclouds_pl': pointclouds_pl,
+               'labels_pl': labels_pl,
+               'sem_labels_pl': sem_labels_pl,
+               'is_training_pl': is_training_pl,
+               'pred_ins': pred_ins,                                       #neu
+               'pred_sem_label': pred_sem_label,                          #neu
+               'loss': loss,
+               'sem_loss': sem_loss,
+               'disc_loss': disc_loss,
+               'l_var': l_var,
+               'l_dist': l_dist,
+               'train_op': train_op,
+               'merged': merged,
+               'step': batch,
+               'learning_rate': learning_rate}
 
         for epoch in range(START_EPOCH, MAX_EPOCH):
             train_one_epoch(sess, ops, train_writer, dataset, epoch)
@@ -225,9 +226,12 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
                      ops['sem_labels_pl']: current_sem,
                      ops['is_training_pl']: is_training}
 
-        summary, step, lr_rate, _, loss_val, sem_loss_val, disc_loss_val, l_var_val, l_dist_val = sess.run(
-            [ops['merged'], ops['step'], ops['learning_rate'], ops['train_op'], ops['loss'], ops['sem_loss'],
+        pred_ins_val, pred_sem_label_val, summary, step, lr_rate, _, loss_val, sem_loss_val, disc_loss_val, l_var_val, l_dist_val = sess.run(
+            [ops['pred_ins'], ops['pred_sem_label'], ops['merged'], ops['step'], ops['learning_rate'], ops['train_op'], ops['loss'], ops['sem_loss'],
              ops['disc_loss'], ops['l_var'], ops['l_dist']], feed_dict=feed_dict)
+        
+        print("Pred_ins_val: ", pred_ins_val.shape, " pred_sem_label_val: ", pred_sem_label_val.shape)
+        
         train_writer.add_summary(summary, step)
         loss_sum += loss_val
 
