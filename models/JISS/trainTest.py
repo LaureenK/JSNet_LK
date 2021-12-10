@@ -230,7 +230,7 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
             [ops['pred_ins'], ops['pred_sem_label'], ops['merged'], ops['step'], ops['learning_rate'], ops['train_op'], ops['loss'], ops['sem_loss'],
              ops['disc_loss'], ops['l_var'], ops['l_dist']], feed_dict=feed_dict)
         
-        print("Pred_ins_val: ", pred_ins_val.shape, " pred_sem_label_val: ", pred_sem_label_val.shape)
+        print("Pred_ins_val: ", pred_ins_val[0,0,:], " pred_sem_label_val: ", pred_sem_label_val[0,0])
         
         train_writer.add_summary(summary, step)
         loss_sum += loss_val
