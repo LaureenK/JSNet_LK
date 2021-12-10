@@ -244,7 +244,7 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
             print("Right: ", right_pred, " from: 16384 accuracy: ", float((right_pred/(NUM_POINT) * 100)))
             i = i+1
 
-        acc_sum += float((right_pred/(BATCH_SIZE*NUM_POINT)))
+        acc_sum += float((right_pred/(NUM_POINT)))
         train_writer.add_summary(summary, step)
         loss_sum += loss_val
 
@@ -259,7 +259,7 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
         logger.info('mean loss: %f' % (loss_sum))
     else:
         logger.info('mean loss: %f' % (loss_sum / float(num_batches)))
-        logger.info('Semantic mean accuracy: %f' % (acc_sum / float(num_batches))*100)
+        logger.info('Semantic mean accuracy: %f' % ((acc_sum / float(num_batches))*100))
 
 
 if __name__ == "__main__":
