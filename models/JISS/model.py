@@ -104,6 +104,9 @@ def get_loss(pred, ins_label, pred_sem_label, pred_sem, sem_label, weights=1.0, 
         pred_sem: BxNx13
         sem_label: BxN
     """
+    print("Pred: ", pred.shape, " ins_label: ", ins_label, " pred_sem_label: ",pred_sem_label)
+    print("pred_sem: ", pred_sem.shape, " sem_label: ", sem_label)
+    
     classify_loss = tf.losses.sparse_softmax_cross_entropy(labels=sem_label, logits=pred_sem, weights=weights)
     tf.summary.scalar('classify loss', classify_loss)
 

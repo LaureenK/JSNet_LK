@@ -5,7 +5,7 @@ from scipy import stats
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--num_cls', type=int, default=13, help='num of classes')
+parser.add_argument('--num_cls', type=int, default=4, help='num of classes')
 parser.add_argument('--log_dir', type=str, default='logs/test_5', help='test dir')
 FLAGS = parser.parse_args()
 

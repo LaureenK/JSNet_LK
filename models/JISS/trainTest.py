@@ -101,8 +101,8 @@ def get_bn_decay(batch):
 
 def train():
     # Load data
-    dataset = DVSDataset(DATA_ROOT, input_list_txt = 'none', split='train',batchsize = BATCH_SIZE)
-    #dataset = DVSDataset(DATA_ROOT, TRAINING_FILE_LIST, split='train',batchsize = BATCH_SIZE)
+    #dataset = DVSDataset(DATA_ROOT, input_list_txt = 'none', split='train',batchsize = BATCH_SIZE)
+    dataset = DVSDataset(DATA_ROOT, TRAINING_FILE_LIST, split='train',batchsize = BATCH_SIZE)
     
     
     # build network and create session
@@ -181,6 +181,21 @@ def train():
                'merged': merged,
                'step': batch,
                'learning_rate': learning_rate}
+
+        # ops = {'pointclouds_pl': pointclouds_pl,
+        #        'labels_pl': labels_pl,
+        #        'sem_labels_pl': sem_labels_pl,
+        #        'is_training_pl': is_training_pl,
+        #        'pred': pred,                          #neu
+        #        'loss': loss,
+        #        'sem_loss': sem_loss,
+        #        'disc_loss': disc_loss,
+        #        'l_var': l_var,
+        #        'l_dist': l_dist,
+        #        'train_op': train_op,
+        #        'merged': merged,
+        #        'step': batch,
+        #        'learning_rate': learning_rate}
 
         for epoch in range(START_EPOCH, MAX_EPOCH):
             train_one_epoch(sess, ops, train_writer, dataset, epoch)
