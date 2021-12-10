@@ -231,12 +231,18 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
         train_writer.add_summary(summary, step)
         loss_sum += loss_val
 
-        if batch_idx % 50 == 0 and batch_idx:
-            logger_info = "epoch: {1:0{0}d}/{2}; batch_num: {4:0{3}d}/{5}; lr_rate: {6:.6f}; loss: {7:.2f}; " \
+        logger_info = "epoch: {1:0{0}d}/{2}; batch_num: {4:0{3}d}/{5}; lr_rate: {6:.6f}; loss: {7:.2f}; " \
                           "sem_loss: {8:.2f}; disc_loss: {9:.2f}; l_var: {10:.2f}; l_dist: {11:.2f};"
 
-            logger.info(logger_info.format(max_epoch_len, epoch, MAX_EPOCH, num_batches_len, batch_idx, num_batches,
+        logger.info(logger_info.format(max_epoch_len, epoch, MAX_EPOCH, num_batches_len, batch_idx, num_batches,
                                            lr_rate, loss_val, sem_loss_val, disc_loss_val, l_var_val, l_dist_val))
+
+        # if batch_idx % 50 == 0 and batch_idx:
+        #     logger_info = "epoch: {1:0{0}d}/{2}; batch_num: {4:0{3}d}/{5}; lr_rate: {6:.6f}; loss: {7:.2f}; " \
+        #                   "sem_loss: {8:.2f}; disc_loss: {9:.2f}; l_var: {10:.2f}; l_dist: {11:.2f};"
+
+        #     logger.info(logger_info.format(max_epoch_len, epoch, MAX_EPOCH, num_batches_len, batch_idx, num_batches,
+        #                                    lr_rate, loss_val, sem_loss_val, disc_loss_val, l_var_val, l_dist_val))
 
     if(loss_sum == 0):
         logger.info('mean loss: %f' % (loss_sum))
