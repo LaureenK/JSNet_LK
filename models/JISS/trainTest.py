@@ -2,10 +2,9 @@ import argparse
 import os
 import socket
 import sys
-
+import numpy as np
 
 import tensorflow as tf
-from utils.dvs_utils.dataset_dvs import NUM_POINTS
 tf.logging.set_verbosity(tf.logging.ERROR)
 
 CURR_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -242,9 +241,9 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
             print("block1: ", block1.shape, " Block2: ", block2.shape)
 
             right_pred = np.count_nonzero(block1==block2)
-            print("Right: ", right_pred, " from: 16384 accuracy: ", float((right_pred/(BATCH_SIZE*NUM_POINTS) * 100)))
+            print("Right: ", right_pred, " from: 16384 accuracy: ", float((right_pred/(BATCH_SIZE*NUM_POINT) * 100)))
 
-        acc_sum += float((right_pred/(BATCH_SIZE*NUM_POINTS)))
+        acc_sum += float((right_pred/(BATCH_SIZE*NUM_POINT)))
         train_writer.add_summary(summary, step)
         loss_sum += loss_val
 
