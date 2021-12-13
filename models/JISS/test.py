@@ -211,16 +211,22 @@ def test():
                 pred_ins_val, pred_sem_label_val, pred_sem_softmax_val = sess.run(
                     [ops['pred_ins'], ops['pred_sem_label'], ops['pred_sem_softmax']], feed_dict=feed_dict)
 
+                print("pred_ins_val: ", pred_ins_val.shape, "\n", pred_ins_val)
+
                 pred_val = np.squeeze(pred_ins_val, axis=0)
                 pred_sem = np.squeeze(pred_sem_label_val, axis=0)
                 pred_sem_softmax = np.squeeze(pred_sem_softmax_val, axis=0)
                 cur_pred_sem[j, :] = pred_sem
                 cur_pred_sem_softmax[j, ...] = pred_sem_softmax
 
+                print("pred_val: ", pred_val.shape, "\n", pred_val)
+
                 # cluster
                 group_seg = {}
                 bandwidth = BANDWIDTH
                 num_clusters, labels, cluster_centers = cluster(pred_val, bandwidth)
+                print("num_clusters: ", num_clusters)
+                print("labels: ", labels.shape, "\n", labels)
                 for idx_cluster in range(num_clusters):
                     tmp = (labels == idx_cluster)
                     estimated_seg = int(stats.mode(pred_sem[tmp])[0])
