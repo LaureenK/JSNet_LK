@@ -128,6 +128,7 @@ def test():
         fout_out_filelist = []
         for shape_idx in range(len_pts_files):
             room_path = ROOM_PATH_LIST[shape_idx]
+            print("Size room path: ", len(ROOM_PATH_LIST))
 
             out_data_label_filename = os.path.basename(room_path)[:-EXT_LEN] + '_pred.txt'
             out_data_label_filename = os.path.join(OUTPUT_DIR, out_data_label_filename)
@@ -144,6 +145,7 @@ def test():
             size_path = room_path
            
             if FILE_TYPE == 'csv':
+                print("Room Path: ", room_path)
                 dataset = DVSDataset(DATA_ROOT, input_list_txt = room_path, split='test')
                 cur_data, cur_sem, cur_group = dataset.get_all()
 
