@@ -202,6 +202,10 @@ def test():
                 pts = cur_data[j, ...]
                 group = cur_group[j]
                 sem = cur_sem[j]
+                
+                print("pts shape: ", pts.shape)
+                print("group shape: ", group.shape, "\ngroup: ", group)
+                print("sem shape: ", sem.shape)
 
                 feed_dict = {ops['pointclouds_pl']: np.expand_dims(pts, 0),
                              ops['labels_pl']: np.expand_dims(group, 0),
