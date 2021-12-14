@@ -200,9 +200,9 @@ def test():
                 pred_ins_val, pred_sem_label_val, pred_sem_softmax_val = sess.run(
                     [ops['pred_ins'], ops['pred_sem_label'], ops['pred_sem_softmax']], feed_dict=feed_dict)
 
-                #print("pred_ins_val: ", pred_ins_val.shape, "\n", pred_ins_val)
-                print("pred_ins_val: ", pred_ins_val.shape)
-                print("pred_sem_label_val: ", pred_sem_label_val.shape)
+                print("pred_ins_val: ", pred_ins_val.shape, "\n", pred_ins_val)
+                #print("pred_ins_val: ", pred_ins_val.shape)
+                #print("pred_sem_label_val: ", pred_sem_label_val.shape)
 
                 pred_val = np.squeeze(pred_ins_val, axis=0)
                 pred_sem = np.squeeze(pred_sem_label_val, axis=0)
@@ -213,6 +213,11 @@ def test():
                 #print("pred_val: ", pred_val.shape, "\n", pred_val)
                 print("pred_val: ", pred_val.shape)
                 print("pred_sem: ", pred_sem.shape)
+
+                #accuracy
+                right_pred = np.count_nonzero(group==pred_sem)
+                acc = float((right_pred/(NUM_POINT)))
+                print("Sem acc: &.2f" % (acc*100))
 
                 # cluster
                 group_seg = {}
