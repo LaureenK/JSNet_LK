@@ -393,16 +393,15 @@ class DVSDataset():
         if len(too_big_points) > 0:
             pool = Pool(processes=None)
             small_points, small_labels, small_instances = zip(*pool.starmap(downscale, zip(too_big_points, too_big_labels,too_big_instances)))
-
-        i=0
-        while i < len(small_points):
-            j=0
-            while j < len(small_points[i]):
-                good_points.append(small_points[i][j])
-                good_labels.append(small_labels[i][j])
-                good_instances.append(small_instances[i][j])
-                j = j+1
-            i = i+1
+            i=0
+            while i < len(small_points):
+                j=0
+                while j < len(small_points[i]):
+                    good_points.append(small_points[i][j])
+                    good_labels.append(small_labels[i][j])
+                    good_instances.append(small_instances[i][j])
+                    j = j+1
+                i = i+1
         # n=0
         # while n < len(too_big_points):
         #     print(n, " of ", len(too_big_points))
