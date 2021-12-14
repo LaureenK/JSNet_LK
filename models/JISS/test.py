@@ -229,6 +229,8 @@ def test():
                 num_clusters, labels, cluster_centers = cluster(pred_val, bandwidth)
                 print("num_clusters: ", num_clusters)
                 print("labels: ", labels.shape, "\n", labels)
+                
+                
                 for idx_cluster in range(num_clusters):
                     tmp = (labels == idx_cluster)
                     estimated_seg = int(stats.mode(pred_sem[tmp])[0])
