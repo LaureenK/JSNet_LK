@@ -282,13 +282,15 @@ class DVSDataset():
             elif(split == 'validation'): 
                 self.files_to_use = glob.glob(os.path.join(DATASET_VALIDATION_DIR, "*.csv"))
             elif(split == 'test'):
-                #self.files_to_use = glob.glob(os.path.join(DATASET_TEST_DIR, "*.csv"))
+                self.files_to_use = glob.glob(os.path.join(DATASET_TEST_DIR, "*.csv"))
+        else:
+            if(split == 'test'):
                 self.files_to_use = []
                 self.files_to_use.append(input_list_txt)
                 print("List: ", len(self.files_to_use), " ", self.files_to_use)
-        else:
-            self.input_list_txt = input_list_txt
-            self.files_to_use = self.get_input_list()
+            else:
+                self.input_list_txt = input_list_txt
+                self.files_to_use = self.get_input_list()
 
         random.shuffle(self.files_to_use)
         self.length = len(self.files_to_use)
