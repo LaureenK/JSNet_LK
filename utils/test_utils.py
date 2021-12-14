@@ -167,12 +167,12 @@ def GroupMerging(pts_corr, confidence, seg, label_bin):
 
 
 def BlockMerging(volume, volume_seg, pts, grouplabel, groupseg, gap=1e-3):
-    print("Volume: ", volume.shape)
-    print("volume_seg: ", volume_seg.shape)
-    print("pts: ", pts.shape)
-    print("grouplabel: ", grouplabel.shape)
-    print("groupseg: ", groupseg)
-    print("gap: ", gap)
+    # print("Volume: ", volume.shape)
+    # print("volume_seg: ", volume_seg.shape)
+    # print("pts: ", pts.shape)
+    # print("grouplabel: ", grouplabel.shape)
+    # print("groupseg: ", groupseg)
+    # print("gap: ", gap)
     overlapgroupcounts = np.zeros([100, 300])
     groupcounts = np.ones(100)
     x = (pts[:, 0] / gap).astype(np.int32)
