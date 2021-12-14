@@ -294,7 +294,7 @@ class DVSDataset():
         self.batch_num = self.length // batchsize
 
         # --------------------------------------------------------------------------------------------------------------
-        if split not in ['train', 'validation', 'train']:
+        if split not in ['train', 'validation', 'test']:
             raise ValueError("unknown split")
 
         # parallel csv read...
