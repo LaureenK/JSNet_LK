@@ -220,7 +220,7 @@ def test():
                 cur_pred_sem[j, :] = pred_sem
                 cur_pred_sem_softmax[j, ...] = pred_sem_softmax
 
-                print("pred_val: ", pred_val.shape, "\n", pred_val)
+                #print("pred_val: ", pred_val.shape, "\n", pred_val)
                 print("pred_val: ", pred_val.shape)
 
                 # cluster
