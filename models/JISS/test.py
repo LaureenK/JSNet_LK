@@ -254,9 +254,9 @@ def test():
             x = (pts[:, 6] / gap).astype(np.int32)
             y = (pts[:, 7] / gap).astype(np.int32)
             z = (pts[:, 8] / gap).astype(np.int32)
-            print("X Shape: ", x.shape, " X Values: ", x)
-            print("Y Shape: ", y.shape, " Y Values: ", y)
-            print("Z Shape: ", z.shape, " Z Values: ", z)
+            # print("X Shape: ", x.shape, " X Values: ", x)
+            # print("Y Shape: ", y.shape, " Y Values: ", y)
+            # print("Z Shape: ", z.shape, " Z Values: ", z)
             for i in range(group_pred.shape[0]):
                 if volume[x[i], y[i], z[i]] != -1:
                     group_pred[i] = volume[x[i], y[i], z[i]]
