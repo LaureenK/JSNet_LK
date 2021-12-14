@@ -18,18 +18,16 @@ from model import *
 from test_utils import *
 from log_util import get_logger
 from clustering import cluster
-import provider
-import indoor3d_util
 from dvs_utils.dataset_dvs import DVSDataset
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--gpu', type=int, default=0, help='GPU to use [default: GPU 0]')
 parser.add_argument('--data_root', default='data', help='data dir [default: data]')
-parser.add_argument('--input_list', type=str, default='data/test_hdf5_file_list_Area5.txt', help='Input data list file')
+parser.add_argument('--input_list', type=str, default='/bigdata_hdd/klein/FrKlein_PoC/data/TestFiles/', help='Input data list file')
 parser.add_argument('--data_type', type=str, default='csv', help='Test file type, csv or numpy [default: csv]')
 parser.add_argument('--model_path', type=str, default='log/model.ckpt', help='Path of model')
 parser.add_argument('--log_dir', default='logs', help='Log dir [default: logs]')
-parser.add_argument('--num_point', type=int, default=16384, help='Point number [default: 65536]')                   #changed
+parser.add_argument('--num_point', type=int, default=16384, help='Point number [default: 16384]')                   #changed
 parser.add_argument('--bandwidth', type=float, default=1., help='Bandwidth for meanshift clustering [default: 1.]') #neu?
 parser.add_argument('--verbose', action='store_true', help='if specified, output color-coded seg obj files') #neu?
 FLAGS = parser.parse_args() 
@@ -82,8 +80,7 @@ elif FILE_TYPE == 'csv':
 else:
     raise Exception('Not support file type')
 
-#ROOM_PATH_LIST = [os.path.join(ROOT_DIR, line.rstrip()) for line in open(os.path.join(ROOT_DIR, FLAGS.input_list))]
-ROOM_PATH_LIST = glob.glob(os.path.join(DATASET_TEST_DIR, "*.csv"))
+#ROOM_PATH_LIST = glob.glob(os.path.join(DATASET_TEST_DIR, "*.csv"))
 ROOM_PATH_LIST = []
 ROOM_PATH_LIST.append('/bigdata_hdd/klein/FrKlein_PoC/data/TestFiles/combined_337.csv')
 ROOM_PATH_LIST.append('/bigdata_hdd/klein/FrKlein_PoC/data/TestFiles/combined_101.csv')

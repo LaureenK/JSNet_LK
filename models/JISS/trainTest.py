@@ -17,6 +17,7 @@ sys.path.append(os.path.join(ROOT_DIR, 'utils'))
 from dvs_utils.dataset_dvs import DVSDataset
 from log_util import get_logger
 from model import *
+from clustering import cluster
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--gpu', type=int, default=0, help='GPU to use [default: GPU 0]')
@@ -238,12 +239,20 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
         
         i = 0
         while i < BATCH_SIZE:
-            block1 = pred_sem_label_val[i]
-            block2 = current_sem[i]
+            sem1 = pred_sem_label_val[i]
+            sem2 = current_sem[i]
+            ins1 = current_label[i]
+            ins1num = len(np.unique(ins1)) #falsch nicht unique!!!!!!!!!!!!!
+            ins2 = pred_ins_val[i]
             #print("block1: ", block1.shape, " Block2: ", block2.shape)
 
-            right_pred = np.count_nonzero(block1==block2)
+            right_pred = np.count_nonzero(sem1==sem2)
             #print("Right: ", right_pred, " from: 16384 accuracy: ", float((right_pred/(NUM_POINT) * 100)))
+
+            bandwidth = 4
+            num_clusters, labels, cluster_centers = cluster(ins2, bandwidth)
+            print("Right num of instances: ", ins1num, " Predicted num: ", num_clusters)
+
             i = i+1
 
         acc_sum += float((right_pred/(NUM_POINT)))
