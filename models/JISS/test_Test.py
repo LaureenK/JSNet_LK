@@ -85,8 +85,8 @@ else:
 #ROOM_PATH_LIST = [os.path.join(ROOT_DIR, line.rstrip()) for line in open(os.path.join(ROOT_DIR, FLAGS.input_list))]
 ROOM_PATH_LIST = glob.glob(os.path.join(DATASET_TEST_DIR, "*.csv"))
 ROOM_PATH_LIST = []
-ROOM_PATH_LIST.append('bigdata_hdd/klein/FrKlein_PoC/data/TestFiles/combined_337.csv')
-ROOM_PATH_LIST.append('bigdata_hdd/klein/FrKlein_PoC/data/TestFiles/combined_101.csv')
+ROOM_PATH_LIST.append('/bigdata_hdd/klein/FrKlein_PoC/data/TestFiles/combined_337.csv')
+ROOM_PATH_LIST.append('/bigdata_hdd/klein/FrKlein_PoC/data/TestFiles/combined_101.csv')
 len_pts_files = len(ROOM_PATH_LIST)
 
 
