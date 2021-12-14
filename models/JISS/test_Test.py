@@ -160,18 +160,18 @@ def test():
             # max_room_y = max(data[:, 1])
             # max_room_z = max(data[:, 2])
 
-            max_room_x = 640
-            max_room_y = 768
-            max_room_z = 60
+            # max_room_x = 640
+            # max_room_y = 768
+            # max_room_z = 60
 
             cur_pred_sem = np.zeros_like(cur_sem)
             cur_pred_sem_softmax = np.zeros([cur_sem.shape[0], cur_sem.shape[1], NUM_CLASSES])
             group_output = np.zeros_like(cur_group)
 
-            gap = 5e-3
-            volume_num = int(1. / gap) + 1
-            volume = -1 * np.ones([volume_num, volume_num, volume_num]).astype(np.int32)
-            volume_seg = -1 * np.ones([volume_num, volume_num, volume_num]).astype(np.int32)
+            # gap = 5e-3
+            # volume_num = int(1. / gap) + 1
+            # volume = -1 * np.ones([volume_num, volume_num, volume_num]).astype(np.int32)
+            # volume_seg = -1 * np.ones([volume_num, volume_num, volume_num]).astype(np.int32)
 
             num_data = cur_data.shape[0]
             for j in range(num_data):
@@ -189,101 +189,113 @@ def test():
                 pred_ins_val, pred_sem_label_val, pred_sem_softmax_val = sess.run(
                     [ops['pred_ins'], ops['pred_sem_label'], ops['pred_sem_softmax']], feed_dict=feed_dict)
 
+                #print("pred_ins_val: ", pred_ins_val.shape, "\n", pred_ins_val)
+                print("pred_ins_val: ", pred_ins_val.shape)
+                print("pred_sem_label_val: ", pred_sem_label_val.shape)
+
                 pred_val = np.squeeze(pred_ins_val, axis=0)
                 pred_sem = np.squeeze(pred_sem_label_val, axis=0)
                 pred_sem_softmax = np.squeeze(pred_sem_softmax_val, axis=0)
                 cur_pred_sem[j, :] = pred_sem
                 cur_pred_sem_softmax[j, ...] = pred_sem_softmax
 
+                #print("pred_val: ", pred_val.shape, "\n", pred_val)
+                print("pred_val: ", pred_val.shape)
+                print("pred_sem: ", pred_sem.shape)
+
                 # cluster
                 group_seg = {}
                 bandwidth = BANDWIDTH
                 num_clusters, labels, cluster_centers = cluster(pred_val, bandwidth)
-                for idx_cluster in range(num_clusters):
-                    tmp = (labels == idx_cluster)
-                    estimated_seg = int(stats.mode(pred_sem[tmp])[0])
-                    group_seg[idx_cluster] = estimated_seg
 
-                groupids_block = labels
+                print("num_clusters: ", num_clusters)
+                print("labels: ", labels.shape, "\n", labels)
 
-                groupids = BlockMerging(volume, volume_seg, pts[:, 6:],
-                                        groupids_block.astype(np.int32), group_seg, gap)
+                # for idx_cluster in range(num_clusters):
+                #     tmp = (labels == idx_cluster)
+                #     estimated_seg = int(stats.mode(pred_sem[tmp])[0])
+                #     group_seg[idx_cluster] = estimated_seg
 
-                group_output[j, :] = groupids
-                total_acc += float(np.sum(pred_sem == sem)) / pred_sem.shape[0]
-                total_seen += 1
+                # groupids_block = labels
 
-            group_pred = group_output.reshape(-1)
-            seg_pred = cur_pred_sem.reshape(-1)
-            seg_pred_softmax = cur_pred_sem_softmax.reshape([-1, NUM_CLASSES])
-            pts = cur_data.reshape([-1, 9])
+                # groupids = BlockMerging(volume, volume_seg, pts[:, 6:],
+                #                         groupids_block.astype(np.int32), group_seg, gap)
+
+                # group_output[j, :] = groupids
+                # total_acc += float(np.sum(pred_sem == sem)) / pred_sem.shape[0]
+                # total_seen += 1
+
+            # group_pred = group_output.reshape(-1)
+            # seg_pred = cur_pred_sem.reshape(-1)
+            # seg_pred_softmax = cur_pred_sem_softmax.reshape([-1, NUM_CLASSES])
+            # pts = cur_data.reshape([-1, 9])
 
             # filtering
-            x = (pts[:, 6] / gap).astype(np.int32)
-            y = (pts[:, 7] / gap).astype(np.int32)
-            z = (pts[:, 8] / gap).astype(np.int32)
-            for i in range(group_pred.shape[0]):
-                if volume[x[i], y[i], z[i]] != -1:
-                    group_pred[i] = volume[x[i], y[i], z[i]]
+            # x = (pts[:, 6] / gap).astype(np.int32)
+            # y = (pts[:, 7] / gap).astype(np.int32)
+            # z = (pts[:, 8] / gap).astype(np.int32)
+            # for i in range(group_pred.shape[0]):
+            #     if volume[x[i], y[i], z[i]] != -1:
+            #         group_pred[i] = volume[x[i], y[i], z[i]]
 
-            seg_gt = cur_sem.reshape(-1)
-            un = np.unique(group_pred)
-            pts_in_pred = [[] for itmp in range(NUM_CLASSES)]
-            group_pred_final = -1 * np.ones_like(group_pred)
-            grouppred_cnt = 0
-            for ig, g in enumerate(un):  # each object in prediction
-                if g == -1:
-                    continue
-                tmp = (group_pred == g)
-                sem_seg_g = int(stats.mode(seg_pred[tmp])[0])
-                # if np.sum(tmp) > 500:
-                if np.sum(tmp) > 0.25 * mean_num_pts_in_group[sem_seg_g]:
-                    group_pred_final[tmp] = grouppred_cnt
-                    pts_in_pred[sem_seg_g] += [tmp]
-                    grouppred_cnt += 1
+        #     seg_gt = cur_sem.reshape(-1)
+        #     un = np.unique(group_pred)
+        #     pts_in_pred = [[] for itmp in range(NUM_CLASSES)]
+        #     group_pred_final = -1 * np.ones_like(group_pred)
+        #     grouppred_cnt = 0
+        #     for ig, g in enumerate(un):  # each object in prediction
+        #         if g == -1:
+        #             continue
+        #         tmp = (group_pred == g)
+        #         sem_seg_g = int(stats.mode(seg_pred[tmp])[0])
+        #         # if np.sum(tmp) > 500:
+        #         if np.sum(tmp) > 0.25 * mean_num_pts_in_group[sem_seg_g]:
+        #             group_pred_final[tmp] = grouppred_cnt
+        #             pts_in_pred[sem_seg_g] += [tmp]
+        #             grouppred_cnt += 1
 
-            pts[:, 6] *= max_room_x
-            pts[:, 7] *= max_room_y
-            pts[:, 8] *= max_room_z
-            pts[:, 3:6] *= 255.0
-            ins = group_pred_final.astype(np.int32)
-            sem = seg_pred.astype(np.int32)
-            sem_softmax = seg_pred_softmax
-            sem_gt = seg_gt
-            ins_gt = cur_group.reshape(-1)
+        #     pts[:, 6] *= max_room_x
+        #     pts[:, 7] *= max_room_y
+        #     pts[:, 8] *= max_room_z
+        #     pts[:, 3:6] *= 255.0
+        #     ins = group_pred_final.astype(np.int32)
+        #     sem = seg_pred.astype(np.int32)
+        #     sem_softmax = seg_pred_softmax
+        #     sem_gt = seg_gt
+        #     ins_gt = cur_group.reshape(-1)
 
-            for i in range(pts.shape[0]):
-                fout_data_label.append('%f %f %f %d %d %d %f %d %d\n' % (
-                    pts[i, 6], pts[i, 7], pts[i, 8], pts[i, 3], pts[i, 4], pts[i, 5], sem_softmax[i, sem[i]],
-                    sem[i], ins[i]))
-                fout_gt_label.append('%d %d\n' % (sem_gt[i], ins_gt[i]))
+        #     for i in range(pts.shape[0]):
+        #         fout_data_label.append('%f %f %f %d %d %d %f %d %d\n' % (
+        #             pts[i, 6], pts[i, 7], pts[i, 8], pts[i, 3], pts[i, 4], pts[i, 5], sem_softmax[i, sem[i]],
+        #             sem[i], ins[i]))
+        #         fout_gt_label.append('%d %d\n' % (sem_gt[i], ins_gt[i]))
 
-            with open(out_data_label_filename, 'w') as fd:
-                fd.writelines(fout_data_label)
-            with open(out_gt_label_filename, 'w') as fd:
-                fd.writelines(fout_gt_label)
+        #     with open(out_data_label_filename, 'w') as fd:
+        #         fd.writelines(fout_data_label)
+        #     with open(out_gt_label_filename, 'w') as fd:
+        #         fd.writelines(fout_gt_label)
 
-            if output_verbose:
-                # file name
-                outfile_name = ROOM_PATH_LIST[shape_idx].split('/')[-1][:-EXT_LEN]
-                # Raw Point Cloud
-                output_point_cloud_rgb(pts[:, 6:], pts[:, 3:6].astype(np.int32), os.path.join(VIS_DIR, '{}_raw.obj'.format(outfile_name)))
-                logger.info('Saving file {}_raw.obj'.format(outfile_name))
-                # Instance Prediction
-                output_color_point_cloud(pts[:, 6:], group_pred_final.astype(np.int32), os.path.join(VIS_DIR, '{}_pred_ins.obj'.format(outfile_name)))
-                logger.info('Saving file {}_pred_ins.obj'.format(outfile_name))
-                # Semantic Prediction
-                output_color_point_cloud(pts[:, 6:], seg_pred.astype(np.int32), os.path.join(VIS_DIR, '{}_pred_sem.obj'.format(outfile_name)))
-                logger.info('Saving file {}_pred_sem.obj'.format(outfile_name))
-                # Instance Ground Truth
-                output_color_point_cloud(pts[:, 6:], ins_gt, os.path.join(VIS_DIR, '{}_gt_ins.obj'.format(outfile_name)))
-                logger.info('Saving file {}_gt_ins.obj'.format(outfile_name))
-                # Semantic Ground Truth
-                output_color_point_cloud(pts[:, 6:], sem_gt, os.path.join(VIS_DIR, '{}_gt_sem.obj'.format(outfile_name)))
-                logger.info('Saving file {}_gt_sem.obj'.format(outfile_name))
+        #     if output_verbose:
+        #         # file name
+        #         outfile_name = ROOM_PATH_LIST[shape_idx].split('/')[-1][:-EXT_LEN]
+        #         # Raw Point Cloud
+        #         output_point_cloud_rgb(pts[:, 6:], pts[:, 3:6].astype(np.int32), os.path.join(VIS_DIR, '{}_raw.obj'.format(outfile_name)))
+        #         logger.info('Saving file {}_raw.obj'.format(outfile_name))
+        #         # Instance Prediction
+        #         output_color_point_cloud(pts[:, 6:], group_pred_final.astype(np.int32), os.path.join(VIS_DIR, '{}_pred_ins.obj'.format(outfile_name)))
+        #         logger.info('Saving file {}_pred_ins.obj'.format(outfile_name))
+        #         # Semantic Prediction
+        #         output_color_point_cloud(pts[:, 6:], seg_pred.astype(np.int32), os.path.join(VIS_DIR, '{}_pred_sem.obj'.format(outfile_name)))
+        #         logger.info('Saving file {}_pred_sem.obj'.format(outfile_name))
+        #         # Instance Ground Truth
+        #         output_color_point_cloud(pts[:, 6:], ins_gt, os.path.join(VIS_DIR, '{}_gt_ins.obj'.format(outfile_name)))
+        #         logger.info('Saving file {}_gt_ins.obj'.format(outfile_name))
+        #         # Semantic Ground Truth
+        #         output_color_point_cloud(pts[:, 6:], sem_gt, os.path.join(VIS_DIR, '{}_gt_sem.obj'.format(outfile_name)))
+        #         logger.info('Saving file {}_gt_sem.obj'.format(outfile_name))
 
-        with open(output_filelist_f, 'w') as fd:
-            fd.writelines(fout_out_filelist)
+        # with open(output_filelist_f, 'w') as fd:
+        #     fd.writelines(fout_out_filelist)
 
 
 if __name__ == "__main__":
