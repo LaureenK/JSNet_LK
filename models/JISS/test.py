@@ -183,7 +183,7 @@ def test():
                     max_room_z = max_z
                 i = i +1
 
-            print("Max_X: ", max_room_x, " Max_y: ", max_room_y, " Max_z: ", max_room_z)
+            #print("Max_X: ", max_room_x, " Max_y: ", max_room_y, " Max_z: ", max_room_z)
 
             cur_pred_sem = np.zeros_like(cur_sem)
             cur_pred_sem_softmax = np.zeros([cur_sem.shape[0], cur_sem.shape[1], NUM_CLASSES])
@@ -211,8 +211,8 @@ def test():
                 pred_ins_val, pred_sem_label_val, pred_sem_softmax_val = sess.run(
                     [ops['pred_ins'], ops['pred_sem_label'], ops['pred_sem_softmax']], feed_dict=feed_dict)
 
-                #print("pred_ins_val: ", pred_ins_val.shape, "\n", pred_ins_val)
-                print("pred_ins_val: ", pred_ins_val.shape)
+                print("pred_ins_val: ", pred_ins_val.shape, "\n", pred_ins_val)
+                #print("pred_ins_val: ", pred_ins_val.shape)
 
                 pred_val = np.squeeze(pred_ins_val, axis=0)
                 pred_sem = np.squeeze(pred_sem_label_val, axis=0)
@@ -220,8 +220,8 @@ def test():
                 cur_pred_sem[j, :] = pred_sem
                 cur_pred_sem_softmax[j, ...] = pred_sem_softmax
 
-                #print("pred_val: ", pred_val.shape, "\n", pred_val)
-                print("pred_val: ", pred_val.shape)
+                print("pred_val: ", pred_val.shape, "\n", pred_val)
+                #print("pred_val: ", pred_val.shape)
 
                 # cluster
                 group_seg = {}
