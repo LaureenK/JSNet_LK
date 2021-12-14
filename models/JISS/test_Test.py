@@ -217,7 +217,7 @@ def test():
                 #accuracy
                 right_pred = np.count_nonzero(group==pred_sem)
                 acc = float((right_pred/(NUM_POINT)))
-                print("Sem acc: &.2f" % (acc*100))
+                print("Sem acc: %.2f" % (acc*100))
 
                 # cluster
                 group_seg = {}
