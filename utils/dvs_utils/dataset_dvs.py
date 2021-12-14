@@ -390,8 +390,9 @@ class DVSDataset():
 
         print("Files too big: ", len(too_big_points), " Other: ", len(good_points))
         
-        pool = Pool(processes=None)
-        small_points, small_labels, small_instances = zip(*pool.starmap(downscale, zip(too_big_points, too_big_labels,too_big_instances)))
+        if len(too_big_points) > 0:
+            pool = Pool(processes=None)
+            small_points, small_labels, small_instances = zip(*pool.starmap(downscale, zip(too_big_points, too_big_labels,too_big_instances)))
 
         i=0
         while i < len(small_points):
