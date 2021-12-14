@@ -84,6 +84,7 @@ else:
 
 #ROOM_PATH_LIST = [os.path.join(ROOT_DIR, line.rstrip()) for line in open(os.path.join(ROOT_DIR, FLAGS.input_list))]
 ROOM_PATH_LIST = glob.glob(os.path.join(DATASET_TEST_DIR, "*.csv"))
+ROOM_PATH_LIST = ['bigdata_hdd/klein/FrKlein_PoC/data/TestFiles/combined_337.csv','bigdata_hdd/klein/FrKlein_PoC/data/TestFiles/combined_101.csv']
 len_pts_files = len(ROOM_PATH_LIST)
 
 
@@ -145,7 +146,7 @@ def test():
             size_path = room_path
            
             if FILE_TYPE == 'csv':
-                print("Room Path: ", room_path)
+                #print("Room Path: ", room_path)
                 dataset = DVSDataset(DATA_ROOT, input_list_txt = room_path, split='test')
                 cur_data, cur_sem, cur_group = dataset.get_all()
                 print("Data: ", cur_data.shape, " Sem: ", cur_sem.shape, " Group: ", cur_group.shape)

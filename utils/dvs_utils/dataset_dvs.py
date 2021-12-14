@@ -287,7 +287,7 @@ class DVSDataset():
             if(split == 'test'):
                 self.files_to_use = []
                 self.files_to_use.append(input_list_txt)
-                print("List: ", len(self.files_to_use), " ", self.files_to_use)
+                #print("List: ", len(self.files_to_use), " ", self.files_to_use)
             else:
                 self.input_list_txt = input_list_txt
                 self.files_to_use = self.get_input_list()
@@ -338,7 +338,7 @@ class DVSDataset():
                self.labelweights[self.semantic_label_list[0].astype(np.int32)]
 
     def get_all(self):
-        print("Points: ", self.point_list.shape, " Sem: ", self.semantic_label_list.shape, " Ins: ", self.instance_label_list.shape)
+        #print("Points: ", self.point_list.shape, " Sem: ", self.semantic_label_list.shape, " Ins: ", self.instance_label_list.shape)
         return self.point_list, self.semantic_label_list, self.instance_label_list
 
     def get_batch(self, data_aug=False):
