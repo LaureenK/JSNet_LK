@@ -148,11 +148,13 @@ def test():
                 print("Room Path: ", room_path)
                 dataset = DVSDataset(DATA_ROOT, input_list_txt = room_path, split='test')
                 cur_data, cur_sem, cur_group = dataset.get_all()
+                print("Data: ", cur_data.shape, " Sem: ", cur_sem.shape, " Group: ", cur_group.shape)
 
             cur_data = cur_data[:, 0:NUM_POINT, :]
             cur_sem = np.squeeze(cur_sem)
             cur_group = np.squeeze(cur_group)
             
+            print("Data: ", cur_data.shape, " Sem: ", cur_sem.shape, " Group: ", cur_group.shape)
             
             # Get room dimension..
             #??
