@@ -2,23 +2,26 @@
 import os
 import glob
 import random
-from multiprocessing import Pool
-
+import argparse
+import os
 import numpy as np
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--inputpath', default='/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/')
+parser.add_argument('--outputpath', default='/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/')
+#parser.add_argument('--inputpath', default='E:/Users/Laureen/Documents/Test1/')
+#parser.add_argument('--outputpath', default='E:/Users/Laureen/Documents/Test2/')
+FLAGS = parser.parse_args()  
+
+INPUT = FLAGS.inputpath                   
+OUTPUT = FLAGS.outputpath                   
+  
 NUM_CLASSES = 4
-NUM_POINTS = 2**14  ## <-- TODO: this dataset adapter only supprts UP(!) sampling not DOWN sampling
+NUM_POINTS = 2**14
 
-DATASET_TRAIN_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/"
-DATASET_VALIDATION_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/ValidationFiles/"
-DATASET_TEST_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/TestFiles/"
-
-CLASS_COLORS = {
-    0: (255, 116, 0),    # ClassLabel::PERSON
-    1: (92, 255, 0),     # ClassLabel::DOG
-    2: (0, 128, 128),    # ClassLabel::BICYCLE
-    3: (255, 153, 204),  # ClassLabel::SPORTSBALL
-}
+#DATASET_TRAIN_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/"
+#DATASET_VALIDATION_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/ValidationFiles/"
+#DATASET_TEST_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/TestFiles/"
 
 CLASS_MAPPING = {
     1: 0,  # original PERSON(1) --> 0
@@ -96,7 +99,8 @@ def create_two_x(points, labels, instances, start= 0, end= 640):
 
     i = 0
     while i < len(points):
-        if(points[i][0] < (start + ((end-start) / 2))):
+        point = points[i]
+        if(point[0] < (start + ((end-start) / 2))):
             small_points1.append(points[i])
             small_labels1.append(labels[i])
             small_instances1.append(instances[i])
@@ -140,7 +144,8 @@ def create_two_y(points, labels, instances, start = 0, end = 768):
 
     i = 0
     while i < len(points):
-        if(points[i][1] < (start + ((end-start) / 2))):
+        point = points[i]
+        if(point[1] < (start + ((end-start) / 2))):
             small_points1.append(points[i])
             small_labels1.append(labels[i])
             small_instances1.append(instances[i])
@@ -261,174 +266,93 @@ def downscale(points, labels, instances, x=True, depth = 1, left=True, top=True)
 
     return small_points, small_labels, small_instances
 
+def mapInstance(points, labels, instances):
+    instances = instances + 100
 
-class DVSDataset():
-    def __init__(self, data_root, input_list_txt = 'none', npoints=16384, split='train', batchsize=24):
-        random.seed(1337)  # same result every time
+    i = 0
+    while i < len(labels):
+        num = instances[i]
+        digits = len(str(num))
+        addition = 10**digits
 
-        self.input_list_txt = input_list_txt
-        self.split = split
-        self.data_root = data_root
-        self.batch_count = 0
-        self.batchsize = batchsize
-        
+        if (labels[i] == 0):
+            instances[i] = instances[i] + (4 * addition)
+        elif (labels[i] == 1):
+            instances[i] = instances[i] + (1 * addition)
+        elif (labels[i] == 2):
+            instances[i] = instances[i] + (2 * addition)
+        elif (labels[i] == 3):
+            instances[i] = instances[i] + (3 * addition)
 
-        if npoints != NUM_POINTS:
-            raise ValueError("npoints != NUM_POINTS")
+        i = i + 1
 
-        if(input_list_txt == 'none'):
-            if(split == 'train'):
-                self.files_to_use = glob.glob(os.path.join(DATASET_TRAIN_DIR, "*.csv"))
-            elif(split == 'validation'): 
-                self.files_to_use = glob.glob(os.path.join(DATASET_VALIDATION_DIR, "*.csv"))
-            elif(split == 'test'):
-                self.files_to_use = glob.glob(os.path.join(DATASET_TEST_DIR, "*.csv"))
+    un = np.unique(instances)
+    count = len(un)
+
+    i = 0
+    while i < count:
+        instances[instances == un[i]] = i
+        i = i + 1
+
+    un = np.unique(instances)
+
+    return points, labels, instances
+
+if __name__ == "__main__":
+    INPUTLIST = glob.glob(os.path.join(INPUT, "*.csv"))
+    print(len(INPUTLIST))
+    output_num = 0
+
+    i=0
+    while i < len(INPUTLIST):
+        points, labels, instances = load_and_upscale(INPUTLIST[i])
+        points, labels, instances = mapInstance(points, labels, instances)
+
+        points = np.asarray(points)
+        labels = np.asarray(labels)
+        instances = np.asarray(instances)
+
+
+        if(len(points) > NUM_POINTS):
+            small_points, small_labels, small_instances = downscale(points, labels, instances)
+            small_points = np.asarray(small_points)
+            small_labels = np.asarray(small_labels)
+            small_instances = np.asarray(small_instances)
+
+            j = 0
+
+            while j < small_points.shape[0]:
+                points1 = small_points[j]
+                labels1 = small_labels[j]
+                instances1 = small_instances[j]
+
+                labels1 = np.reshape(labels1, (len(labels1),1))
+                instances1 = np.reshape(instances1,(len(instances1),1))
+                all = np.append(points1, labels1, axis=1)
+                all = np.append(all, instances1, axis=1)
+
+                name = OUTPUT + str(output_num) + ".csv"
+                print(name)
+                np.savetxt(name, all, delimiter=" ", fmt='%d %d %.10f %d %d')
+
+                output_num = output_num + 1
+
+                j = j + 1
+
+
         else:
-            if(split == 'test'):
-                self.files_to_use = []
-                self.files_to_use.append(input_list_txt)
-                #print("List: ", len(self.files_to_use), " ", self.files_to_use)
-            else:
-                self.input_list_txt = input_list_txt
-                self.files_to_use = self.get_input_list()
+            labels = np.reshape(labels, (len(labels),1))
+            instances = np.reshape(instances,(len(instances),1))
+            all = np.append(points, labels, axis=1)
+            all = np.append(all, instances, axis=1)
 
-        random.shuffle(self.files_to_use)
-        self.length = len(self.files_to_use)
-        self.batch_num = self.length // batchsize
-
-        # --------------------------------------------------------------------------------------------------------------
-        if split not in ['train', 'validation', 'test']:
-            raise ValueError("unknown split")
-
-        # parallel csv read...
-        print("Start to read files...")
-        pool = Pool(processes=None)
-        points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
-        points, labels, instances = self.do_downscale(points, labels, instances)
-
-        print("Downscale files...")
-        self.point_list = np.asarray(points)
-        self.semantic_label_list = np.asarray(labels)
-        self.instance_label_list = np.asarray(instances)
-
-        print(len(self.point_list), len(self.semantic_label_list), len(self.instance_label_list))
-        
-
-        # labelweights
-        # TODO: does [e.g. JSnet]-implementation provide some kind of handling of class-imbalances?
-        #??
-        #if split == 'train':
-        #    labelweights = np.zeros(NUM_CLASSES)
-        #    for seg in self.semantic_label_list:
-        #        tmp, _ = np.histogram(seg, range(NUM_CLASSES + 1))
-        #        labelweights += tmp
-        #    labelweights = labelweights.astype(np.float32)
-        #    labelweights = labelweights / np.sum(labelweights)
-         #   self.labelweights = 1 / np.log(1.2 + labelweights)
-        #elif split == 'validation':
-        #    self.labelweights = np.ones(NUM_CLASSES)
-
-    def __len__(self):
-        #return len(self.point_list)
-        return self.length
-
-    def __getitem__(self, index):
-        return self.point_list[index], \
-               self.semantic_label_list[index].astype(np.int32), \
-               self.labelweights[self.semantic_label_list[0].astype(np.int32)]
-
-    def get_all(self):
-        #print("Points: ", self.point_list.shape, " Sem: ", self.semantic_label_list.shape, " Ins: ", self.instance_label_list.shape)
-        return self.point_list, self.semantic_label_list, self.instance_label_list
-
-    def get_batch(self, data_aug=False):
-
-        points = self.point_list[(self.batch_count*self.batchsize):((self.batch_count+1)*self.batchsize)][:][:]
-        sem = self.semantic_label_list[(self.batch_count*self.batchsize):((self.batch_count+1)*self.batchsize)][:][:]
-        inst = self.instance_label_list[(self.batch_count*self.batchsize):((self.batch_count+1)*self.batchsize)][:][:]
-
-        self.batch_count = self.batch_count + 1
-        if(self.batch_count == self.batch_num):
-            self.batch_count = 0
+            name = OUTPUT + str(output_num) + ".csv"
+            print(name)
+            np.savetxt(name, all, delimiter=" ",fmt='%d %d %.10f %d %d')
             
-        return points, sem, inst
+            output_num = output_num + 1
+            
 
-    def get_input_list(self):
-        input_list = [line.strip() for line in open(self.input_list_txt, 'r')]
+        i = i + 1
 
-        #temp_list = [item.split('/')[-1].strip('.h5').strip('.npy').strip('.csv') for item in input_list]
- 
-        #cnt_length = len(temp_list)
-        #self.length = cnt_length
-
-        input_list = [os.path.join(self.data_root, item) for item in input_list]
-
-        return input_list
-
-    def get_length(self):
-        return self.__len__()
-    
-    def do_downscale(self, points, labels, instances):
-        too_big_points = []
-        too_big_labels = []
-        too_big_instances = []
-        good_points = []
-        good_labels = []
-        good_instances = []
-
-        n=0
-        while n < len(points):
-            if(len(points[n]) > NUM_POINTS):
-                too_big_points.append(points[n])
-                too_big_labels.append(labels[n])
-                too_big_instances.append(instances[n])
-            else:
-                good_points.append(points[n])
-                good_labels.append(labels[n])
-                good_instances.append(instances[n])
-            n = n + 1
-
-        print("Files too big: ", len(too_big_points), " Other: ", len(good_points))
-        
-        if len(too_big_points) > 0:
-            pool = Pool(processes=None)
-            small_points, small_labels, small_instances = zip(*pool.starmap(downscale, zip(too_big_points, too_big_labels,too_big_instances)))
-            i=0
-            while i < len(small_points):
-                j=0
-                while j < len(small_points[i]):
-                    good_points.append(small_points[i][j])
-                    good_labels.append(small_labels[i][j])
-                    good_instances.append(small_instances[i][j])
-                    j = j+1
-                i = i+1
-        # n=0
-        # while n < len(too_big_points):
-        #     print(n, " of ", len(too_big_points))
-        #     small_points, small_labels, small_instances = downscale(too_big_points[n], too_big_labels[n],too_big_instances[n])
-        #     i=0
-        #     while i < len(small_points):
-        #         good_points.append(small_points[i])
-        #         good_labels.append(small_labels[i])
-        #         good_instances.append(small_instances[i])
-        #         i = i+1
-
-        #     n = n + 1
-
-        return good_points, good_labels, good_instances
-# ------------------------------------------------------------------------------
-if __name__ == '__main__':
-# ------------------------------------------------------------------------------
-    dvsDataset = DVSDataset('data', '/home/klein/neural_networks/jsnet/JSNet_LK/data/train_csv_dvs.txt', split='train', batchsize=8)
-    points, sem, inst = dvsDataset.get_batch()
-    print(points.shape)
-    print(sem.shape)
-    print(inst.shape)
-    points, sem, inst = dvsDataset.get_batch()
-    print(points.shape)
-    print(sem.shape)
-    print(inst.shape)
-    points, sem, inst = dvsDataset.get_batch()
-    print(points.shape)
-    print(sem.shape)
-    print(inst.shape)
+    print("finish")

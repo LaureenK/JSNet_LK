@@ -257,7 +257,7 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
             bandwidth = 4
             num_clusters, labels, cluster_centers = cluster(ins2, bandwidth)
             sum_diff += abs(ins1num - num_clusters)
-            print("Right num of instances: ", ins1num, " Predicted num: ", num_clusters)
+            #print("Right num of instances: ", ins1num, " Predicted num: ", num_clusters)
 
             i = i+1
 
