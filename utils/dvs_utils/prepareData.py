@@ -332,7 +332,7 @@ if __name__ == "__main__":
                 all = np.append(all, instances1, axis=1)
 
                 name = OUTPUT + str(output_num) + ".csv"
-                print(name)
+                #print(name)
                 np.savetxt(name, all, delimiter=" ", fmt='%d %d %.10f %d %d')
 
                 output_num = output_num + 1
@@ -347,9 +347,9 @@ if __name__ == "__main__":
             all = np.append(all, instances, axis=1)
 
             name = OUTPUT + str(output_num) + ".csv"
-            print(name)
+            #print(name)
             np.savetxt(name, all, delimiter=" ",fmt='%d %d %.10f %d %d')
-            
+
             output_num = output_num + 1
             
 
