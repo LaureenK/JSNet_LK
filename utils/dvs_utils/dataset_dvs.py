@@ -3,23 +3,17 @@ import os
 import glob
 import random
 from multiprocessing import Pool
+from random import randrange
 
 import numpy as np
 
 NUM_CLASSES = 4
-NUM_POINTS = 2**14  ## <-- TODO: this dataset adapter only supprts UP(!) sampling not DOWN sampling
+NUM_POINTS = 2**14
 
 DATASET_TRAIN_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/"
 DATASET_PREP_TRAIN_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/"
 DATASET_VALIDATION_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/ValidationFiles/"
 DATASET_TEST_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/TestFiles/"
-
-CLASS_COLORS = {
-    0: (255, 116, 0),    # ClassLabel::PERSON
-    1: (92, 255, 0),     # ClassLabel::DOG
-    2: (0, 128, 128),    # ClassLabel::BICYCLE
-    3: (255, 153, 204),  # ClassLabel::SPORTSBALL
-}
 
 CLASS_MAPPING = {
     1: 0,  # original PERSON(1) --> 0
@@ -201,93 +195,60 @@ def create_two_y(points, labels, instances, start = 0, end = 768):
 
     return small_points3, small_labels3, small_instances3, top, down
 
-def downscale(points, labels, instances, x=True, depth = 1, left=True, top=True):
+def downscale(points, labels, instances):
     small_points = []
     small_labels = []
     small_instances = []
 
-    if x == True:
-        if depth == 1 and left == True:
-            small_points1, small_labels1, small_instances1, left1, right1 = create_two_x(points, labels, instances)
-        elif depth == 2 and left == True:
-            small_points1, small_labels1, small_instances1, left1, right1 = create_two_x(points, labels, instances, 0,320)
-        elif depth == 2 and left == False:
-            small_points1, small_labels1, small_instances1, left1, right1 = create_two_x(points, labels, instances, 320,640)
+    #### divide x no.1####
+    small_points1, small_labels1, small_instances1, left1, right1 = create_two_x(points, labels, instances)
+    print(len(small_points1))
+    i = 0
+    while i < len(small_points1):
+        if len(small_points1[i]) > NUM_POINTS:
+            #### divide y no.1####
+            small_points2, small_labels2, small_instances2, top1, down1 = create_two_y(small_points1[i], small_labels1[i], small_instances1[i])
 
-        # print("After downscale X: ", len(small_points1[0]))
-        # print("After downscale X: ", len(small_points1[1]))
-        
-        if left1:
-            if len(small_points1[0]) > NUM_POINTS:
-                small_points2, small_labels2, small_instances2 = downscale(small_points1[0], small_labels1[0], small_instances1[0], False,depth,True,top)
-                i = 0
-                while i < len(small_points2):
-                    small_points.append(small_points2[i])
-                    small_labels.append(small_labels2[i])
-                    small_instances.append(small_instances2[i])
-                    i = i +1
-            else:
-                small_points.append(small_points1[0])
-                small_labels.append(small_labels1[0])
-                small_instances.append(small_instances1[0])
+            j = 0
+            print(len(small_points2))
+            while j < len(small_points2):
+                if len(small_points2[j]) > NUM_POINTS:
+                    #### divide x no.2####
+                    #left
+                    if (left1 == True and right1 == True and i == 0) or (left1 == True and right1 == False):
+                        small_points3, small_labels3, small_instances3, left2, right2 = create_two_x(points, labels, instances, 0,320)
+                    else:
+                        small_points3, small_labels3, small_instances3, left2, right2 = create_two_x(points, labels, instances, 320,640)
 
-        if right1:
-            if len(small_points1[1]) > NUM_POINTS:
-                small_points2, small_labels2, small_instances2 = downscale(small_points1[1], small_labels1[1], small_instances1[1], False,depth,False,top)
-                i = 0
-                while i < len(small_points2):
-                    small_points.append(small_points2[i])
-                    small_labels.append(small_labels2[i])
-                    small_instances.append(small_instances2[i])
-                    i = i +1
-            else:
-                small_points.append(small_points1[1])
-                small_labels.append(small_labels1[1])
-                small_instances.append(small_instances1[1])
-    else:
-        if depth == 1 and top == True:
-            small_points1, small_labels1, small_instances1, top1, down1 = create_two_y(points, labels, instances)
-        elif depth == 2 and top == True:
-            small_points1, small_labels1, small_instances1, top1, down1 = create_two_y(points, labels, instances, 0, 384)
-        elif depth == 2 and top == False:
-            small_points1, small_labels1, small_instances1, top1, down1 = create_two_y(points, labels, instances, 384, 768)
-        
+                    z = 0
+                    print(len(small_points3))
+                    while z < len(small_points3):
+                        if len(small_points3[z]) > NUM_POINTS:
+                            while len(small_points3[z]) != NUM_POINTS:
+                                index = randrange(len(small_points3[z]))
+                                small_points3[z].remove(index)
 
-        small_points1, small_labels1, small_instances1, top1, down1 = create_two_y(points, labels, instances)
-        # print("After downscale Y: ", len(small_points1[0]))
-        # print("After downscale Y: ", len(small_points1[1]))
+                            print('happend')
+                        else: #remove
+                            small_points.append(small_points3[z])
+                            small_labels.append(small_labels3[z])
+                            small_instances.append(small_instances3[z])
+                        z = z + 1 
 
-        if top1:
-            if len(small_points1[0]) > NUM_POINTS:
-                small_points2, small_labels2, small_instances2 = downscale(small_points1[0], small_labels1[0], small_instances1[0], True, depth+1,left,True)
-                i = 0
-                while i < len(small_points2):
-                    small_points.append(small_points2[i])
-                    small_labels.append(small_labels2[i])
-                    small_instances.append(small_instances2[i])
-                    i = i +1
-            else:     
-                small_points.append(small_points1[0])
-                small_labels.append(small_labels1[0])
-                small_instances.append(small_instances1[0])
-        
-        if down1:
-            if len(small_points1[1]) > NUM_POINTS:
-                small_points2, small_labels2, small_instances2 = downscale(small_points1[1], small_labels1[1], small_instances1[1], True, depth+1,left,False)
-                i = 0
-                while i < len(small_points2):
-                    small_points.append(small_points2[i])
-                    small_labels.append(small_labels2[i])
-                    small_instances.append(small_instances2[i])
-                    i = i +1
-            else:     
-                small_points.append(small_points1[1])
-                small_labels.append(small_labels1[1])
-                small_instances.append(small_instances1[1])
+                else:
+                    small_points.append(small_points2[j])
+                    small_labels.append(small_labels2[j])
+                    small_instances.append(small_instances2[j])
+                j = j +1 
+        else:
+            small_points.append(small_points1[i])
+            small_labels.append(small_labels1[i])
+            small_instances.append(small_instances1[i])
 
-
+        i = i + 1
+    
+    print("Result: ", len(small_points))
     return small_points, small_labels, small_instances
-
 
 class DVSDataset():
     def __init__(self, data_root, input_list_txt = 'none', npoints=16384, split='train', batchsize=24):
