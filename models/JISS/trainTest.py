@@ -256,7 +256,7 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
             #print("block1: ", block1.shape, " Block2: ", block2.shape)
 
             right_pred = np.count_nonzero(sem1==sem2)
-            sum_acc = float((right_pred/(NUM_POINT) * 100))
+            sum_acc += float((right_pred/(NUM_POINT) * 100))
 
             print("Acc: ", float((right_pred/(NUM_POINT) * 100)), " sum_acc: ", sum_acc)
 
