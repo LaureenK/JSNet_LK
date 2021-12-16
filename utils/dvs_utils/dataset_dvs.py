@@ -74,7 +74,7 @@ def load_ascii_cloud_prepared(fname):
                 continue
 
             x, y, t, class_label, instance_label = line.strip().split(' ')
-            x, y, t, class_label, instance_label = float(x), float(y), float(t), int(pol), int(class_label), int(instance_label)
+            x, y, t, class_label, instance_label = float(x), float(y), float(t), int(class_label), int(instance_label)
 
             points.append(np.array([x, y, t], dtype=np.float32))
             labels.append(class_label)
