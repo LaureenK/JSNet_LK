@@ -103,7 +103,7 @@ def get_bn_decay(batch):
 
 def train():
     # Load data
-    dataset = DVSDataset(DATA_ROOT, input_list_txt = 'none', split='train',batchsize = BATCH_SIZE)
+    dataset = DVSDataset(DATA_ROOT, input_list_txt = 'none', split='prepared_train',batchsize = BATCH_SIZE)
     #dataset = DVSDataset(DATA_ROOT, TRAINING_FILE_LIST, split='train',batchsize = BATCH_SIZE)
     
     
@@ -244,24 +244,31 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
         while i < BATCH_SIZE:
             sem1 = pred_sem_label_val[i]
             sem2 = current_sem[i]
+            print("Sem1: ", sem1.shape)
+            print("Sem2: ", sem2.shape)
+
             ins1 = current_label[i]
-            ins1num = len(np.unique(ins1)) #falsch nicht unique!!!!!!!!!!!!!
+            print("ins1: ", ins1.shape)
+            ins1num = len(np.unique(ins1))
+            print("Num unique: ", ins1num, " ", np.unique(ins1)) 
             ins2 = pred_ins_val[i]
+            print("ins2: ", ins2.shape)
             #print("block1: ", block1.shape, " Block2: ", block2.shape)
 
             right_pred = np.count_nonzero(sem1==sem2)
             sum_acc = float((right_pred/(NUM_POINT)))
 
-            #print("Right: ", right_pred, " from: 16384 accuracy: ", float((right_pred/(NUM_POINT) * 100)))
+            print("Right: ", right_pred, " from: 16384 accuracy: ", float((right_pred/(NUM_POINT) * 100)))
 
             bandwidth = 4
             num_clusters, labels, cluster_centers = cluster(ins2, bandwidth)
             sum_diff += abs(ins1num - num_clusters)
-            #print("Right num of instances: ", ins1num, " Predicted num: ", num_clusters)
+            print("Right num of instances: ", ins1num, " Predicted num: ", num_clusters)
 
             i = i+1
-
+        print("Sum acc: ", sum_acc, " acc_sum: ", float((sum_acc/(BATCH_SIZE))) * 100)
         acc_sum += float((sum_acc/(BATCH_SIZE)))
+        print("diff acc: ", sum_diff, " diff_sum: ", float((sum_diff/(BATCH_SIZE))))
         diff_sum += float((sum_diff/(BATCH_SIZE)))
         train_writer.add_summary(summary, step)
         loss_sum += loss_val

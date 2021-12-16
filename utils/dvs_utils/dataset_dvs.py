@@ -10,6 +10,7 @@ NUM_CLASSES = 4
 NUM_POINTS = 2**14  ## <-- TODO: this dataset adapter only supprts UP(!) sampling not DOWN sampling
 
 DATASET_TRAIN_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/"
+DATASET_PREP_TRAIN_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/"
 DATASET_VALIDATION_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/ValidationFiles/"
 DATASET_TEST_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/TestFiles/"
 
@@ -59,6 +60,32 @@ def load_ascii_cloud(fname):
     npIns = np.array(instances, dtype=np.uint32)
 
     npPoints, npSeg, npIns = unison_shuffled_copies(npPoints, npSeg, npIns)
+ 
+    return npPoints, npSeg, npIns
+
+def load_ascii_cloud_prepared(fname):
+    points = []
+    labels = []
+    instances = []
+
+    with open(fname, 'r') as fd:
+        for line in fd.readlines():
+            if "//" in line:
+                continue
+
+            x, y, t, pol, class_label, instance_label = line.strip().split(' ')
+            x, y, t, pol, class_label, instance_label = float(x), float(y), float(t), int(pol), int(class_label), int(instance_label)
+
+            points.append(np.array([x, y, t], dtype=np.float32))
+            labels.append(class_label)
+            instances.append(instance_label)
+
+    npPoints = np.array(points, dtype=np.float32)
+    npSeg = np.array(labels, dtype=np.uint8)
+    npIns = np.array(instances, dtype=np.uint16)
+
+    if len(npIns) != NUM_POINTS:
+            raise ValueError("Wrong NUM_POINTS of cloud: ", fname)
  
     return npPoints, npSeg, npIns
 
@@ -283,6 +310,26 @@ class DVSDataset():
                 self.files_to_use = glob.glob(os.path.join(DATASET_VALIDATION_DIR, "*.csv"))
             elif(split == 'test'):
                 self.files_to_use = glob.glob(os.path.join(DATASET_TEST_DIR, "*.csv"))
+            elif(split == 'prepared_train'):
+                #self.files_to_use = glob.glob(os.path.join(DATASET_PREP_TRAIN_DIR, "*.csv"))
+                self.files_to_use = []
+                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/19.csv')
+                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5999.csv')
+                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/13.csv')
+                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5599.csv')
+                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/1.csv')
+                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5299.csv')
+                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5.csv')
+                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/599.csv')
+                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/32.csv')
+                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/59.csv')
+                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/20.csv')
+                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5979.csv')
+                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/30.csv')
+                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5909.csv')
+                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/10.csv')
+                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/99.csv')
+
         else:
             if(split == 'test'):
                 self.files_to_use = []
@@ -297,16 +344,21 @@ class DVSDataset():
         self.batch_num = self.length // batchsize
 
         # --------------------------------------------------------------------------------------------------------------
-        if split not in ['train', 'validation', 'test']:
+        if split not in ['train', 'validation', 'test', 'prepared_train']:
             raise ValueError("unknown split")
 
         # parallel csv read...
         print("Start to read files...")
-        pool = Pool(processes=None)
-        points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
-        points, labels, instances = self.do_downscale(points, labels, instances)
+        if split != 'prepared_train':
+            pool = Pool(processes=None)
+            points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
+            print("Downscale files...")
+            points, labels, instances = self.do_downscale(points, labels, instances)
+        else:
+            pool = Pool(processes=None)
+            points, labels, instances = zip(*pool.map(load_ascii_cloud_prepared, self.files_to_use))
 
-        print("Downscale files...")
+        
         self.point_list = np.asarray(points)
         self.semantic_label_list = np.asarray(labels)
         self.instance_label_list = np.asarray(instances)
