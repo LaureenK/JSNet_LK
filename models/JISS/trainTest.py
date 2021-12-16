@@ -256,9 +256,9 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
             #print("block1: ", block1.shape, " Block2: ", block2.shape)
 
             right_pred = np.count_nonzero(sem1==sem2)
-            sum_acc = float((right_pred/(NUM_POINT)))
+            sum_acc = float((right_pred/(NUM_POINT) * 100))
 
-            print("Right: ", right_pred, " from: 16384 accuracy: ", float((right_pred/(NUM_POINT) * 100)))
+            print("Acc: ", float((right_pred/(NUM_POINT) * 100)), " sum_acc: ", sum_acc)
 
             bandwidth = 4
             num_clusters, labels, cluster_centers = cluster(ins2, bandwidth)
@@ -266,8 +266,9 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
             print("Right num of instances: ", ins1num, " Predicted num: ", num_clusters)
 
             i = i+1
-        print("Sum acc: ", sum_acc, " acc_sum: ", float((sum_acc/(BATCH_SIZE))) * 100)
+        
         acc_sum += float((sum_acc/(BATCH_SIZE)))
+        print("acc_sum from batch: ", acc_sum)
         print("diff acc: ", sum_diff, " diff_sum: ", float((sum_diff/(BATCH_SIZE))))
         diff_sum += float((sum_diff/(BATCH_SIZE)))
         train_writer.add_summary(summary, step)
