@@ -311,24 +311,24 @@ class DVSDataset():
             elif(split == 'test'):
                 self.files_to_use = glob.glob(os.path.join(DATASET_TEST_DIR, "*.csv"))
             elif(split == 'prepared_train'):
-                #self.files_to_use = glob.glob(os.path.join(DATASET_PREP_TRAIN_DIR, "*.csv"))
-                self.files_to_use = []
-                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/19.csv')
-                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5999.csv')
-                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/13.csv')
-                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5599.csv')
-                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/1.csv')
-                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5299.csv')
-                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5.csv')
-                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/599.csv')
-                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/32.csv')
-                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/59.csv')
-                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/20.csv')
-                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5979.csv')
-                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/30.csv')
-                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5909.csv')
-                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/10.csv')
-                self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/99.csv')
+                self.files_to_use = glob.glob(os.path.join(DATASET_PREP_TRAIN_DIR, "*.csv"))
+                # self.files_to_use = []
+                # self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/19.csv')
+                # self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5999.csv')
+                # self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/13.csv')
+                # self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5599.csv')
+                # self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/1.csv')
+                # self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5299.csv')
+                # self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5.csv')
+                # self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/599.csv')
+                # self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/32.csv')
+                # self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/59.csv')
+                # self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/20.csv')
+                # self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5979.csv')
+                # self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/30.csv')
+                # self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/5909.csv')
+                # self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/10.csv')
+                # self.files_to_use.append('/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/99.csv')
 
         else:
             if(split == 'test'):
