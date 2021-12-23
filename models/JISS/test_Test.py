@@ -28,7 +28,7 @@ parser.add_argument('--data_type', type=str, default='csv', help='Test file type
 parser.add_argument('--model_path', type=str, default='log/model.ckpt', help='Path of model')
 parser.add_argument('--log_dir', default='logs', help='Log dir [default: logs]')
 parser.add_argument('--num_point', type=int, default=16384, help='Point number [default: 16384]')                   #changed
-parser.add_argument('--bandwidth', type=float, default=1., help='Bandwidth for meanshift clustering [default: 1.]') #neu?
+parser.add_argument('--bandwidth', type=float, default=0.6, help='Bandwidth for meanshift clustering [default: 1.]') #neu?
 parser.add_argument('--verbose', action='store_true', help='if specified, output color-coded seg obj files') #neu?
 FLAGS = parser.parse_args() 
 
