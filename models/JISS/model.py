@@ -27,15 +27,16 @@ def get_model(point_cloud, is_training, num_class, num_embed=5, sigma=0.05, bn_d
     l0_points = point_cloud[:, :, 3:]
     end_points['l0_xyz'] = l0_xyz
 
-    radius1 = 2
-    radius2 = 4
-    radius3 = 8
-    radius4 = 16
+    radius1 = 1
+    radius2 = 2
+    radius3 = 4
+    radius4 = 8
 
-    npoint1 = 4096
-    npoint2 = 1024
-    npoint3 = 256
-    npoint4 = 128
+    #alle ein höher Tensorflow error
+    npoint1 = 2048
+    npoint2 = 512
+    npoint3 = 128
+    npoint4 = 64
 
     # shared encoder
     l1_xyz, l1_points, l1_indices = pointnet_sa_module(l0_xyz, l0_points, npoint=npoint1, radius=radius1, nsample=32, mlp=[32, 32, 64], mlp2=None, group_all=False, is_training=is_training, bn_decay=bn_decay, is_dist=is_dist, scope='layer1')
