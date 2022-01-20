@@ -299,8 +299,11 @@ class DVSDataset():
             print("Downscale files...")
             points, labels, instances = self.do_downscale(points, labels, instances)
         else:
-            pool = Pool(processes=None)
-            points, labels, instances = zip(*pool.map(load_ascii_cloud_prepared, self.files_to_use))
+            if(len(self.files_to_use) == 1):
+                points, labels, instances = load_ascii_cloud_prepared(self.files_to_use[0])
+            else:
+                pool = Pool(processes=None)
+                points, labels, instances = zip(*pool.map(load_ascii_cloud_prepared, self.files_to_use))
 
         
         self.point_list = np.asarray(points)
