@@ -293,17 +293,18 @@ class DVSDataset():
 
         # parallel csv read...
         print("Start to read files...")
-        if split != 'prepared_train' or split != 'prepared_test':
-            pool = Pool(processes=None)
-            points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
-            print("Downscale files...")
-            points, labels, instances = self.do_downscale(points, labels, instances)
-        else:
+        if split == 'prepared_train' or split == 'prepared_test':
             if(len(self.files_to_use) == 1):
                 points, labels, instances = load_ascii_cloud_prepared(self.files_to_use[0])
             else:
                 pool = Pool(processes=None)
                 points, labels, instances = zip(*pool.map(load_ascii_cloud_prepared, self.files_to_use))
+        
+        else:
+            pool = Pool(processes=None)
+            points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
+            print("Downscale files...")
+            points, labels, instances = self.do_downscale(points, labels, instances)
 
         
         self.point_list = np.asarray(points)
