@@ -53,7 +53,7 @@ def safeFile(pts, pred_sem, labels, file_path):
     print(filename)
 
     with open(file_path, 'r') as fd:
-        head = fd.readlines()
+        head = fd.readlines()[0]
         print(type(head))
         print(head)
     
