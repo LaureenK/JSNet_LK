@@ -293,7 +293,7 @@ class DVSDataset():
 
         # parallel csv read...
         print("Start to read files...")
-        if split != 'prepared_train':
+        if split != 'prepared_train' or split != 'prepared_test':
             pool = Pool(processes=None)
             points, labels, instances = zip(*pool.map(load_and_upscale, self.files_to_use))
             print("Downscale files...")
