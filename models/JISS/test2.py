@@ -60,11 +60,11 @@ def safeFile(pts, pred_sem, labels, file_path):
     print(labels.shape)
 
     #pts = np.reshape(pts, (len(pts),1,1,1))
-    #sem_labels = np.reshape(pred_sem, (len(pred_sem),1))
-    #instances = np.reshape(labels,(len(labels),1))
+    sem_labels = np.reshape(pred_sem, (len(pred_sem),1))
+    instances = np.reshape(labels,(len(labels),1))
 
-    sem_labels = pred_sem
-    instances = labels
+    #sem_labels = pred_sem
+    #instances = labels
 
 
     print(pts.shape)
