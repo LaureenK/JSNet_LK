@@ -50,7 +50,7 @@ logger.info(str(FLAGS) + '\n')
 
 def safeFile(pts, pred_sem, labels, file_path):
     filename = file_path.split('/')[-1].split('.')[0]
-    print(filename)
+    #print(filename)
 
     with open(file_path, 'r') as fd:
         head = fd.readlines()[0]
@@ -107,80 +107,44 @@ def test():
                'pred_sem_label': pred_sem_label,
                'pred_sem_softmax': pred_sem_softmax}
 
-        # for file_idx in range(len_pts_files):
-        #     file_path = ROOM_PATH_LIST[file_idx]
+        for file_idx in range(len_pts_files):
+            file_path = ROOM_PATH_LIST[file_idx]
 
-        #     dataset = DVSDataset("", input_list_txt = file_path, split='prepared_test')
-        #     cur_data, cur_sem, cur_group = dataset.get_all()
-        #     print("Data: ", cur_data.shape, " Sem: ", cur_sem.shape, " Group: ", cur_group.shape)
+            dataset = DVSDataset("", input_list_txt = file_path, split='prepared_test')
+            cur_data, cur_sem, cur_group = dataset.get_all()
+            #print("Data: ", cur_data.shape, " Sem: ", cur_sem.shape, " Group: ", cur_group.shape)
 
 
-        #     logger.info("Processsing: File [%d] of [%d]" % (file_idx, len_pts_files))
+            logger.info("Processsing: File [%d] of [%d]" % (file_idx, len_pts_files))
 
-        #     #maybe just one different numpy array
-        #     pts = cur_data
-        #     group = cur_group
-        #     sem = cur_sem
+            #maybe just one different numpy array
+            pts = cur_data
+            group = cur_group
+            sem = cur_sem
                 
-        #     print("pts shape: ", pts.shape)
-        #     print("group shape: ", group.shape, "\ngroup: ", np.unique(group))
-        #     print("sem shape: ", sem.shape)
+            # print("pts shape: ", pts.shape)
+            # print("group shape: ", group.shape, "\ngroup: ", np.unique(group))
+            # print("sem shape: ", sem.shape)
 
-        #     feed_dict = {ops['pointclouds_pl']: np.expand_dims(pts, 0),
-        #                 ops['labels_pl']: np.expand_dims(group, 0),
-        #                 ops['sem_labels_pl']: np.expand_dims(sem, 0),
-        #                 ops['is_training_pl']: is_training}
+            feed_dict = {ops['pointclouds_pl']: np.expand_dims(pts, 0),
+                        ops['labels_pl']: np.expand_dims(group, 0),
+                        ops['sem_labels_pl']: np.expand_dims(sem, 0),
+                        ops['is_training_pl']: is_training}
 
-        #     pred_ins_val, pred_sem_label_val, pred_sem_softmax_val = sess.run(
-        #         [ops['pred_ins'], ops['pred_sem_label'], ops['pred_sem_softmax']], feed_dict=feed_dict)
+            pred_ins_val, pred_sem_label_val, pred_sem_softmax_val = sess.run(
+                [ops['pred_ins'], ops['pred_sem_label'], ops['pred_sem_softmax']], feed_dict=feed_dict)
             
-        #     #instance
-        #     pred_val = np.squeeze(pred_ins_val, axis=0)
-        #     #sem label
-        #     pred_sem = np.squeeze(pred_sem_label_val, axis=0)
-        #     pred_sem_softmax = np.squeeze(pred_sem_softmax_val, axis=0)
+            #instance
+            pred_val = np.squeeze(pred_ins_val, axis=0)
+            #sem label
+            pred_sem = np.squeeze(pred_sem_label_val, axis=0)
+            pred_sem_softmax = np.squeeze(pred_sem_softmax_val, axis=0)
 
-        #     bandwidth = BANDWIDTH
-        #     num_clusters, labels, cluster_centers = cluster(pred_val, bandwidth)
+            bandwidth = BANDWIDTH
+            num_clusters, labels, cluster_centers = cluster(pred_val, bandwidth)
 
-        #     safeFile(pts, pred_sem, labels, file_path)
+            safeFile(pts, pred_sem, labels, file_path)
 
-        file_path = ROOM_PATH_LIST[0]
-
-        dataset = DVSDataset("", input_list_txt = file_path, split='prepared_test')
-        cur_data, cur_sem, cur_group = dataset.get_all()
-        print("Data: ", cur_data.shape, " Sem: ", cur_sem.shape, " Group: ", cur_group.shape)
-
-
-        logger.info("Processsing: File [%d] of [%d]" % (0, len_pts_files))
-
-        #maybe just one different numpy array
-        pts = cur_data
-        group = cur_group
-        sem = cur_sem
-                
-        #print("pts shape: ", pts.shape)
-        #print("group shape: ", group.shape, "\ngroup: ", np.unique(group))
-        #print("sem shape: ", sem.shape)
-
-        feed_dict = {ops['pointclouds_pl']: np.expand_dims(pts, 0),
-                    ops['labels_pl']: np.expand_dims(group, 0),
-                    ops['sem_labels_pl']: np.expand_dims(sem, 0),
-                    ops['is_training_pl']: is_training}
-
-        pred_ins_val, pred_sem_label_val, pred_sem_softmax_val = sess.run(
-            [ops['pred_ins'], ops['pred_sem_label'], ops['pred_sem_softmax']], feed_dict=feed_dict)
-            
-        #instance
-        pred_val = np.squeeze(pred_ins_val, axis=0)
-        #sem label
-        pred_sem = np.squeeze(pred_sem_label_val, axis=0)
-        pred_sem_softmax = np.squeeze(pred_sem_softmax_val, axis=0)
-
-        bandwidth = BANDWIDTH
-        num_clusters, labels, cluster_centers = cluster(pred_val, bandwidth)
-
-        safeFile(pts, pred_sem, labels, file_path)
   
 
 
