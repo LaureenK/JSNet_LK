@@ -54,8 +54,6 @@ def safeFile(pts, pred_sem, labels, file_path):
 
     with open(file_path, 'r') as fd:
         head = fd.readlines()[0]
-        print(type(head))
-        print(head)
     
     sem_labels = np.reshape(pred_sem, (len(pred_sem),1))
     instances = np.reshape(labels,(len(labels),1))
@@ -69,9 +67,9 @@ def safeFile(pts, pred_sem, labels, file_path):
     #print(all.shape)
 
     name = OUTPUT_PATH + filename + ".csv"
-    print("Save %s", name)
+    print("Save ", name)
     
-    #np.savetxt(name, all, delimiter=" ", header=head, fmt='%d %d %.10f %d %d', comments='//')
+    np.savetxt(name, all, delimiter=" ", header=head, fmt='%d %d %.10f %d %d', comments='//')
 
 
 
