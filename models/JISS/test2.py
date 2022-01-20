@@ -55,13 +55,16 @@ def safeFile(pts, pred_sem, labels, file_path):
     with open(file_path, 'r') as fd:
         head = fd.readlines()
     
-    print(type(pts))
-    print(type(pred_sem))
-    print(type(labels))
+    print(pts.shape)
+    print(pred_sem.shape)
+    print(labels.shape)
 
-    pts = np.reshape(pts, (len(pts),1,1,1))
-    sem_labels = np.reshape(pred_sem, (len(pred_sem),1))
-    instances = np.reshape(labels,(len(labels),1))
+    #pts = np.reshape(pts, (len(pts),1,1,1))
+    #sem_labels = np.reshape(pred_sem, (len(pred_sem),1))
+    #instances = np.reshape(labels,(len(labels),1))
+
+    sem_labels = pred_sem
+    instances = labels
 
 
     print(pts.shape)
@@ -164,9 +167,9 @@ def test():
         group = cur_group
         sem = cur_sem
                 
-        print("pts shape: ", pts.shape)
-        print("group shape: ", group.shape, "\ngroup: ", np.unique(group))
-        print("sem shape: ", sem.shape)
+        #print("pts shape: ", pts.shape)
+        #print("group shape: ", group.shape, "\ngroup: ", np.unique(group))
+        #print("sem shape: ", sem.shape)
 
         feed_dict = {ops['pointclouds_pl']: np.expand_dims(pts, 0),
                     ops['labels_pl']: np.expand_dims(group, 0),
