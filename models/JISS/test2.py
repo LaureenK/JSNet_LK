@@ -14,7 +14,7 @@ sys.path.append(BASE_DIR)
 sys.path.append(ROOT_DIR)
 sys.path.append(os.path.join(ROOT_DIR, 'utils'))
 
-from modelOriginal import *
+from model import *
 from test_utils import *
 from log_util import get_logger
 from clustering import cluster
