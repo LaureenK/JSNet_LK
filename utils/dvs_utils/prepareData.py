@@ -302,7 +302,8 @@ if __name__ == "__main__":
 
                 name = OUTPUT + str(output_num) + ".csv"
                 #print(name)
-                np.savetxt(name, all, delimiter=" ", fmt='%d %d %.10f %d %d')
+                head = INPUTLIST[i] + " " + str(j)
+                np.savetxt(name, all, delimiter=" ", header=head, fmt='%d %d %.10f %d %d', comments='//')
 
                 output_num = output_num + 1
 
@@ -317,7 +318,8 @@ if __name__ == "__main__":
 
             name = OUTPUT + str(output_num) + ".csv"
             #print(name)
-            np.savetxt(name, all, delimiter=" ",fmt='%d %d %.10f %d %d')
+            head = INPUTLIST[i]
+            np.savetxt(name, all, delimiter=" ", header=head, fmt='%d %d %.10f %d %d', comments='//')
 
             output_num = output_num + 1
             
