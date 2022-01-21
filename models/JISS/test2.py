@@ -21,9 +21,9 @@ from clustering import cluster
 from dvs_utils.dataset_dvs import DVSDataset
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--model_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/train_dvs_5/epoch_99.ckpt', help='Path of model')
+parser.add_argument('--model_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/train_dvs_4/epoch_99.ckpt', help='Path of model')
 parser.add_argument('--input_path', type=str, default="/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TestFiles/", help='Path of test files')
-parser.add_argument('--output_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_5/result/', help='Result path')
+parser.add_argument('--output_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_4/result/', help='Result path')
 FLAGS = parser.parse_args() 
 
 GPU_INDEX = 0
@@ -37,7 +37,7 @@ DATASET_TEST_DIR = FLAGS.input_path
 ROOM_PATH_LIST = glob.glob(os.path.join(DATASET_TEST_DIR, "*.csv"))
 len_pts_files = len(ROOM_PATH_LIST)
 
-LOG_DIR = '/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_5/'
+LOG_DIR = '/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_4/'
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
