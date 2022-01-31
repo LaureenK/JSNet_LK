@@ -65,7 +65,7 @@ def safeFile(pts, gt_sem, gt_group, pred_sem, labels, file_path):
 
     all = np.append(pts, gt_sem, axis=1)
     all = np.append(all, gt_group, axis=1)
-    all = np.append(pts, sem_labels, axis=1)
+    all = np.append(all, sem_labels, axis=1)
     all = np.append(all, instances, axis=1)
 
     #print(all.shape)
