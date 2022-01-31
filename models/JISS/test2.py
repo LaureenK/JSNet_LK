@@ -48,19 +48,23 @@ if not os.path.exists(OUTPUT_PATH):
 logger = get_logger(__file__, LOG_DIR, 'log_inference.txt')
 logger.info(str(FLAGS) + '\n')
 
-def safeFile(pts, pred_sem, labels, file_path):
+def safeFile(pts, gt_sem, gt_group, pred_sem, labels, file_path):
     filename = file_path.split('/')[-1].split('.')[0]
     #print(filename)
 
     with open(file_path, 'r') as fd:
         head = fd.readlines()[0]
     
+    gt_sem = np.reshape(gt_sem, (len(pred_sem),1))
+    gt_group = np.reshape(gt_group,(len(labels),1))
     sem_labels = np.reshape(pred_sem, (len(pred_sem),1))
     instances = np.reshape(labels,(len(labels),1))
 
     #sem_labels = pred_sem
     #instances = labels
 
+    all = np.append(pts, gt_sem, axis=1)
+    all = np.append(all, gt_group, axis=1)
     all = np.append(pts, sem_labels, axis=1)
     all = np.append(all, instances, axis=1)
 
@@ -69,7 +73,7 @@ def safeFile(pts, pred_sem, labels, file_path):
     name = OUTPUT_PATH + filename + ".csv"
     print("Save ", name)
     
-    np.savetxt(name, all, delimiter=" ", header=head, fmt='%d %d %.10f %d %d', comments='//')
+    np.savetxt(name, all, delimiter=" ", header=head, fmt='%d %d %.10f %d %d %d %d', comments='//')
 
 
 
@@ -119,16 +123,16 @@ def test():
 
             #maybe just one different numpy array
             pts = cur_data
-            group = cur_group
-            sem = cur_sem
+            gt_group = cur_group
+            gt_sem = cur_sem
                 
             # print("pts shape: ", pts.shape)
             # print("group shape: ", group.shape, "\ngroup: ", np.unique(group))
             # print("sem shape: ", sem.shape)
 
             feed_dict = {ops['pointclouds_pl']: np.expand_dims(pts, 0),
-                        ops['labels_pl']: np.expand_dims(group, 0),
-                        ops['sem_labels_pl']: np.expand_dims(sem, 0),
+                        ops['labels_pl']: np.expand_dims(gt_group, 0),
+                        ops['sem_labels_pl']: np.expand_dims(gt_sem, 0),
                         ops['is_training_pl']: is_training}
 
             pred_ins_val, pred_sem_label_val, pred_sem_softmax_val = sess.run(
@@ -143,7 +147,7 @@ def test():
             bandwidth = BANDWIDTH
             num_clusters, labels, cluster_centers = cluster(pred_val, bandwidth)
 
-            safeFile(pts, pred_sem, labels, file_path)
+            safeFile(pts, gt_sem, gt_group, pred_sem, labels, file_path)
 
   
 
