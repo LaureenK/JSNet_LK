@@ -147,7 +147,10 @@ def test():
             bandwidth = BANDWIDTH
             num_clusters, labels, cluster_centers = cluster(pred_val, bandwidth)
 
-            safeFile(pts, gt_sem, gt_group, pred_sem, labels, file_path)
+            print("## Test Cluster ##")
+            print("Num clusters: ", num_clusters, " Unique Labels: ", len(np.unique(labels)), " cluster_centers: ", len(cluster_centers))
+
+            #safeFile(pts, gt_sem, gt_group, pred_sem, labels, file_path)
 
   
 
