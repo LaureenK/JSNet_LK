@@ -27,7 +27,7 @@ parser.add_argument('--data_type', default='csv', help='data type: numpy or csv 
 parser.add_argument('--log_dir', default='logs', help='Log dir [default: logs]')
 parser.add_argument('--num_point', type=int, default=16384, help='Point number [default: 65536]')                   #changed
 parser.add_argument('--start_epoch', type=int, default=0, help='Epoch to run [default: 50]')
-parser.add_argument('--max_epoch', type=int, default=50, help='Epoch to run [default: 50]')
+parser.add_argument('--max_epoch', type=int, default=100, help='Epoch to run [default: 50]')
 parser.add_argument('--batch_size', type=int, default=16, help='Batch Size during training [default: 8000]')      #changed!
 parser.add_argument('--learning_rate', type=float, default=0.001, help='Initial learning rate [default: 0.001]')
 parser.add_argument('--momentum', type=float, default=0.9, help='Initial learning rate [default: 0.9]')
@@ -99,7 +99,6 @@ def get_bn_decay(batch):
         staircase=True)
     bn_decay = tf.minimum(BN_DECAY_CLIP, 1 - bn_momentum)
     return bn_decay
-
 
 def train():
     # Load data
@@ -208,7 +207,6 @@ def train():
                 save_path = saver.save(sess, os.path.join(LOG_DIR, 'epoch_' + str(epoch) + '.ckpt'))
                 logger.info("Model saved in file: %s" % save_path)
 
-
 def train_one_epoch(sess, ops, train_writer, dataset, epoch):
     """ ops: dict mapping from string to tf ops """
     print("#### Start Epoch ", epoch, " ####")
@@ -292,7 +290,6 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
         logger.info('Semantic mean accuracy: %.2f' % ((acc_sum / float(num_batches))))
         logger.info('Instance mean difference: %.2f' % (diff_sum / float(num_batches)))
         logger.info('Instance mean: %.2f' % (num_sum / float(num_batches)))
-
 
 if __name__ == "__main__":
     train()

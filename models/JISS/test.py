@@ -279,11 +279,14 @@ def test():
             pts_in_pred = [[] for itmp in range(NUM_CLASSES)]
             group_pred_final = -1 * np.ones_like(group_pred)
             grouppred_cnt = 0
+            
             for ig, g in enumerate(un):  # each object in prediction
                 if g == -1:
                     continue
+                
                 tmp = (group_pred == g)
                 sem_seg_g = int(stats.mode(seg_pred[tmp])[0])
+               
                 # if np.sum(tmp) > 500:
                 if np.sum(tmp) > 0.25 * mean_num_pts_in_group[sem_seg_g]:
                     group_pred_final[tmp] = grouppred_cnt

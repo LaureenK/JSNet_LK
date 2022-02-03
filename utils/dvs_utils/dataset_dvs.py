@@ -80,6 +80,8 @@ def load_ascii_cloud_prepared(fname):
 
     if len(npIns) != NUM_POINTS:
         raise ValueError("Wrong NUM_POINTS of cloud: ", fname)
+    
+    npPoints, npSeg, npIns = unison_shuffled_copies(npPoints, npSeg, npIns)
  
     return npPoints, npSeg, npIns
 
@@ -251,7 +253,7 @@ def downscale(points, labels, instances):
     return small_points, small_labels, small_instances
 
 class DVSDataset():
-    def __init__(self, data_root, input_list_txt = 'none', npoints=16384, split='train', batchsize=24):
+    def __init__(self, data_root, input_list_txt = 'none', npoints=16384, split='train', batchsize=16):
         random.seed(1337)  # same result every time
 
         self.input_list_txt = input_list_txt
