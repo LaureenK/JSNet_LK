@@ -150,7 +150,7 @@ def test():
             print("## Test Cluster ##")
             print("Num clusters: ", num_clusters, " Unique Labels: ", len(np.unique(labels)), " cluster_centers: ", len(cluster_centers))
 
-            #safeFile(pts, gt_sem, gt_group, pred_sem, labels, file_path)
+            safeFile(pts, gt_sem, gt_group, pred_sem, labels, file_path)
 
   
 
