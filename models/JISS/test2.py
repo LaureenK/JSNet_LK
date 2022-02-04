@@ -109,10 +109,10 @@ def test():
                'pred_sem_label': pred_sem_label,
                'pred_sem_softmax': pred_sem_softmax}
 
-        #for file_idx in range(len_pts_files):
-        for file_idx in range(1):
-            #file_path = ROOM_PATH_LIST[file_idx]
-            file_path = "/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TestFiles/102.csv"
+        for file_idx in range(len_pts_files):
+        #for file_idx in range(1):
+            file_path = ROOM_PATH_LIST[file_idx]
+            #file_path = "/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TestFiles/102.csv"
 
             dataset = DVSDataset("", input_list_txt = file_path, split='prepared_test')
             cur_data, cur_sem, cur_group = dataset.get_all()
