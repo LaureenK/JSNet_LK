@@ -110,7 +110,7 @@ def test():
                'pred_sem_softmax': pred_sem_softmax}
 
         #for file_idx in range(len_pts_files):
-        for file_idx in range(0):
+        for file_idx in range(1):
             #file_path = ROOM_PATH_LIST[file_idx]
             file_path = "/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TestFiles/102.csv"
 
