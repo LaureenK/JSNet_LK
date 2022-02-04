@@ -235,44 +235,35 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
             [ops['pred_ins'], ops['pred_sem_label'], ops['merged'], ops['step'], ops['learning_rate'], ops['train_op'], ops['loss'], ops['sem_loss'],
              ops['disc_loss'], ops['l_var'], ops['l_dist']], feed_dict=feed_dict)
         
-        #print("Pred_ins_val: ", pred_ins_val[0,0,:], " pred_sem_label_val: ", pred_sem_label_val[0,0])
         
-        i = 0
-        sum_acc = 0
-        sum_diff = 0
-        sum_num = 0
-        while i < BATCH_SIZE:
-            sem1 = pred_sem_label_val[i]
-            sem2 = current_sem[i]
-            #print("Sem1: ", sem1.shape)
-            #print("Sem2: ", sem2.shape)
+        # i = 0
+        # sum_acc = 0
+        # sum_diff = 0
+        # sum_num = 0
+        # while i < BATCH_SIZE:
+        #     sem1 = pred_sem_label_val[i]
+        #     sem2 = current_sem[i]
 
-            ins1 = current_label[i]
-            #print("ins1: ", ins1.shape)
-            ins1num = len(np.unique(ins1))
-            #print("Num unique: ", ins1num, " ", np.unique(ins1)) 
-            ins2 = pred_ins_val[i]
-            #print("ins2: ", ins2.shape)
-            #print("block1: ", block1.shape, " Block2: ", block2.shape)
+        #     ins1 = current_label[i]
+        #     ins1num = len(np.unique(ins1))
 
-            right_pred = np.count_nonzero(sem1==sem2)
-            sum_acc += float((right_pred/(NUM_POINT) * 100))
+        #     ins2 = pred_ins_val[i]
 
-            #print("Acc: ", float((right_pred/(NUM_POINT) * 100)), " sum_acc: ", sum_acc)
+        #     right_pred = np.count_nonzero(sem1==sem2)
+        #     sum_acc += float((right_pred/(NUM_POINT) * 100))
 
-            bandwidth = 0.6
-            num_clusters, labels, cluster_centers = cluster(ins2, bandwidth)
-            sum_diff += abs(ins1num - num_clusters)
-            sum_num += num_clusters
-            #print("Right num of instances: ", ins1num, " Predicted num: ", num_clusters)
 
-            i = i+1
+        #     bandwidth = 0.6
+        #     num_clusters, labels, cluster_centers = cluster(ins2, bandwidth)
+        #     sum_diff += abs(ins1num - num_clusters)
+        #     sum_num += num_clusters
+
+        #     i = i+1
         
-        acc_sum += float((sum_acc/(BATCH_SIZE)))
-        #print("acc_sum from batch: ", acc_sum)
-        #print("diff acc: ", sum_diff, " diff_sum: ", float((sum_diff/(BATCH_SIZE))))
-        diff_sum += float((sum_diff/(BATCH_SIZE)))
-        num_sum += float((sum_num/(BATCH_SIZE)))
+        # acc_sum += float((sum_acc/(BATCH_SIZE)))
+        # diff_sum += float((sum_diff/(BATCH_SIZE)))
+        # num_sum += float((sum_num/(BATCH_SIZE)))
+
         train_writer.add_summary(summary, step)
         loss_sum += loss_val
 
@@ -287,9 +278,9 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
         logger.info('mean loss: %f' % (loss_sum))
     else:
         logger.info('mean loss: %.2f' % (loss_sum / float(num_batches)))
-        logger.info('Semantic mean accuracy: %.2f' % ((acc_sum / float(num_batches))))
-        logger.info('Instance mean difference: %.2f' % (diff_sum / float(num_batches)))
-        logger.info('Instance mean: %.2f' % (num_sum / float(num_batches)))
+        # logger.info('Semantic mean accuracy: %.2f' % ((acc_sum / float(num_batches))))
+        # logger.info('Instance mean difference: %.2f' % (diff_sum / float(num_batches)))
+        # logger.info('Instance mean: %.2f' % (num_sum / float(num_batches)))
 
 if __name__ == "__main__":
     train()
