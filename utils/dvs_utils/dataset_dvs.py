@@ -81,7 +81,7 @@ def load_ascii_cloud_prepared(fname):
     if len(npIns) != NUM_POINTS:
         raise ValueError("Wrong NUM_POINTS of cloud: ", fname)
     
-    npPoints, npSeg, npIns = unison_shuffled_copies(npPoints, npSeg, npIns)
+    #npPoints, npSeg, npIns = unison_shuffled_copies(npPoints, npSeg, npIns)
  
     return npPoints, npSeg, npIns
 

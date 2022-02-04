@@ -23,7 +23,7 @@ from dvs_utils.dataset_dvs import DVSDataset
 parser = argparse.ArgumentParser()
 parser.add_argument('--model_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/train_dvs_5/epoch_99.ckpt', help='Path of model')
 parser.add_argument('--input_path', type=str, default="/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TestFiles/", help='Path of test files')
-parser.add_argument('--output_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_5/result/', help='Result path')
+parser.add_argument('--output_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_102/result/', help='Result path')
 FLAGS = parser.parse_args() 
 
 GPU_INDEX = 0
@@ -37,7 +37,7 @@ DATASET_TEST_DIR = FLAGS.input_path
 ROOM_PATH_LIST = glob.glob(os.path.join(DATASET_TEST_DIR, "*.csv"))
 len_pts_files = len(ROOM_PATH_LIST)
 
-LOG_DIR = '/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_4/'
+LOG_DIR = '/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_102/'
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
@@ -75,8 +75,6 @@ def safeFile(pts, gt_sem, gt_group, pred_sem, labels, file_path):
     
     np.savetxt(name, all, delimiter=" ", header=head, fmt='%d %d %.10f %d %d %d %d', comments='//')
 
-
-
 def test():
     with tf.Graph().as_default():
         with tf.device('/gpu:' + str(GPU_INDEX)):
@@ -111,8 +109,10 @@ def test():
                'pred_sem_label': pred_sem_label,
                'pred_sem_softmax': pred_sem_softmax}
 
-        for file_idx in range(len_pts_files):
-            file_path = ROOM_PATH_LIST[file_idx]
+        #for file_idx in range(len_pts_files):
+        for file_idx in range(0):
+            #file_path = ROOM_PATH_LIST[file_idx]
+            file_path = "/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TestFiles/102.csv"
 
             dataset = DVSDataset("", input_list_txt = file_path, split='prepared_test')
             cur_data, cur_sem, cur_group = dataset.get_all()
