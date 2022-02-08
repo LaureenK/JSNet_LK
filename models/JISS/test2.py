@@ -154,25 +154,25 @@ def test():
             #sem label
             pred_sem = np.squeeze(pred_sem_label_val, axis=0)
             #softmax
-            np.set_printoptions(suppress=True)
+            #np.set_printoptions(suppress=True)
             
             pred_sem_softmax = np.squeeze(pred_sem_softmax_val, axis=0)
-            print(pred_sem_softmax.shape)
-            print(pred_sem_softmax[0])
+            #print(pred_sem_softmax.shape)
+            #print(pred_sem_softmax[0])
             sem_softmax = pred_sem_softmax.reshape([-1, NUM_CLASSES])
-            print(sem_softmax.shape)
-            print(sem_softmax[0])
+            #print(sem_softmax.shape)
+            #print(sem_softmax[0])
             softmax = getSoftmaxForSem(pred_sem,sem_softmax)
-            print(softmax.shape)
-            print(softmax[0])
+            #print(softmax.shape)
+            #print(softmax[0])
 
             bandwidth = BANDWIDTH
             num_clusters, labels, cluster_centers = cluster(pred_val, bandwidth)
 
-            print("## Test Cluster ##")
-            print("Num clusters: ", num_clusters, " Unique Labels: ", len(np.unique(labels)), " cluster_centers: ", len(cluster_centers))
+            #print("## Test Cluster ##")
+            #print("Num clusters: ", num_clusters, " Unique Labels: ", len(np.unique(labels)), " cluster_centers: ", len(cluster_centers))
 
-            #safeFile(pts, gt_sem, gt_group, pred_sem, labels, softmax, file_path)
+            safeFile(pts, gt_sem, gt_group, pred_sem, labels, softmax, file_path)
 
   
 
