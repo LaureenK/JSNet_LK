@@ -154,6 +154,8 @@ def test():
             #sem label
             pred_sem = np.squeeze(pred_sem_label_val, axis=0)
             #softmax
+            np.set_printoptions(suppress=True)
+            
             pred_sem_softmax = np.squeeze(pred_sem_softmax_val, axis=0)
             print(pred_sem_softmax.shape)
             print(pred_sem_softmax[0])
