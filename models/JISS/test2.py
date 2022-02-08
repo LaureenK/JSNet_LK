@@ -122,8 +122,8 @@ def test():
 
         for file_idx in range(len_pts_files):
         #for file_idx in range(1):
-            file_path = ROOM_PATH_LIST[file_idx]
-            #file_path = "/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TestFiles/102.csv"
+            #file_path = ROOM_PATH_LIST[file_idx]
+            file_path = "/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TestFiles/102.csv"
 
             dataset = DVSDataset("", input_list_txt = file_path, split='prepared_test')
             cur_data, cur_sem, cur_group = dataset.get_all()
@@ -154,9 +154,13 @@ def test():
             #sem label
             pred_sem = np.squeeze(pred_sem_label_val, axis=0)
             #softmax
+            print(pred_sem_softmax_val.shape)
             pred_sem_softmax = np.squeeze(pred_sem_softmax_val, axis=0)
+            print(pred_sem_softmax.shape)
             sem_softmax = pred_sem_softmax.reshape([-1, NUM_CLASSES])
+            print(sem_softmax.shape)
             softmax = getSoftmaxForSem(pred_sem,sem_softmax)
+            print(softmax.shape)
 
             bandwidth = BANDWIDTH
             num_clusters, labels, cluster_centers = cluster(pred_val, bandwidth)
@@ -164,7 +168,7 @@ def test():
             print("## Test Cluster ##")
             print("Num clusters: ", num_clusters, " Unique Labels: ", len(np.unique(labels)), " cluster_centers: ", len(cluster_centers))
 
-            safeFile(pts, gt_sem, gt_group, pred_sem, labels, softmax, file_path)
+            #safeFile(pts, gt_sem, gt_group, pred_sem, labels, softmax, file_path)
 
   
 
