@@ -120,8 +120,8 @@ def test():
                'pred_sem_label': pred_sem_label,
                'pred_sem_softmax': pred_sem_softmax}
 
-        for file_idx in range(len_pts_files):
-        #for file_idx in range(1):
+        #for file_idx in range(len_pts_files):
+        for file_idx in range(1):
             #file_path = ROOM_PATH_LIST[file_idx]
             file_path = "/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TestFiles/102.csv"
 
@@ -154,13 +154,15 @@ def test():
             #sem label
             pred_sem = np.squeeze(pred_sem_label_val, axis=0)
             #softmax
-            print(pred_sem_softmax_val.shape)
             pred_sem_softmax = np.squeeze(pred_sem_softmax_val, axis=0)
             print(pred_sem_softmax.shape)
+            print(pred_sem_softmax[0])
             sem_softmax = pred_sem_softmax.reshape([-1, NUM_CLASSES])
             print(sem_softmax.shape)
+            print(sem_softmax[0])
             softmax = getSoftmaxForSem(pred_sem,sem_softmax)
             print(softmax.shape)
+            print(softmax[0])
 
             bandwidth = BANDWIDTH
             num_clusters, labels, cluster_centers = cluster(pred_val, bandwidth)
