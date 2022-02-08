@@ -21,9 +21,9 @@ from clustering import cluster
 from dvs_utils.dataset_dvs import DVSDataset
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--model_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/train_dvs_5/epoch_99.ckpt', help='Path of model')
+parser.add_argument('--model_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/train_dvs_6/epoch_99.ckpt', help='Path of model')
 parser.add_argument('--input_path', type=str, default="/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TestFiles/", help='Path of test files')
-parser.add_argument('--output_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_102/result/', help='Result path')
+parser.add_argument('--output_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_6/result/', help='Result path')
 FLAGS = parser.parse_args() 
 
 GPU_INDEX = 0
@@ -37,7 +37,7 @@ DATASET_TEST_DIR = FLAGS.input_path
 ROOM_PATH_LIST = glob.glob(os.path.join(DATASET_TEST_DIR, "*.csv"))
 len_pts_files = len(ROOM_PATH_LIST)
 
-LOG_DIR = '/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_102/'
+LOG_DIR = '/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_6/'
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
@@ -48,7 +48,7 @@ if not os.path.exists(OUTPUT_PATH):
 logger = get_logger(__file__, LOG_DIR, 'log_inference.txt')
 logger.info(str(FLAGS) + '\n')
 
-def safeFile(pts, gt_sem, gt_group, pred_sem, labels, file_path):
+def safeFile(pts, gt_sem, gt_group, pred_sem, labels, softmax, file_path):
     filename = file_path.split('/')[-1].split('.')[0]
     #print(filename)
 
@@ -59,6 +59,7 @@ def safeFile(pts, gt_sem, gt_group, pred_sem, labels, file_path):
     gt_group = np.reshape(gt_group,(len(labels),1))
     sem_labels = np.reshape(pred_sem, (len(pred_sem),1))
     instances = np.reshape(labels,(len(labels),1))
+    softmax = np.reshape(softmax,(len(softmax),1))
 
     #sem_labels = pred_sem
     #instances = labels
@@ -67,13 +68,23 @@ def safeFile(pts, gt_sem, gt_group, pred_sem, labels, file_path):
     all = np.append(all, gt_group, axis=1)
     all = np.append(all, sem_labels, axis=1)
     all = np.append(all, instances, axis=1)
+    all = np.append(all, softmax, axis=1)
 
     #print(all.shape)
 
     name = OUTPUT_PATH + filename + ".csv"
     print("Save ", name)
     
-    np.savetxt(name, all, delimiter=" ", header=head, fmt='%d %d %.10f %d %d %d %d', comments='//')
+    np.savetxt(name, all, delimiter=" ", header=head, fmt='%d %d %.10f %d %d %d %d %.3f', comments='//')
+
+def getSoftmaxForSem(pred_sem,sem_softmax):
+    softmax = []
+    for i in range(len(pred_sem)):
+        softmax.append(sem_softmax[i, pred_sem[i]])
+    
+    softmax = np.array(softmax)
+
+    return softmax
 
 def test():
     with tf.Graph().as_default():
@@ -142,7 +153,10 @@ def test():
             pred_val = np.squeeze(pred_ins_val, axis=0)
             #sem label
             pred_sem = np.squeeze(pred_sem_label_val, axis=0)
+            #softmax
             pred_sem_softmax = np.squeeze(pred_sem_softmax_val, axis=0)
+            sem_softmax = pred_sem_softmax.reshape([-1, NUM_CLASSES])
+            softmax = getSoftmaxForSem(pred_sem,sem_softmax)
 
             bandwidth = BANDWIDTH
             num_clusters, labels, cluster_centers = cluster(pred_val, bandwidth)
@@ -150,7 +164,7 @@ def test():
             print("## Test Cluster ##")
             print("Num clusters: ", num_clusters, " Unique Labels: ", len(np.unique(labels)), " cluster_centers: ", len(cluster_centers))
 
-            safeFile(pts, gt_sem, gt_group, pred_sem, labels, file_path)
+            safeFile(pts, gt_sem, gt_group, pred_sem, labels, softmax, file_path)
 
   
 
