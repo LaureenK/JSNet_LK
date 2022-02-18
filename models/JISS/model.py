@@ -27,6 +27,12 @@ def get_model(point_cloud, is_training, num_class, num_embed=5, sigma=0.05, bn_d
     l0_points = point_cloud[:, :, 3:]
     end_points['l0_xyz'] = l0_xyz
 
+    #train_4
+    radius1 = 2
+    radius2 = 4
+    radius3 = 8
+    radius4 = 16
+    
     #train_5
     # radius1 = 1
     # radius2 = 2
@@ -40,10 +46,10 @@ def get_model(point_cloud, is_training, num_class, num_embed=5, sigma=0.05, bn_d
     # radius4 = 76.8
 
     #train_7
-    radius1 = 19.2
-    radius2 = 38.4
-    radius3 = 76.8
-    radius4 = 153.6
+    # radius1 = 19.2
+    # radius2 = 38.4
+    # radius3 = 76.8
+    # radius4 = 153.6
 
     #alle ein höher Tensorflow error
     npoint1 = 2048

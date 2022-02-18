@@ -21,10 +21,10 @@ from clustering import cluster
 from dvs_utils.dataset_dvs import DVSDataset
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--model_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/train_dvs_7/epoch_99.ckpt', help='Path of model')
+parser.add_argument('--model_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/train_dvs_4/epoch_99.ckpt', help='Path of model')
 parser.add_argument('--input_path', type=str, default="/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TestFiles/", help='Path of test files')
-parser.add_argument('--output_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_7/result/', help='Result path')
-parser.add_argument('--log_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_7/', help='Log path')
+parser.add_argument('--output_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_4/result/', help='Result path')
+parser.add_argument('--log_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_4/', help='Log path')
 FLAGS = parser.parse_args() 
 
 GPU_INDEX = 0
@@ -53,7 +53,6 @@ logger.info(str(FLAGS) + '\n')
 
 def safeFile(pts, gt_sem, gt_group, pred_sem, labels, softmax, file_path):
     filename = file_path.split('/')[-1].split('.')[0]
-    #print(filename)
 
     with open(file_path, 'r') as fd:
         head = fd.readlines()[0]
@@ -64,16 +63,11 @@ def safeFile(pts, gt_sem, gt_group, pred_sem, labels, softmax, file_path):
     instances = np.reshape(labels,(len(labels),1))
     softmax = np.reshape(softmax,(len(softmax),1))
 
-    #sem_labels = pred_sem
-    #instances = labels
-
     all = np.append(pts, gt_sem, axis=1)
     all = np.append(all, gt_group, axis=1)
     all = np.append(all, sem_labels, axis=1)
     all = np.append(all, instances, axis=1)
     all = np.append(all, softmax, axis=1)
-
-    #print(all.shape)
 
     name = OUTPUT_PATH + filename + ".csv"
     print("Save ", name)
@@ -130,19 +124,12 @@ def test():
 
             dataset = DVSDataset("", input_list_txt = file_path, split='prepared_test')
             cur_data, cur_sem, cur_group = dataset.get_all()
-            #print("Data: ", cur_data.shape, " Sem: ", cur_sem.shape, " Group: ", cur_group.shape)
-
 
             logger.info("Processsing: File [%d] of [%d]" % (file_idx, len_pts_files))
 
-            #maybe just one different numpy array
             pts = cur_data
             gt_group = cur_group
             gt_sem = cur_sem
-                
-            # print("pts shape: ", pts.shape)
-            # print("group shape: ", group.shape, "\ngroup: ", np.unique(group))
-            # print("sem shape: ", sem.shape)
 
             feed_dict = {ops['pointclouds_pl']: np.expand_dims(pts, 0),
                         ops['labels_pl']: np.expand_dims(gt_group, 0),
@@ -158,27 +145,14 @@ def test():
             pred_sem = np.squeeze(pred_sem_label_val, axis=0)
             #softmax
             #np.set_printoptions(suppress=True)
-            
             pred_sem_softmax = np.squeeze(pred_sem_softmax_val, axis=0)
-            #print(pred_sem_softmax.shape)
-            #print(pred_sem_softmax[0])
             sem_softmax = pred_sem_softmax.reshape([-1, NUM_CLASSES])
-            #print(sem_softmax.shape)
-            #print(sem_softmax[0])
             softmax = getSoftmaxForSem(pred_sem,sem_softmax)
-            #print(softmax.shape)
-            #print(softmax[0])
 
             bandwidth = BANDWIDTH
             num_clusters, labels, cluster_centers = cluster(pred_val, bandwidth)
 
-            #print("## Test Cluster ##")
-            #print("Num clusters: ", num_clusters, " Unique Labels: ", len(np.unique(labels)), " cluster_centers: ", len(cluster_centers))
-
             safeFile(pts, gt_sem, gt_group, pred_sem, labels, softmax, file_path)
-
-  
-
 
 
 if __name__ == "__main__":
