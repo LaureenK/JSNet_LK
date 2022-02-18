@@ -28,16 +28,16 @@ def get_model(point_cloud, is_training, num_class, num_embed=5, sigma=0.05, bn_d
     end_points['l0_xyz'] = l0_xyz
 
     #train_4
-    radius1 = 2
-    radius2 = 4
-    radius3 = 8
-    radius4 = 16
+    # radius1 = 2
+    # radius2 = 4
+    # radius3 = 8
+    # radius4 = 16
     
     #train_5
-    # radius1 = 1
-    # radius2 = 2
-    # radius3 = 4
-    # radius4 = 8
+    radius1 = 1
+    radius2 = 2
+    radius3 = 4
+    radius4 = 8
 
     #train_6
     # radius1 = 9.6
