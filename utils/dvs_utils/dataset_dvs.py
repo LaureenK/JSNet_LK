@@ -3,8 +3,9 @@ import os
 import glob
 import random
 import numpy as np
-import prepareData
 from multiprocessing import Pool
+
+from dvs_utils.prepareData import prepareData
 
 NUM_CLASSES = 4
 NUM_POINTS = 2**14
