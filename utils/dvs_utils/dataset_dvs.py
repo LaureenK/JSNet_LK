@@ -140,8 +140,8 @@ class DVSDataset():
             
         return points, sem, inst
 
-    # def get_length(self):
-    #     return self.__len__()
+    def get_length(self):
+        return self.length
     
 
 # ------------------------------------------------------------------------------

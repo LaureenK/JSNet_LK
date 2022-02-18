@@ -161,26 +161,12 @@ def train():
         adam_initializers = [var.initializer for var in tf.global_variables() if 'Adam' in var.name]
         sess.run(adam_initializers)
 
-        # ops = {'pointclouds_pl': pointclouds_pl,
-        #        'labels_pl': labels_pl,
-        #        'sem_labels_pl': sem_labels_pl,
-        #        'is_training_pl': is_training_pl,
-        #        'loss': loss,
-        #        'sem_loss': sem_loss,
-        #        'disc_loss': disc_loss,
-        #        'l_var': l_var,
-        #        'l_dist': l_dist,
-        #        'train_op': train_op,
-        #        'merged': merged,
-        #        'step': batch,
-        #        'learning_rate': learning_rate}
-
         ops = {'pointclouds_pl': pointclouds_pl,
                'labels_pl': labels_pl,
                'sem_labels_pl': sem_labels_pl,
                'is_training_pl': is_training_pl,
-               'pred_ins': pred_ins,                                       #neu
-               'pred_sem_label': pred_sem_label,                          #neu
+               'pred_ins': pred_ins,                                       
+               'pred_sem_label': pred_sem_label,                          
                'loss': loss,
                'sem_loss': sem_loss,
                'disc_loss': disc_loss,
@@ -208,9 +194,6 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
     num_batches = file_size // BATCH_SIZE
 
     loss_sum = 0
-    acc_sum = 0.0
-    diff_sum = 0.0
-    num_sum = 0.0
 
     max_epoch_len = len(str(MAX_EPOCH))
     num_batches_len = len(str(num_batches))
@@ -227,35 +210,6 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
             [ops['pred_ins'], ops['pred_sem_label'], ops['merged'], ops['step'], ops['learning_rate'], ops['train_op'], ops['loss'], ops['sem_loss'],
              ops['disc_loss'], ops['l_var'], ops['l_dist']], feed_dict=feed_dict)
         
-        
-        # i = 0
-        # sum_acc = 0
-        # sum_diff = 0
-        # sum_num = 0
-        # while i < BATCH_SIZE:
-        #     sem1 = pred_sem_label_val[i]
-        #     sem2 = current_sem[i]
-
-        #     ins1 = current_label[i]
-        #     ins1num = len(np.unique(ins1))
-
-        #     ins2 = pred_ins_val[i]
-
-        #     right_pred = np.count_nonzero(sem1==sem2)
-        #     sum_acc += float((right_pred/(NUM_POINT) * 100))
-
-
-        #     bandwidth = 0.6
-        #     num_clusters, labels, cluster_centers = cluster(ins2, bandwidth)
-        #     sum_diff += abs(ins1num - num_clusters)
-        #     sum_num += num_clusters
-
-        #     i = i+1
-        
-        # acc_sum += float((sum_acc/(BATCH_SIZE)))
-        # diff_sum += float((sum_diff/(BATCH_SIZE)))
-        # num_sum += float((sum_num/(BATCH_SIZE)))
-
         train_writer.add_summary(summary, step)
         loss_sum += loss_val
 
@@ -270,9 +224,6 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
         logger.info('mean loss: %f' % (loss_sum))
     else:
         logger.info('mean loss: %.2f' % (loss_sum / float(num_batches)))
-        # logger.info('Semantic mean accuracy: %.2f' % ((acc_sum / float(num_batches))))
-        # logger.info('Instance mean difference: %.2f' % (diff_sum / float(num_batches)))
-        # logger.info('Instance mean: %.2f' % (num_sum / float(num_batches)))
 
 if __name__ == "__main__":
     train()
