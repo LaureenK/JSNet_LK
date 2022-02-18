@@ -21,10 +21,10 @@ from clustering import cluster
 from dvs_utils.dataset_dvs import DVSDataset
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--model_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/train_dvs_4/epoch_99.ckpt', help='Path of model')
+parser.add_argument('--model_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/train_dvs_5/epoch_99.ckpt', help='Path of model')
 parser.add_argument('--input_path', type=str, default="/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TestFiles/", help='Path of test files')
-parser.add_argument('--output_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_4/result/', help='Result path')
-parser.add_argument('--log_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_4/', help='Log path')
+parser.add_argument('--output_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_5/result/', help='Result path')
+parser.add_argument('--log_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_5/', help='Log path')
 FLAGS = parser.parse_args() 
 
 GPU_INDEX = 0
@@ -70,7 +70,7 @@ def safeFile(pts, gt_sem, gt_group, pred_sem, labels, softmax, file_path):
     all = np.append(all, softmax, axis=1)
 
     name = OUTPUT_PATH + filename + ".csv"
-    print("Save ", name)
+    #print("Save ", name)
     
     np.savetxt(name, all, delimiter=" ", header=head, fmt='%d %d %.10f %d %d %d %d %.3f', comments='//')
 
