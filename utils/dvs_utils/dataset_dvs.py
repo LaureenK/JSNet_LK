@@ -125,8 +125,8 @@ class DVSDataset():
     #            self.semantic_label_list[index].astype(np.int32), \
     #            self.labelweights[self.semantic_label_list[0].astype(np.int32)]
 
-    # def get_all(self):
-    #     return self.point_list, self.semantic_label_list, self.instance_label_list
+    def get_all(self):
+        return self.point_list, self.semantic_label_list, self.instance_label_list
 
     def get_batch(self, data_aug=False):
 

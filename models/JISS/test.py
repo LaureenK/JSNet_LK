@@ -122,7 +122,7 @@ def test():
             file_path = ROOM_PATH_LIST[file_idx]
             #file_path = "/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TestFiles/102.csv"
 
-            dataset = DVSDataset("", input_list_txt = file_path, split='prepared_test')
+            dataset = DVSDataset(input_list_txt = file_path, split='prepared_test')
             cur_data, cur_sem, cur_group = dataset.get_all()
 
             logger.info("Processsing: File [%d] of [%d]" % (file_idx, len_pts_files))
