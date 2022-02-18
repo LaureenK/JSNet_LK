@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# -*- coding: utf-8 -*-
+
 import os
 import glob
 import random
@@ -19,10 +19,6 @@ OUTPUT = FLAGS.outputpath
   
 NUM_CLASSES = 4
 NUM_POINTS = 2**14
-
-#DATASET_TRAIN_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/"
-#DATASET_VALIDATION_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/ValidationFiles/"
-#DATASET_TEST_DIR = "/bigdata_hdd/klein/FrKlein_PoC/data/TestFiles/"
 
 CLASS_MAPPING = {
     1: 0,  # original PERSON(1) --> 0
@@ -187,7 +183,7 @@ def downscale(points, labels, instances):
 
     #### divide x no.1####
     small_points1, small_labels1, small_instances1, left1, right1 = create_two_x(points, labels, instances)
-    print(len(small_points1))
+    #print(len(small_points1))
     i = 0
     while i < len(small_points1):
         if len(small_points1[i]) > NUM_POINTS:
@@ -195,7 +191,7 @@ def downscale(points, labels, instances):
             small_points2, small_labels2, small_instances2, top1, down1 = create_two_y(small_points1[i], small_labels1[i], small_instances1[i])
 
             j = 0
-            print(len(small_points2))
+            #print(len(small_points2))
             while j < len(small_points2):
                 if len(small_points2[j]) > NUM_POINTS:
                     #### divide x no.2####
@@ -206,15 +202,20 @@ def downscale(points, labels, instances):
                         small_points3, small_labels3, small_instances3, left2, right2 = create_two_x(points, labels, instances, 320,640)
 
                     z = 0
-                    print(len(small_points3))
+                    #print(len(small_points3))
                     while z < len(small_points3):
                         if len(small_points3[z]) > NUM_POINTS:
-                            while len(small_points3[z]) != NUM_POINTS:
-                                index = randrange(len(small_points3[z]))
-                                small_points3[z].remove(index)
+                            #print('happend') #remove
+                            #print(len(small_points3[z]))
+                            #print(type(small_points3[z]))
 
-                            print('happend')
-                        else: #remove
+                            while len(small_points3[z]) != NUM_POINTS:
+                                index = random.randrange(len(small_points3[z]))
+                                #print(index)
+                                small_points3[z].pop(index)
+                                #print(len(small_points3[z]))
+                     
+                        else: 
                             small_points.append(small_points3[z])
                             small_labels.append(small_labels3[z])
                             small_instances.append(small_instances3[z])
@@ -232,7 +233,7 @@ def downscale(points, labels, instances):
 
         i = i + 1
     
-    print("Result: ", len(small_points))
+    #print("Result: ", len(small_points))
     return small_points, small_labels, small_instances
 
 def mapInstance(points, labels, instances):
@@ -267,7 +268,118 @@ def mapInstance(points, labels, instances):
 
     return points, labels, instances
 
+def prepareData(filelist):
+    random.seed(1337) 
+    point_list = []
+    semantic_label_list = []
+    instance_label_list = []
+
+    i=0
+    while i < len(filelist):
+        points, labels, instances = load_and_upscale(filelist[i])
+        points, labels, instances = mapInstance(points, labels, instances)
+
+        points = np.asarray(points)
+        labels = np.asarray(labels)
+        instances = np.asarray(instances)
+
+
+        if(len(points) > NUM_POINTS):
+            small_points, small_labels, small_instances = downscale(points, labels, instances)
+            small_points = np.asarray(small_points)
+            small_labels = np.asarray(small_labels)
+            small_instances = np.asarray(small_instances)
+
+            j = 0
+
+            while j < small_points.shape[0]:
+                points1 = small_points[j]
+                labels1 = small_labels[j]
+                instances1 = small_instances[j]
+                
+                point_list.append(points1)
+                semantic_label_list.append(labels1)
+                instance_label_list.append(instances1)
+
+                j = j + 1
+
+
+        else:            
+            point_list.append(points)
+            semantic_label_list.append(labels)
+            instance_label_list.append(instances)
+            
+
+        i = i + 1
+
+    point_list = np.asarray(point_list)
+    semantic_label_list = np.asarray(semantic_label_list)
+    instance_label_list = np.asarray(instance_label_list)
+
+    return point_list, semantic_label_list, instance_label_list
+
 if __name__ == "__main__":
+    random.seed(1337) 
+    INPUTLIST = glob.glob(os.path.join(INPUT, "*.csv"))
+    print(len(INPUTLIST))
+    output_num = 0
+
+    i=0
+    while i < len(INPUTLIST):
+        print(i)
+        points, labels, instances = load_and_upscale(INPUTLIST[i])
+        points, labels, instances = mapInstance(points, labels, instances)
+
+        points = np.asarray(points)
+        labels = np.asarray(labels)
+        instances = np.asarray(instances)
+
+
+        if(len(points) > NUM_POINTS):
+            small_points, small_labels, small_instances = downscale(points, labels, instances)
+            small_points = np.asarray(small_points)
+            small_labels = np.asarray(small_labels)
+            small_instances = np.asarray(small_instances)
+
+            j = 0
+
+            while j < small_points.shape[0]:
+                points1 = small_points[j]
+                labels1 = small_labels[j]
+                instances1 = small_instances[j]
+
+                labels1 = np.reshape(labels1, (len(labels1),1))
+                instances1 = np.reshape(instances1,(len(instances1),1))
+                all = np.append(points1, labels1, axis=1)
+                all = np.append(all, instances1, axis=1)
+
+                name = OUTPUT + str(output_num) + ".csv"
+                #print(name)
+                head = INPUTLIST[i] + " " + str(j)
+                np.savetxt(name, all, delimiter=" ", header=head, fmt='%d %d %.10f %d %d', comments='//')
+
+                output_num = output_num + 1
+
+                j = j + 1
+
+
+        else:
+            labels = np.reshape(labels, (len(labels),1))
+            instances = np.reshape(instances,(len(instances),1))
+            all = np.append(points, labels, axis=1)
+            all = np.append(all, instances, axis=1)
+
+            name = OUTPUT + str(output_num) + ".csv"
+            #print(name)
+            head = INPUTLIST[i]
+            np.savetxt(name, all, delimiter=" ", header=head, fmt='%d %d %.10f %d %d', comments='//')
+
+            output_num = output_num + 1
+            
+
+        i = i + 1
+
+    print("finish")
     INPUTLIST = glob.glob(os.path.join(INPUT, "*.csv"))
     print(len(INPUTLIST))
     output_num = 0

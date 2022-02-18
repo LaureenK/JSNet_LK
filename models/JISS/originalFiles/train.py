@@ -2,7 +2,6 @@ import argparse
 import os
 import socket
 import sys
-import numpy as np
 
 import tensorflow as tf
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -14,55 +13,54 @@ ROOT_DIR = os.path.dirname(os.path.dirname(BASE_DIR))
 sys.path.append(BASE_DIR)
 sys.path.append(os.path.join(ROOT_DIR, 'utils'))
 
-from dvs_utils.dataset_dvs import DVSDataset
+from s3dis_utils.dataset_s3dis import S3DISDataset
 from log_util import get_logger
-from model import *
-from clustering import cluster
+from modelOriginal import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--gpu', type=int, default=0, help='GPU to use [default: GPU 0]')
 parser.add_argument('--num_works', type=int, default=8, help='Loading data thread [default: 8]')
 parser.add_argument('--data_root', default='data', help='data dir [default: data]')
-parser.add_argument('--data_type', default='csv', help='data type: numpy or csv [default: csv]')                  #changed
+parser.add_argument('--data_type', default='numpy', help='data type: numpy or hdf5 [default: numpy]')
 parser.add_argument('--log_dir', default='logs', help='Log dir [default: logs]')
-parser.add_argument('--num_point', type=int, default=16384, help='Point number [default: 65536]')                   #changed
+parser.add_argument('--num_point', type=int, default=4096, help='Point number [default: 4096]')
 parser.add_argument('--start_epoch', type=int, default=0, help='Epoch to run [default: 50]')
-parser.add_argument('--max_epoch', type=int, default=100, help='Epoch to run [default: 50]')
-parser.add_argument('--batch_size', type=int, default=16, help='Batch Size during training [default: 8000]')      #changed!
+parser.add_argument('--max_epoch', type=int, default=50, help='Epoch to run [default: 50]')
+parser.add_argument('--batch_size', type=int, default=24, help='Batch Size during training [default: 24]')
 parser.add_argument('--learning_rate', type=float, default=0.001, help='Initial learning rate [default: 0.001]')
 parser.add_argument('--momentum', type=float, default=0.9, help='Initial learning rate [default: 0.9]')
 parser.add_argument('--optimizer', default='adam', help='adam or momentum [default: adam]')
 parser.add_argument('--decay_step', type=int, default=12500, help='Decay step for lr decay [default: 12500]')
 parser.add_argument('--decay_rate', type=float, default=0.5, help='Decay rate for lr decay [default: 0.5]')
-parser.add_argument('--input_list', type=str, default='data/train_csv_dvs.txt',
+parser.add_argument('--input_list', type=str, default='data/train_hdf5_file_list_woArea5.txt',
                     help='Input data list file')
 parser.add_argument('--restore_model', type=str, default='log/', help='Pretrained model')
 FLAGS = parser.parse_args()
 
-BATCH_SIZE = FLAGS.batch_size                   #16
-NUM_WORKS = FLAGS.num_works                     #8
-NUM_POINT = FLAGS.num_point                     #16384
-DATA_TYPE = FLAGS.data_type                     #csv
-START_EPOCH = FLAGS.start_epoch                 #0
-MAX_EPOCH = FLAGS.max_epoch                     #in file --> 1
-BASE_LEARNING_RATE = FLAGS.learning_rate        #0.001
-GPU_INDEX = FLAGS.gpu                           #0
-MOMENTUM = FLAGS.momentum                       #0.9
-OPTIMIZER = FLAGS.optimizer                     #adam
-DECAY_STEP = FLAGS.decay_step                   #12500
+BATCH_SIZE = FLAGS.batch_size
+NUM_WORKS = FLAGS.num_works
+NUM_POINT = FLAGS.num_point
+DATA_TYPE = FLAGS.data_type
+START_EPOCH = FLAGS.start_epoch
+MAX_EPOCH = FLAGS.max_epoch
+BASE_LEARNING_RATE = FLAGS.learning_rate
+GPU_INDEX = FLAGS.gpu
+MOMENTUM = FLAGS.momentum
+OPTIMIZER = FLAGS.optimizer
+DECAY_STEP = FLAGS.decay_step
 DECAY_STEP = int(DECAY_STEP / (BATCH_SIZE / 24))
-DECAY_RATE = FLAGS.decay_rate                   #0.5
+DECAY_RATE = FLAGS.decay_rate
 
-DATA_ROOT = FLAGS.data_root                     # ./ -> in file
-TRAINING_FILE_LIST = FLAGS.input_list           #data/train_csv_dvs.txt
+DATA_ROOT = FLAGS.data_root
+TRAINING_FILE_LIST = FLAGS.input_list
 PRETRAINED_MODEL_PATH = FLAGS.restore_model
 
 LOG_DIR = FLAGS.log_dir
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
-MAX_NUM_POINT = 16384   #changed
-NUM_CLASSES = 4        #changed
+MAX_NUM_POINT = 4096
+NUM_CLASSES = 13
 
 BN_INIT_DECAY = 0.5
 BN_DECAY_DECAY_RATE = 0.5
@@ -100,12 +98,12 @@ def get_bn_decay(batch):
     bn_decay = tf.minimum(BN_DECAY_CLIP, 1 - bn_momentum)
     return bn_decay
 
+
 def train():
     # Load data
-    dataset = DVSDataset(DATA_ROOT, input_list_txt = 'none', split='prepared_train',batchsize = BATCH_SIZE)
-    #dataset = DVSDataset(DATA_ROOT, TRAINING_FILE_LIST, split='train',batchsize = BATCH_SIZE)
-    
-    
+    dataset = S3DISDataset(DATA_ROOT, TRAINING_FILE_LIST, split='train', epoch=MAX_EPOCH - START_EPOCH,
+                           batch_size=BATCH_SIZE, num_works=NUM_WORKS, data_type=DATA_TYPE, block_points=NUM_POINT)
+
     # build network and create session
     with tf.Graph().as_default(), tf.device('/gpu:'+str(GPU_INDEX)):
         pointclouds_pl, labels_pl, sem_labels_pl = placeholder_inputs(BATCH_SIZE, NUM_POINT)
@@ -169,26 +167,10 @@ def train():
         adam_initializers = [var.initializer for var in tf.global_variables() if 'Adam' in var.name]
         sess.run(adam_initializers)
 
-        # ops = {'pointclouds_pl': pointclouds_pl,
-        #        'labels_pl': labels_pl,
-        #        'sem_labels_pl': sem_labels_pl,
-        #        'is_training_pl': is_training_pl,
-        #        'loss': loss,
-        #        'sem_loss': sem_loss,
-        #        'disc_loss': disc_loss,
-        #        'l_var': l_var,
-        #        'l_dist': l_dist,
-        #        'train_op': train_op,
-        #        'merged': merged,
-        #        'step': batch,
-        #        'learning_rate': learning_rate}
-
         ops = {'pointclouds_pl': pointclouds_pl,
                'labels_pl': labels_pl,
                'sem_labels_pl': sem_labels_pl,
                'is_training_pl': is_training_pl,
-               'pred_ins': pred_ins,                                       #neu
-               'pred_sem_label': pred_sem_label,                          #neu
                'loss': loss,
                'sem_loss': sem_loss,
                'disc_loss': disc_loss,
@@ -207,63 +189,32 @@ def train():
                 save_path = saver.save(sess, os.path.join(LOG_DIR, 'epoch_' + str(epoch) + '.ckpt'))
                 logger.info("Model saved in file: %s" % save_path)
 
+
 def train_one_epoch(sess, ops, train_writer, dataset, epoch):
     """ ops: dict mapping from string to tf ops """
-    print("#### Start Epoch ", epoch, " ####")
-    logger.info('Start time')
     is_training = True
     file_size = dataset.get_length()
     num_batches = file_size // BATCH_SIZE
 
     loss_sum = 0
-    acc_sum = 0.0
-    diff_sum = 0.0
-    num_sum = 0.0
 
     max_epoch_len = len(str(MAX_EPOCH))
     num_batches_len = len(str(num_batches))
 
     for batch_idx in range(num_batches):
         current_data, current_sem, current_label = dataset.get_batch(False)
-
+        #print("Batch size: ", BATCH_SIZE, " \nOne Batch:\nData: ", current_data.shape, " SegLabel: ", current_sem.shape, " InsLabel: ", current_label)
+        #print("Data Type: ", type(current_data), " SegLabel Type: ", type(current_sem), " InsLabel Type: ", type(current_label))
+        #print("InsLabel len: ", len(current_label))
+        
         feed_dict = {ops['pointclouds_pl']: current_data,
                      ops['labels_pl']: current_label,
                      ops['sem_labels_pl']: current_sem,
                      ops['is_training_pl']: is_training}
 
-        pred_ins_val, pred_sem_label_val, summary, step, lr_rate, _, loss_val, sem_loss_val, disc_loss_val, l_var_val, l_dist_val = sess.run(
-            [ops['pred_ins'], ops['pred_sem_label'], ops['merged'], ops['step'], ops['learning_rate'], ops['train_op'], ops['loss'], ops['sem_loss'],
+        summary, step, lr_rate, _, loss_val, sem_loss_val, disc_loss_val, l_var_val, l_dist_val = sess.run(
+            [ops['merged'], ops['step'], ops['learning_rate'], ops['train_op'], ops['loss'], ops['sem_loss'],
              ops['disc_loss'], ops['l_var'], ops['l_dist']], feed_dict=feed_dict)
-        
-        
-        # i = 0
-        # sum_acc = 0
-        # sum_diff = 0
-        # sum_num = 0
-        # while i < BATCH_SIZE:
-        #     sem1 = pred_sem_label_val[i]
-        #     sem2 = current_sem[i]
-
-        #     ins1 = current_label[i]
-        #     ins1num = len(np.unique(ins1))
-
-        #     ins2 = pred_ins_val[i]
-
-        #     right_pred = np.count_nonzero(sem1==sem2)
-        #     sum_acc += float((right_pred/(NUM_POINT) * 100))
-
-
-        #     bandwidth = 0.6
-        #     num_clusters, labels, cluster_centers = cluster(ins2, bandwidth)
-        #     sum_diff += abs(ins1num - num_clusters)
-        #     sum_num += num_clusters
-
-        #     i = i+1
-        
-        # acc_sum += float((sum_acc/(BATCH_SIZE)))
-        # diff_sum += float((sum_diff/(BATCH_SIZE)))
-        # num_sum += float((sum_num/(BATCH_SIZE)))
-
         train_writer.add_summary(summary, step)
         loss_sum += loss_val
 
@@ -274,13 +225,8 @@ def train_one_epoch(sess, ops, train_writer, dataset, epoch):
             logger.info(logger_info.format(max_epoch_len, epoch, MAX_EPOCH, num_batches_len, batch_idx, num_batches,
                                            lr_rate, loss_val, sem_loss_val, disc_loss_val, l_var_val, l_dist_val))
 
-    if(loss_sum == 0):
-        logger.info('mean loss: %f' % (loss_sum))
-    else:
-        logger.info('mean loss: %.2f' % (loss_sum / float(num_batches)))
-        # logger.info('Semantic mean accuracy: %.2f' % ((acc_sum / float(num_batches))))
-        # logger.info('Instance mean difference: %.2f' % (diff_sum / float(num_batches)))
-        # logger.info('Instance mean: %.2f' % (num_sum / float(num_batches)))
+    logger.info('mean loss: %f' % (loss_sum / float(num_batches)))
+
 
 if __name__ == "__main__":
     train()
