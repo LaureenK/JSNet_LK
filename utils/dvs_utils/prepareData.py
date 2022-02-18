@@ -7,16 +7,6 @@ import argparse
 import os
 import numpy as np
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--inputpath', default='/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/')
-parser.add_argument('--outputpath', default='/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/')
-#parser.add_argument('--inputpath', default='E:/Users/Laureen/Documents/Test1/')
-#parser.add_argument('--outputpath', default='E:/Users/Laureen/Documents/Test2/')
-FLAGS = parser.parse_args()  
-
-INPUT = FLAGS.inputpath                   
-OUTPUT = FLAGS.outputpath                   
-  
 NUM_CLASSES = 4
 NUM_POINTS = 2**14
 
@@ -319,6 +309,15 @@ def prepareData(filelist):
     return point_list, semantic_label_list, instance_label_list
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--inputpath', default='/bigdata_hdd/klein/FrKlein_PoC/data/TrainFiles/')
+    parser.add_argument('--outputpath', default='/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TrainFiles/')
+    FLAGS = parser.parse_args()  
+
+    INPUT = FLAGS.inputpath                   
+    OUTPUT = FLAGS.outputpath
+
+
     random.seed(1337) 
     INPUTLIST = glob.glob(os.path.join(INPUT, "*.csv"))
     print(len(INPUTLIST))
