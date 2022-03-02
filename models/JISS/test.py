@@ -3,6 +3,7 @@ import os
 import socket
 import sys
 import glob
+import time
 
 import numpy as np
 import tensorflow as tf
@@ -21,10 +22,10 @@ from clustering import cluster
 from dvs_utils.dataset_dvs import DVSDataset
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--model_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/train_dvs_5/epoch_99.ckpt', help='Path of model')
+parser.add_argument('--model_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/train_dvs_6/epoch_99.ckpt', help='Path of model')
 parser.add_argument('--input_path', type=str, default="/bigdata_hdd/klein/FrKlein_PoC/data/prepared/TestFiles/", help='Path of test files')
-parser.add_argument('--output_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_5/result/', help='Result path')
-parser.add_argument('--log_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_5/', help='Log path')
+parser.add_argument('--output_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_time/result/', help='Result path')
+parser.add_argument('--log_path', type=str, default='/home/klein/neural_networks/jsnet/JSNet_LK/logs/test_dvs_Time/', help='Log path')
 FLAGS = parser.parse_args() 
 
 GPU_INDEX = 0
@@ -136,9 +137,14 @@ def test():
                         ops['sem_labels_pl']: np.expand_dims(gt_sem, 0),
                         ops['is_training_pl']: is_training}
 
+            start_time = time.time()
             pred_ins_val, pred_sem_label_val, pred_sem_softmax_val = sess.run(
                 [ops['pred_ins'], ops['pred_sem_label'], ops['pred_sem_softmax']], feed_dict=feed_dict)
             
+            duration = time.time() - start_time
+            print("Time: ")
+            print(duration)
+
             #instance
             pred_val = np.squeeze(pred_ins_val, axis=0)
             #sem label
@@ -152,7 +158,7 @@ def test():
             bandwidth = BANDWIDTH
             num_clusters, labels, cluster_centers = cluster(pred_val, bandwidth)
 
-            safeFile(pts, gt_sem, gt_group, pred_sem, labels, softmax, file_path)
+            #safeFile(pts, gt_sem, gt_group, pred_sem, labels, softmax, file_path)
 
 
 if __name__ == "__main__":
